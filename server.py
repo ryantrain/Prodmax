@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from database import supabase
 
 ##############################################################################
@@ -7,7 +7,16 @@ from database import supabase
 
 api = FastAPI()
 
-@api.get("/messages")
-def get_messages():
-    response = supabase.table("messages").select("*").execute()
-    return response.data
+connected_users = {}
+
+@api.websocket("/messages")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    connected_users[websocket] = True
+    try:
+        while True:
+            data = await websocket.receive_json()
+            # Process the received data
+            
+    except WebSocketDisconnect:
+        del connected_users[websocket]
