@@ -1,2 +1,7 @@
 PyInstaller
 PyQt5
+FastAPI
+Uvicorn
+WebSockets
+Supabase
+Python-dotenv

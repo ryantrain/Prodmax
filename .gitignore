@@ -1,3 +1,5 @@
 dist/*
 main.spec
 build/*
+password.txt
+.env
