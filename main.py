@@ -11,6 +11,11 @@ import threading
 # Load the environment variables from the .env file for Supabase configuration
 load_dotenv()
 
+
+def resource_path(relative_path):
+    base_path = getattr(sys, '_MEIPASS', os.path.abspath('.'))
+    return os.path.join(base_path, relative_path)
+
 class Signals(QObject):
     """
     Defines custom signals for the application. These signals are used to communicate between
@@ -131,13 +136,13 @@ class Homepage(QMainWindow):
         self.stack.setCurrentWidget(self.login_page)
 
     def create_login_page(self):
-        page = uic.loadUi("layouts/login.ui")
+        page = uic.loadUi(resource_path("layouts/login.ui"))
         page.button_1.clicked.connect(self.switch_to_chat)
         self.stack.addWidget(page)
         return page
 
     def create_chat_page(self):
-        page = uic.loadUi("layouts/chat.ui")
+        page = uic.loadUi(resource_path("layouts/chat.ui"))
         self.message_preview = QLabel("Waiting for Supabase updates...", page)
         self.message_preview.setGeometry(20, 220, 520, 30)
         page.button_1.clicked.connect(self.switch_to_login)
