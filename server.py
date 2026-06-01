@@ -17,6 +17,21 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             data = await websocket.receive_json()
             # Process the received data
+            supabase.table("messages").insert({"sender": data["sender"],
+                                               "content": data["content"],
+                                               "created_at": data["created_at"],
+                                               "receiver": data["receiver"]
             
+            }).execute()
+
+            recipient = supabase.table("user_information").select("user_id").eq("user_id", data["receiver"]).execute()
+            if recipient:
+                await recipient.send_json({
+                    "from": data["sender"],
+                    "content": data["content"],
+                    "created_at": data["created_at"],
+                    "receiver": data["receiver"]
+                })
+
     except WebSocketDisconnect:
         del connected_users[websocket]
