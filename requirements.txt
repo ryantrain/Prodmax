@@ -5,4 +5,3 @@ Uvicorn
 WebSockets
 Supabase
 Python-dotenv
-PyQt5designer
