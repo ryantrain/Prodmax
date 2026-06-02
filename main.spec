@@ -5,7 +5,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('layouts/login.ui', 'layouts'), ('layouts/chat.ui', 'layouts')],
+    datas=[('layouts/login.ui', 'layouts'), ('layouts/chat.ui', 'layouts'), ('layouts/register.ui', 'layouts')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
