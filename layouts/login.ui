@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>login_page</class>
+ <widget class="QWidget" name="login_page">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>882</width>
-    <height>679</height>
+    <width>1261</width>
+    <height>960</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QPushButton" name="button_1">
+  <widget class="QPushButton" name="login_button">
    <property name="geometry">
     <rect>
-     <x>220</x>
-     <y>260</y>
+     <x>160</x>
+     <y>600</y>
      <width>451</width>
      <height>151</height>
     </rect>
    </property>
    <property name="text">
-    <string>button</string>
+    <string>login</string>
    </property>
   </widget>
   <widget class="QTextEdit" name="textEdit">
@@ -43,7 +43,47 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;login page&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
+  <widget class="QLineEdit" name="email_field">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>340</y>
+     <width>351</width>
+     <height>41</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="password_field">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>440</y>
+     <width>351</width>
+     <height>41</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="register_button">
+   <property name="geometry">
+    <rect>
+     <x>640</x>
+     <y>600</y>
+     <width>451</width>
+     <height>151</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>register</string>
+   </property>
+  </widget>
  </widget>
+ <tabstops>
+  <tabstop>email_field</tabstop>
+  <tabstop>password_field</tabstop>
+  <tabstop>login_button</tabstop>
+  <tabstop>register_button</tabstop>
+  <tabstop>textEdit</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

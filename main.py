@@ -7,6 +7,7 @@ from supabase import create_async_client
 from dotenv import load_dotenv
 import os
 import threading
+import verification
 
 # Load the environment variables from the .env file for Supabase configuration
 load_dotenv()
@@ -25,7 +26,7 @@ class Signals(QObject):
         - message_received: Signal emitted when a new message is received from the Supabase realtime channel. 
                             The signal carries the formatted message as a string.
         - status_received: Signal emitted when the status of the Supabase realtime connection changes. 
-                           The signal carries the status message as a string.
+                        The signal carries the status message as a string.
     """
     message_received = pyqtSignal(str)
     status_received = pyqtSignal(str)
@@ -117,13 +118,14 @@ class Homepage(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Prodmax')
-        self.setGeometry(100, 100, 800, 600)
+        self.setGeometry(100, 100, 1200, 1000)
 
         self.stack = QStackedWidget()
         self.setCentralWidget(self.stack)
 
         self.login_page = self.create_login_page()
         self.chat_page = self.create_chat_page()
+        self.register_page = self.create_register_page()
 
         self.stack.setCurrentWidget(self.login_page)
         signals.message_received.connect(self.update_message_preview)
@@ -135,9 +137,48 @@ class Homepage(QMainWindow):
     def switch_to_login(self):
         self.stack.setCurrentWidget(self.login_page)
 
+    def switch_to_register(self):
+        self.stack.setCurrentWidget(self.register_page)
+
     def create_login_page(self):
         page = uic.loadUi(resource_path("layouts/login.ui"))
-        page.button_1.clicked.connect(self.switch_to_chat)
+
+        def handle_login():
+            email = page.email_field.text()
+            password = page.password_field.text()
+
+            try:
+                response = asyncio.run(verification.login_user(email, password))
+                self.switch_to_chat()
+
+            except RuntimeError as e:
+
+                print("Login failed:", e)
+
+        page.login_button.clicked.connect(handle_login)
+        page.register_button.clicked.connect(self.switch_to_register)
+        self.stack.addWidget(page)
+        return page
+    
+    def create_register_page(self):
+        page = uic.loadUi(resource_path("layouts/register.ui"))
+
+        def handle_register():
+            email = page.email_field.text()
+            password = page.password_field.text()
+            username = page.username_field.text()
+            phone_number = page.phone_number_field.text()
+
+            try:
+
+                response = asyncio.run(verification.register_user(email, password, username, phone_number))
+                self.switch_to_login()
+
+            except RuntimeError as e:
+
+                print("Registration failed:", e)
+
+        page.register_button.clicked.connect(handle_register)
         self.stack.addWidget(page)
         return page
 
