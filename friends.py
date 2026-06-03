@@ -1,17 +1,17 @@
-from supabase import create_client
+from supabase import Client, create_client
 import os
 import sys
 from dotenv import load_dotenv
 
 load_dotenv()
 
-client = None
+client = ""
 
-async def start_friends_client():
+def start_friends_client():
     url = os.getenv("SUPABASE_URL")
     key = os.getenv("SUPABASE_KEY")
     global client
-    client = await create_client(url, key)
+    client = create_client(url, key)
 
 def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.abspath('.'))
@@ -24,13 +24,13 @@ async def get_friends():
     friends = await client.from_('friendships'\
                             .select("uuid_pair")\
                             .contains("uuid_pair", [user_uuid])\
-                            .eq("status", "accepted").execute()).get("data")
+                            .eq("status", "accepted").execute()).data
 
     # Returns a list of dictionaries of length 1 with the username of each friend in each dictionary
     friends_list = client.from_('user_information')\
                             .select("username")\
                             .contains("uuid", [friend['uuid_pair'][0] if friend['uuid_pair'][0] != user_uuid else friend['uuid_pair'][1] for friend in friends]) \
-                            .execute().get("data")
+                            .execute().data
     return friends_list
 
 def get_uuid(addressee_username: str):
@@ -39,7 +39,7 @@ def get_uuid(addressee_username: str):
                             .select("user_id")\
                             .eq("username", addressee_username)\
                             .execute()\
-                            .get("data")[0]["user_id"]
+                            .data[0]["user_id"]
     return addressee_uuid
 
 def send_friend_request(addressee_username: str):
@@ -49,7 +49,7 @@ def send_friend_request(addressee_username: str):
     request_exists = client.from_("friendships").select("status")\
                             .contains("uuid_pair", [client.auth.get_user().user.id]) \
                             .contains("uuid_pair", [addressee_uuid]) \
-                            .execute().get("data")
+                            .execute().data
     
     if addressee_uuid and not request_exists:
         client.from_("friendships")\
@@ -74,3 +74,10 @@ def decline_friend_request(addressee_username: str):
             .delete()\
             .contains("uuid_pair", [client.auth.get_user().user.id]) \
             .contains("uuid_pair", [addressee_uuid])
+    
+def get_username(uuid: str):
+    username = client.from_("user_information")\
+                            .select("username")\
+                            .eq("user_id", uuid)\
+                            .execute().data[0]["username"]
+    return username

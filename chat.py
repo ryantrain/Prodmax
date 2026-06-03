@@ -4,6 +4,7 @@ from PyQt5.QtCore import pyqtSignal, QObject
 from dotenv import load_dotenv
 import os
 from supabase import create_async_client
+from friends import get_username
 
 # Load the environment variables from the .env file for Supabase configuration
 load_dotenv()
@@ -46,9 +47,11 @@ def format_message(payload):
     event_type = data.get("type") if isinstance(data, dict) else None
 
     if isinstance(row, dict):
-        sender = row.get("sender")
+        sender = row.get("sender_user_id")
         content = row.get("content")
+        
         if sender and content:
+            sender = get_username(sender)
             return f"{sender}: {content}"
         return f"{event_type or 'CHANGE'}: {row}"
 

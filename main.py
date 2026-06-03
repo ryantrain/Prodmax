@@ -1,13 +1,13 @@
 import asyncio
 import sys
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QStackedWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QStackedWidget, QTextEdit
 from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5 import uic
 from dotenv import load_dotenv
 import os
 import threading
 import verification
-from chat import start_realtime
+import chat
 import friends
 
 # Load the environment variables from the .env file for Supabase configuration
@@ -33,6 +33,10 @@ class Signals(QObject):
     status_received = pyqtSignal(str)
 
 signals = Signals()
+
+def start_friends_client():
+    friends.start_friends_client()
+
 #####################################################################
 # Loading pages + PyQt5 setup
 #####################################################################
@@ -40,6 +44,7 @@ class Homepage(QMainWindow):
 
     login_page: QStackedWidget
     chat_page: QStackedWidget
+    message_preview: QTextEdit
 
     def __init__(self):
         super().__init__()
@@ -54,7 +59,7 @@ class Homepage(QMainWindow):
         self.register_page = self.create_register_page()
 
         self.stack.setCurrentWidget(self.login_page)
-        # signals.message_received.connect(self.update_message_preview)
+        chat.signals.message_received.connect(self.update_message_preview)
         # signals.status_received.connect(self.update_message_preview) prolly move to chat.py
 
     def switch_to_chat(self):
@@ -110,20 +115,22 @@ class Homepage(QMainWindow):
 
     def create_chat_page(self):
         page = uic.loadUi(resource_path("layouts/chat.ui"))
-        self.message_preview = QLabel("Waiting for Supabase updates...", page)
-        self.message_preview.setGeometry(20, 220, 520, 30)
+        self.message_preview = page.textEdit
+        self.message_preview.setPlainText("im poo")
         page.button_1.clicked.connect(self.switch_to_login)
         self.stack.addWidget(page)
+        page.textEdit.setReadOnly(True)
         return page
 
     def update_message_preview(self, message):
-        self.message_preview.setText(message)
+        print(message)
+        self.message_preview.setPlainText(message)
 
 if __name__ == "__main__":
-    thread = threading.Thread(target=start_realtime, daemon=True)
+    thread = threading.Thread(target=chat.start_realtime, daemon=True)
     thread.start()
 
-    thread2 = threading.Thread(target=friends.start_friends_client, daemon=True)
+    thread2 = threading.Thread(target=start_friends_client, daemon=True)
     thread2.start()
     
     app = QApplication([])

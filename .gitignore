@@ -3,3 +3,4 @@ main.spec
 build/*
 password.txt
 .env
+dockerfile
