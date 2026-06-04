@@ -34,8 +34,6 @@ class Signals(QObject):
 
 signals = Signals()
 
-def start_friends_client():
-    friends.start_friends_client()
 
 #####################################################################
 # Loading pages + PyQt5 setup
@@ -62,8 +60,23 @@ class Homepage(QMainWindow):
         chat.signals.message_received.connect(self.update_message_preview)
         # signals.status_received.connect(self.update_message_preview) prolly move to chat.py
 
-    def switch_to_chat(self):
+    def switch_to_chat(self, email, password):
         self.stack.setCurrentWidget(self.chat_page)
+
+        def update_friends_list(friends_list: list):
+            self.friends_list.clear()
+            for friend in friends_list:
+                self.friends_list.addItem(str(friend))
+
+        def run_get_friends():
+            if not friends.client:
+                friends.start_friends_client()
+
+            friends_list = asyncio.run(friends.get_friends(email, password))
+            if friends_list is not None:
+                update_friends_list(friends_list)
+        
+        run_get_friends()
 
     def switch_to_login(self):
         self.stack.setCurrentWidget(self.login_page)
@@ -80,7 +93,14 @@ class Homepage(QMainWindow):
 
             try:
                 response = asyncio.run(verification.login_user(email, password))
-                self.switch_to_chat()
+                if response:
+                    friends.start_friends_client()
+                    if response.session:
+                        friends.client.auth.set_session(
+                            response.session.access_token,
+                            response.session.refresh_token,
+                        )
+                    self.switch_to_chat(email, password)
 
             except RuntimeError as e:
 
@@ -103,7 +123,8 @@ class Homepage(QMainWindow):
             try:
 
                 response = asyncio.run(verification.register_user(email, password, username, phone_number))
-                self.switch_to_login()
+                if response:
+                    self.switch_to_login()
 
             except RuntimeError as e:
 
@@ -116,10 +137,12 @@ class Homepage(QMainWindow):
     def create_chat_page(self):
         page = uic.loadUi(resource_path("layouts/chat.ui"))
         self.message_preview = page.textEdit
+        self.friends_list = page.friends_list
         self.message_preview.setPlainText("im poo")
-        page.button_1.clicked.connect(self.switch_to_login)
-        self.stack.addWidget(page)
         page.textEdit.setReadOnly(True)
+
+        self.stack.addWidget(page)
+        page.button_1.clicked.connect(self.switch_to_login)
         return page
 
     def update_message_preview(self, message):
@@ -129,9 +152,6 @@ class Homepage(QMainWindow):
 if __name__ == "__main__":
     thread = threading.Thread(target=chat.start_realtime, daemon=True)
     thread.start()
-
-    thread2 = threading.Thread(target=start_friends_client, daemon=True)
-    thread2.start()
     
     app = QApplication([])
     window = Homepage()

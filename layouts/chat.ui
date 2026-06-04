@@ -16,8 +16,8 @@
   <widget class="QPushButton" name="button_1">
    <property name="geometry">
     <rect>
-     <x>220</x>
-     <y>260</y>
+     <x>310</x>
+     <y>460</y>
      <width>451</width>
      <height>151</height>
     </rect>
@@ -29,8 +29,8 @@
   <widget class="QTextEdit" name="textEdit">
    <property name="geometry">
     <rect>
-     <x>110</x>
-     <y>160</y>
+     <x>620</x>
+     <y>140</y>
      <width>104</width>
      <height>87</height>
     </rect>
@@ -41,6 +41,16 @@
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:7.8pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;chat page&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="friends_list">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>160</y>
+     <width>256</width>
+     <height>192</height>
+    </rect>
    </property>
   </widget>
  </widget>

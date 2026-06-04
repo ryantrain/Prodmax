@@ -2,10 +2,17 @@ from supabase import Client, create_client
 import os
 import sys
 from dotenv import load_dotenv
+from PyQt5.QtCore import pyqtSignal, QObject
 
 load_dotenv()
 
-client = ""
+client : Client = None
+
+class Signals(QObject):
+
+    client_signal = pyqtSignal(bool)
+
+signals = Signals()
 
 def start_friends_client():
     url = os.getenv("SUPABASE_URL")
@@ -17,21 +24,41 @@ def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.abspath('.'))
     return os.path.join(base_path, relative_path) 
 
-async def get_friends():
-    user_uuid = client.auth.get_user().user.id
+async def get_friends(email, password) -> list:
+    start_friends_client()
 
-    # Returns a list of length 2 with dictionaries of the uuid pairs of friendships of the current user
-    friends = await client.from_('friendships'\
-                            .select("uuid_pair")\
-                            .contains("uuid_pair", [user_uuid])\
-                            .eq("status", "accepted").execute()).data
+    if client:
+        client.auth.sign_in_with_password({"email": email, "password": password})
+        user_uuid = client.auth.get_user().user.id
+        if not user_uuid:
+            raise RuntimeError("No authenticated user is available on the friends client")
+        
 
-    # Returns a list of dictionaries of length 1 with the username of each friend in each dictionary
-    friends_list = client.from_('user_information')\
-                            .select("username")\
-                            .contains("uuid", [friend['uuid_pair'][0] if friend['uuid_pair'][0] != user_uuid else friend['uuid_pair'][1] for friend in friends]) \
-                            .execute().data
-    return friends_list
+        # Returns a dictionary with each key containing a list of length 2 uuid pairs
+        
+        friends = client.from_('friendships')\
+                                .select("uuid_pair")\
+                                .contains("uuid_pair", [user_uuid])\
+                                .eq("status", "accepted").execute().data[0]
+        
+        # Turns friends dictionairy into a list of uuid pairs
+        result = list(friends.values())
+
+        # Returns a list of dictionaries of length 1 with the username of each friend in each dictionary                        
+        friends_list = []
+        for friends in result:
+            uuid = friends[0] if friends[0] != user_uuid else friends[1]
+
+            friend_username = client.from_('user_information')\
+                                    .select("username")\
+                                    .eq("user_id", uuid) \
+                                    .execute().data[0]["username"]
+            
+            friends_list.append(friend_username)
+
+        return friends_list
+
+    raise RuntimeError("client does not exist")
 
 def get_uuid(addressee_username: str):
     # find uuid of that username
