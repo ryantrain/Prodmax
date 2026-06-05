@@ -1,31 +1,17 @@
-from supabase import Client, create_client
+from supabase import Client
 import os
 import sys
 from dotenv import load_dotenv
-from PyQt5.QtCore import pyqtSignal, QObject
 
 load_dotenv()
 
 client : Client = None
-
-class Signals(QObject):
-
-    client_signal = pyqtSignal(bool)
-
-signals = Signals()
-
-def start_friends_client():
-    url = os.getenv("SUPABASE_URL")
-    key = os.getenv("SUPABASE_KEY")
-    global client
-    client = create_client(url, key)
 
 def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.abspath('.'))
     return os.path.join(base_path, relative_path) 
 
 async def get_friends(email, password) -> list:
-    start_friends_client()
 
     if client:
         client.auth.sign_in_with_password({"email": email, "password": password})
@@ -33,9 +19,7 @@ async def get_friends(email, password) -> list:
         if not user_uuid:
             raise RuntimeError("No authenticated user is available on the friends client")
         
-
         # Returns a dictionary with each key containing a list of length 2 uuid pairs
-        
         friends = client.from_('friendships')\
                                 .select("uuid_pair")\
                                 .contains("uuid_pair", [user_uuid])\

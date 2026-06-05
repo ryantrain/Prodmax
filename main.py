@@ -6,6 +6,7 @@ from PyQt5 import uic
 from dotenv import load_dotenv
 import os
 import threading
+from supabase import create_client, create_async_client
 import verification
 import chat
 import friends
@@ -16,7 +17,6 @@ load_dotenv()
 def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.abspath('.'))
     return os.path.join(base_path, relative_path)
-
 
 class Signals(QObject):
     """
@@ -123,7 +123,7 @@ class LoginRegisterPage(QMainWindow):
             try:
                 response = asyncio.run(verification.login_user(email, password))
                 if response:
-                    friends.start_friends_client()
+                    # friends.start_friends_client()
                     if response.session:
                         friends.client.auth.set_session(
                             response.session.access_token,
@@ -182,6 +182,13 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.chat_window)
 
 if __name__ == "__main__":
+    
+    async_client = asyncio.run(create_async_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY")))
+    client = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
+    friends.client = client
+    verification.async_client = async_client
+    chat.async_client = async_client
+    
     thread = threading.Thread(target=chat.start_realtime, daemon=True)
     thread.start()
     

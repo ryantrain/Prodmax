@@ -3,16 +3,17 @@ import sys
 from PyQt5.QtCore import pyqtSignal, QObject
 from dotenv import load_dotenv
 import os
-from supabase import create_async_client
+from supabase import AsyncClient
 from friends import get_username
 
 # Load the environment variables from the .env file for Supabase configuration
 load_dotenv()
 
+async_client : AsyncClient
+
 def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.abspath('.'))
     return os.path.join(base_path, relative_path) 
-
 
 class Signals(QObject):
     """
@@ -22,14 +23,10 @@ class Signals(QObject):
     Instance attributes:
         - message_received: Signal emitted when a new message is received from the Supabase realtime channel. 
                             The signal carries the formatted message as a string.
-        - status_received: Signal emitted when the status of the Supabase realtime connection changes. 
-                        The signal carries the status message as a string.
     """
     message_received = pyqtSignal(str)
-    status_received = pyqtSignal(str)
 
 signals = Signals()
-
 
 def format_message(payload):
     """
@@ -72,29 +69,15 @@ async def start_realtime_async():
         - "public:messages" for changes in the "messages" table in the "public" schema    
     """
 
-    # Using the dotenv library to retrieve url and keys from .env file to load Supabase information
-    supabase_url = os.getenv("SUPABASE_URL")
-    supabase_key = os.getenv("SUPABASE_KEY")
-    if not supabase_url or not supabase_key:
-        raise RuntimeError("SUPABASE_URL and SUPABASE_KEY must be set")
-
-    # Waits for the connection to be established and creates the asynchronous client 
-    # for Supabase using the url and key retrieved from the .env file
-    client = await create_async_client(supabase_url, supabase_key)
-
+    global async_client
     # Creates a client channel to listen for changes on the "public" schema and in the "messages" table
-    channel = client.channel("public:messages")
+    channel = async_client.channel("public:messages")
 
     # Subscribe to changes, specifically, inserts, on the "messages" table in the "public" schema
     # Note: Whenever on_postgres_changes() is triggered, it will automatically call on_message() and pass
     # a payload object as an argument containing the information about the change occured in "messages"
     channel.on_postgres_changes("INSERT", on_message, table="messages", schema="public")
     await channel.subscribe()
-
-    # Activates the signal object status_received and gives it the string value "Connected to Supabase realtime"
-    # to indicate that the connection to the Supabase realtime channel has been established successfully since
-    # the code has reached this point without the exception above being raised
-    signals.status_received.emit("Connected to Supabase realtime")
 
     while True:
         await asyncio.sleep(60)
