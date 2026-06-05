@@ -20,13 +20,17 @@ async def get_friends(email, password) -> list:
             raise RuntimeError("No authenticated user is available on the friends client")
         
         # Returns a dictionary with each key containing a list of length 2 uuid pairs
+
         friends = client.from_('friendships')\
                                 .select("uuid_pair")\
                                 .contains("uuid_pair", [user_uuid])\
-                                .eq("status", "accepted").execute().data[0]
+                                .eq("status", "accepted").execute().data
+        
+        if not friends:
+            return []
         
         # Turns friends dictionairy into a list of uuid pairs
-        result = list(friends.values())
+        result = list(friends[0].values())
 
         # Returns a list of dictionaries of length 1 with the username of each friend in each dictionary                        
         friends_list = []

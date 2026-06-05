@@ -164,6 +164,7 @@ class LoginRegisterPage(QMainWindow):
         self.stack.addWidget(page)
         return page
 
+
 class MainWindow(QMainWindow):
 
     def __init__(self):
@@ -182,9 +183,12 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.chat_window)
 
 if __name__ == "__main__":
-    
+
+    # Initialize all the clients before starting and setting each client in all other files to the same client
+    # to keep clients centralized and avoid multiple clients being created in different files.
     async_client = asyncio.run(create_async_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY")))
     client = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
+
     friends.client = client
     verification.async_client = async_client
     chat.async_client = async_client
