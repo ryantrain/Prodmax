@@ -49,7 +49,7 @@ async def register_user(email: str, password: str, username: str, phone_number: 
             await async_client.auth.sign_out()
             await async_client.from_("user_information").insert({"user_id": response.user.id, "email": email, "username": username}, returning="minimal").execute()
 
-        return response
+        return True
 
     except APIError as e:
         raise RuntimeError(e.message) from e
