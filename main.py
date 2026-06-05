@@ -30,7 +30,7 @@ class Signals(QObject):
                         The signal carries the status message as a string.
     """
     message_received = pyqtSignal(str)
-    status_received = pyqtSignal(str)
+    change_to_chat = pyqtSignal(str, str)
 
 signals = Signals()
 
@@ -44,24 +44,20 @@ class Homepage(QMainWindow):
     chat_page: QStackedWidget
     message_preview: QTextEdit
 
-    def __init__(self):
+    def __init__(self, email, password):
         super().__init__()
         self.setWindowTitle('Prodmax')
         self.setGeometry(100, 100, 1200, 1000)
 
-        self.stack = QStackedWidget()
-        self.setCentralWidget(self.stack)
+        self.chat_window = self.create_chat_page()
+        self.setCentralWidget(self.chat_window)
+        
+        self.email = email
+        self.password = password
 
-        self.login_page = self.create_login_page()
-        self.chat_page = self.create_chat_page()
-        self.register_page = self.create_register_page()
-
-        self.stack.setCurrentWidget(self.login_page)
         chat.signals.message_received.connect(self.update_message_preview)
-        # signals.status_received.connect(self.update_message_preview) prolly move to chat.py
 
-    def switch_to_chat(self, email, password):
-        self.stack.setCurrentWidget(self.chat_page)
+    def initialize_friends_list(self):
 
         def update_friends_list(friends_list: list):
             self.friends_list.clear()
@@ -72,17 +68,50 @@ class Homepage(QMainWindow):
             if not friends.client:
                 friends.start_friends_client()
 
-            friends_list = asyncio.run(friends.get_friends(email, password))
+            friends_list = asyncio.run(friends.get_friends(self.email, self.password))
             if friends_list is not None:
                 update_friends_list(friends_list)
         
         run_get_friends()
+
+    def create_chat_page(self):
+        page = uic.loadUi(resource_path("layouts/chat.ui"))
+        self.message_preview = page.textEdit
+        self.friends_list = page.friends_list
+        self.message_preview.setPlainText("im poo")
+        page.textEdit.setReadOnly(True)
+
+        return page
+
+    def update_message_preview(self, message):
+        print(message)
+        self.message_preview.setPlainText(message)
+
+
+class LoginRegisterPage(QMainWindow):
+
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('Prodmax')
+        self.setGeometry(100, 100, 1200, 1000)
+
+        self.stack = QStackedWidget()
+        self.setCentralWidget(self.stack)
+
+        self.login_page = self.create_login_page()
+        self.register_page = self.create_register_page()
+
+        self.stack.setCurrentWidget(self.login_page)
 
     def switch_to_login(self):
         self.stack.setCurrentWidget(self.login_page)
 
     def switch_to_register(self):
         self.stack.setCurrentWidget(self.register_page)
+    
+    def switch_to_chat(self, email, password):
+        self.chat_window = Homepage(email, password)
+        self.setCentralWidget(self.chat_window)
 
     def create_login_page(self):
         page = uic.loadUi(resource_path("layouts/login.ui"))
@@ -100,7 +129,8 @@ class Homepage(QMainWindow):
                             response.session.access_token,
                             response.session.refresh_token,
                         )
-                    self.switch_to_chat(email, password)
+                    # self.switch_to_chat(email, password)
+                    signals.change_to_chat.emit(email, password)
 
             except RuntimeError as e:
 
@@ -134,26 +164,28 @@ class Homepage(QMainWindow):
         self.stack.addWidget(page)
         return page
 
-    def create_chat_page(self):
-        page = uic.loadUi(resource_path("layouts/chat.ui"))
-        self.message_preview = page.textEdit
-        self.friends_list = page.friends_list
-        self.message_preview.setPlainText("im poo")
-        page.textEdit.setReadOnly(True)
+class MainWindow(QMainWindow):
 
-        self.stack.addWidget(page)
-        page.button_1.clicked.connect(self.switch_to_login)
-        return page
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('Prodmax')
+        self.setGeometry(100, 100, 1200, 1000)
 
-    def update_message_preview(self, message):
-        print(message)
-        self.message_preview.setPlainText(message)
+        self.login_register_page = LoginRegisterPage()
+        self.setCentralWidget(self.login_register_page)
+
+        signals.change_to_chat.connect(self.handle_change_to_chat)
+
+    def handle_change_to_chat(self, email, password):
+        self.chat_window = Homepage(email, password)
+        self.chat_window.initialize_friends_list()
+        self.setCentralWidget(self.chat_window)
 
 if __name__ == "__main__":
     thread = threading.Thread(target=chat.start_realtime, daemon=True)
     thread.start()
     
     app = QApplication([])
-    window = Homepage()
+    window = MainWindow()
     window.show()
     sys.exit(app.exec_())
