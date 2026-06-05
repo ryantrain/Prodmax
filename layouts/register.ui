@@ -35,6 +35,9 @@
      <height>41</height>
     </rect>
    </property>
+   <property name="placeholderText">
+    <string>Username</string>
+   </property>
   </widget>
   <widget class="QLineEdit" name="password_field">
    <property name="geometry">
@@ -44,6 +47,9 @@
      <width>351</width>
      <height>41</height>
     </rect>
+   </property>
+   <property name="placeholderText">
+    <string>Password</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="email_field">
@@ -55,6 +61,9 @@
      <height>41</height>
     </rect>
    </property>
+   <property name="placeholderText">
+    <string>Email</string>
+   </property>
   </widget>
   <widget class="QLineEdit" name="phone_number_field">
    <property name="geometry">
@@ -64,6 +73,9 @@
      <width>351</width>
      <height>41</height>
     </rect>
+   </property>
+   <property name="placeholderText">
+    <string>Phone Number</string>
    </property>
   </widget>
  </widget>

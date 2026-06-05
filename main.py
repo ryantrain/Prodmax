@@ -40,7 +40,6 @@ signals = Signals()
 #####################################################################
 class Homepage(QMainWindow):
 
-    login_page: QStackedWidget
     chat_page: QStackedWidget
     message_preview: QTextEdit
 
