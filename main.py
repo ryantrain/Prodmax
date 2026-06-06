@@ -1,7 +1,7 @@
 import asyncio
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QStackedWidget, QTextEdit
-from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtWidgets import QApplication, QMainWindow, QStackedWidget, QTextEdit, QVBoxLayout, QWidget
+from PyQt5.QtCore import Qt, pyqtSignal, QObject
 from PyQt5 import uic
 from dotenv import load_dotenv
 import os
@@ -74,10 +74,16 @@ class Homepage(QMainWindow):
         run_get_friends()
 
     def create_chat_page(self):
+
         page = uic.loadUi(resource_path("layouts/chat.ui"))
         self.message_preview = page.textEdit
         self.friends_list = page.friends_list
+        self.profile_container = page.profile_container
+        self.profile_layout = QVBoxLayout(self.profile_container)
+        self.profile_container.layout().setContentsMargins(0, 0, 0, 0)
         self.message_preview.setPlainText("im poo")
+
+        page.friends_list.itemClicked.connect(self.select_profile_pane)
         page.textEdit.setReadOnly(True)
 
         return page
@@ -85,6 +91,32 @@ class Homepage(QMainWindow):
     def update_message_preview(self, message):
         print(message)
         self.message_preview.setPlainText(message)
+
+    def select_profile_pane(self, item):
+
+        while self.profile_container.layout().count():
+            child = self.profile_layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+
+        profile_pane = ProfilePane(item)
+        self.profile_container.layout().addWidget(profile_pane)
+        self.profile_container.show()
+
+    def close_profile_pane(self):
+
+        if self.profile_container.layout():
+            while self.profile_container.layout().count():
+                self.profile_container.layout().takeAt(0)
+                self.profile_container.hide()
+
+    def mousePressEvent(self, event):
+        super().mousePressEvent(event)
+
+        if event.button() == Qt.LeftButton:
+
+            if not self.profile_container.geometry().contains(event.pos()):
+                self.close_profile_pane()
 
 
 class LoginRegisterPage(QMainWindow):
@@ -180,6 +212,24 @@ class MainWindow(QMainWindow):
         self.chat_window = Homepage(email, password)
         self.chat_window.initialize_friends_list()
         self.setCentralWidget(self.chat_window)
+
+class ProfilePane(QWidget):
+
+    def __init__(self, name):
+        super().__init__()
+
+        self.name = name.text()
+        self.show_profile()
+
+    def show_profile(self):
+        self.pane = uic.loadUi(resource_path("layouts/profile_pane.ui"))
+        self.pane.profile_name.setText(self.name)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.pane)
+        self.setLayout(layout)
+
 
 if __name__ == "__main__":
 
