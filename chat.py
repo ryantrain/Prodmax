@@ -3,13 +3,12 @@ import sys
 from PyQt5.QtCore import pyqtSignal, QObject
 from dotenv import load_dotenv
 import os
-from supabase import AsyncClient
+from supabase import create_async_client
 from friends import get_username
 
 # Load the environment variables from the .env file for Supabase configuration
 load_dotenv()
 
-async_client : AsyncClient
 
 def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.abspath('.'))
@@ -69,7 +68,7 @@ async def start_realtime_async():
         - "public:messages" for changes in the "messages" table in the "public" schema    
     """
 
-    global async_client
+    async_client = await create_async_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
     # Creates a client channel to listen for changes on the "public" schema and in the "messages" table
     channel = async_client.channel("public:messages")
 

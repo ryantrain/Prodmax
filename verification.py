@@ -1,6 +1,7 @@
 import asyncio
+import os
 
-from supabase import AsyncClient
+from supabase import create_async_client
 from supabase_auth.errors import AuthApiError
 from dotenv import load_dotenv
 from postgrest.exceptions import APIError
@@ -8,15 +9,12 @@ import friends
 
 load_dotenv()
 
-async_client : AsyncClient
-
 async def login_user(email: str, password: str):
     """
     Logs the user in by checking email and password against email and hashed password.
     """
-    global async_client
-
     try:
+        async_client = await create_async_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
         response = await async_client.auth.sign_in_with_password({"email": email, "password": password})
 
         if friends.client and response.session:
@@ -35,9 +33,8 @@ async def register_user(email: str, password: str, username: str, phone_number: 
     Registers the user by creating a new user in the Supabase authentication system and inserting
     the user's information into the "user_information" table in the "public" schema.
     """
-    global async_client
-
     try:
+        async_client = await create_async_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
 
         if phone_number:
             response = await async_client.auth.sign_up({"email": email, "password": password, "phone": phone_number, 'options': {"data": {"username": username}}})

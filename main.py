@@ -6,7 +6,7 @@ from PyQt5 import uic
 from dotenv import load_dotenv
 import os
 import threading
-from supabase import create_client, create_async_client
+from supabase import create_client
 import verification
 import chat
 import friends
@@ -153,6 +153,7 @@ class LoginRegisterPage(QMainWindow):
 
             try:
                 response = asyncio.run(verification.login_user(email, password))
+
                 if response:
                     # friends.start_friends_client()
                     if response.session:
@@ -181,15 +182,14 @@ class LoginRegisterPage(QMainWindow):
             username = page.username_field.text()
             phone_number = page.phone_number_field.text()
 
-            try:
+            if len(password) >= 6:            
+                try:
+                    response = asyncio.run(verification.register_user(email, password, username, phone_number))
+                    if response:
+                        self.switch_to_login()
 
-                response = asyncio.run(verification.register_user(email, password, username, phone_number))
-                if response:
-                    self.switch_to_login()
-
-            except RuntimeError as e:
-
-                print("Registration failed:", e)
+                except RuntimeError as e:
+                    print("Registration failed:", e)
 
         page.register_button.clicked.connect(handle_register)
         self.stack.addWidget(page)
@@ -235,13 +235,10 @@ if __name__ == "__main__":
 
     # Initialize all the clients before starting and setting each client in all other files to the same client
     # to keep clients centralized and avoid multiple clients being created in different files.
-    async_client = asyncio.run(create_async_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY")))
     client = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
 
     friends.client = client
-    verification.async_client = async_client
-    chat.async_client = async_client
-    
+
     thread = threading.Thread(target=chat.start_realtime, daemon=True)
     thread.start()
     
