@@ -78,6 +78,19 @@
     <string>Phone Number</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="previous_button">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>40</y>
+     <width>201</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Go Back</string>
+   </property>
+  </widget>
  </widget>
  <tabstops>
   <tabstop>username_field</tabstop>

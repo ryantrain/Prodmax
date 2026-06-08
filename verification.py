@@ -1,4 +1,4 @@
-import asyncio
+from supabase_auth.errors import AuthApiError
 import os
 
 from supabase import create_async_client
@@ -33,6 +33,13 @@ async def register_user(email: str, password: str, username: str, phone_number: 
     Registers the user by creating a new user in the Supabase authentication system and inserting
     the user's information into the "user_information" table in the "public" schema.
     """
+
+    if not email or not password or not username:
+        raise RuntimeError("Registration failed: Email, password, and username are required.")
+    
+    if len(password) < 6:
+        raise RuntimeError("Registration failed: Password must be at least 6 characters long.")
+    
     try:
         async_client = await create_async_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
 
@@ -53,3 +60,6 @@ async def register_user(email: str, password: str, username: str, phone_number: 
     
     except RuntimeError as e:
         raise RuntimeError("Registration failed: invalid username or password.") from e
+    
+    except AuthApiError as e:
+        raise RuntimeError("Registration failed: unable to validate email address.") from e

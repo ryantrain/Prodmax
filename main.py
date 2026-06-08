@@ -1,6 +1,6 @@
 import asyncio
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QStackedWidget, QTextEdit, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QStackedWidget, QTextEdit, QVBoxLayout, QWidget, QLineEdit
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 from PyQt5 import uic
 from dotenv import load_dotenv
@@ -153,9 +153,11 @@ class LoginRegisterPage(QMainWindow):
 
     def switch_to_login(self):
         self.stack.setCurrentWidget(self.login_page)
+        [widget.clear() for widget in self.register_page.findChildren(QLineEdit)]
 
     def switch_to_register(self):
         self.stack.setCurrentWidget(self.register_page)
+        [widget.clear() for widget in self.login_page.findChildren(QLineEdit)]
     
     def switch_to_chat(self, email, password):
         self.chat_window = Homepage(email, password)
@@ -170,19 +172,20 @@ class LoginRegisterPage(QMainWindow):
         async def handle_login(*args):
             email = page.email_field.text()
             password = page.password_field.text()
+            page.email_field.clear()
+            page.password_field.clear()
 
             try:
                 response = await verification.login_user(email, password)
 
                 if response:
-                    # friends.start_friends_client()
                     if response.session:
                         friends.client.auth.set_session(
                             response.session.access_token,
                             response.session.refresh_token,
                         )
-                    # self.switch_to_chat(email, password)
                     signals.change_to_chat.emit(email, password)
+
 
             except RuntimeError as e:
 
@@ -202,21 +205,21 @@ class LoginRegisterPage(QMainWindow):
             password = page.password_field.text()
             username = page.username_field.text()
             phone_number = page.phone_number_field.text()
+        
+            try:
+                response = await verification.register_user(email, password, username, phone_number)
+                if response:
+                    page.email_field.clear()
+                    page.password_field.clear()
+                    page.username_field.clear()
+                    page.phone_number_field.clear()
+                    self.switch_to_login()
 
-            if len(password) >= 6:            
-                try:
-                    response = await verification.register_user(email, password, username, phone_number)
-                    if response:
-                        page.email_field.clear()
-                        page.password_field.clear()
-                        page.username_field.clear()
-                        page.phone_number_field.clear()
-                        self.switch_to_login()
-
-                except RuntimeError as e:
-                    print("Registration failed:", e)
+            except RuntimeError as e:
+                print("Registration failed:", e)
 
         page.register_button.clicked.connect(handle_register)
+        page.previous_button.clicked.connect(self.switch_to_login)
         self.stack.addWidget(page)
         return page
     
