@@ -81,6 +81,22 @@ async def start_realtime_async():
     while True:
         await asyncio.sleep(60)
 
+async def load_messages(chat_id: str):
+    """
+    Asynchronous function that loads up to 10 messages in the
+    message history from the table "messages" in the "public" schema.
+    """
+
+    client = await create_async_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
+    response = await client.from_("messages").select("content", "sender_user_id").eq("chat_id", chat_id).order("created_at", desc=True).limit(10).execute()
+    messages = response.data if response.data else []
+    formatted_messages = []
+    for message in messages:
+        sender_id = message.get("sender_user_id")
+        response = await client.from_("user_information").select("username").eq("user_id", sender_id).execute()
+        sender_username = response.data[0]["username"]
+        formatted_messages.append(f"{sender_username}: {message.get('content', '')}")
+    return formatted_messages
 
 def start_realtime():
     """

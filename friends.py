@@ -91,8 +91,10 @@ def decline_friend_request(addressee_username: str):
             .contains("uuid_pair", [addressee_uuid])
     
 def get_username(uuid: str):
-    username = client.from_("user_information")\
-                            .select("username")\
-                            .eq("user_id", uuid)\
-                            .execute().data[0]["username"]
-    return username
+    if client:
+        username = client.from_("user_information")\
+                                .select("username")\
+                                .eq("user_id", uuid)\
+                                .execute().data[0]["username"]
+        return username
+    raise RuntimeError("client does not exist")

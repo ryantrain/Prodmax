@@ -10,6 +10,7 @@ from supabase import create_client
 import verification
 import chat
 import friends
+from qasync import QEventLoop, asyncSlot
 
 # Load the environment variables from the .env file for Supabase configuration
 load_dotenv()
@@ -56,22 +57,23 @@ class Homepage(QMainWindow):
 
         chat.signals.message_received.connect(self.update_message_preview)
 
-    def initialize_friends_list(self):
+    @asyncSlot()
+    async def initialize_friends_list(self):
 
         def update_friends_list(friends_list: list):
             self.friends_list.clear()
             for friend in friends_list:
                 self.friends_list.addItem(str(friend))
 
-        def run_get_friends():
+        async def run_get_friends():
             if not friends.client:
                 friends.start_friends_client()
 
-            friends_list = asyncio.run(friends.get_friends(self.email, self.password))
+            friends_list = await (friends.get_friends(self.email, self.password))
             if friends_list is not None:
                 update_friends_list(friends_list)
         
-        run_get_friends()
+        await run_get_friends()
 
     def create_chat_page(self):
 
@@ -80,10 +82,14 @@ class Homepage(QMainWindow):
         self.friends_list = page.friends_list
         self.profile_container = page.profile_container
         self.profile_layout = QVBoxLayout(self.profile_container)
+        self.messages_window = page.chat_window
+       
+        self.messages_window.hide()
         self.profile_container.layout().setContentsMargins(0, 0, 0, 0)
         self.message_preview.setPlainText("im poo")
 
         page.friends_list.itemClicked.connect(self.select_profile_pane)
+        page.friends_list.itemClicked.connect(self.show_messages_window)
         page.textEdit.setReadOnly(True)
 
         return page
@@ -101,7 +107,7 @@ class Homepage(QMainWindow):
 
         profile_pane = ProfilePane(item)
         self.profile_container.layout().addWidget(profile_pane)
-        self.profile_container.show()
+        self.profile_container.show()        
 
     def close_profile_pane(self):
 
@@ -115,8 +121,19 @@ class Homepage(QMainWindow):
 
         if event.button() == Qt.LeftButton:
 
-            if not self.profile_container.geometry().contains(event.pos()):
+            if not self.profile_container.geometry().contains(event.pos()) or not self.messages_window.geometry().contains(event.pos()):
                 self.close_profile_pane()
+                self.close_messages_window()
+
+    @asyncSlot()
+    async def show_messages_window(self, *args):
+        self.messages_window.clear()
+        messages = await chat.load_messages("9e5628ee-877d-40d8-8b4f-382a409546ae")
+        self.messages_window.addItems(reversed(messages))
+        self.messages_window.show()
+
+    def close_messages_window(self):
+        self.messages_window.hide()
 
 
 class LoginRegisterPage(QMainWindow):
@@ -144,15 +161,18 @@ class LoginRegisterPage(QMainWindow):
         self.chat_window = Homepage(email, password)
         self.setCentralWidget(self.chat_window)
 
+        asyncio.ensure_future(self.chat_window.initialize_friends_list())
+    
     def create_login_page(self):
         page = uic.loadUi(resource_path("layouts/login.ui"))
 
-        def handle_login():
+        @asyncSlot()
+        async def handle_login(*args):
             email = page.email_field.text()
             password = page.password_field.text()
 
             try:
-                response = asyncio.run(verification.login_user(email, password))
+                response = await verification.login_user(email, password)
 
                 if response:
                     # friends.start_friends_client()
@@ -176,7 +196,8 @@ class LoginRegisterPage(QMainWindow):
     def create_register_page(self):
         page = uic.loadUi(resource_path("layouts/register.ui"))
 
-        def handle_register():
+        @asyncSlot()
+        async def handle_register(*args):
             email = page.email_field.text()
             password = page.password_field.text()
             username = page.username_field.text()
@@ -184,8 +205,12 @@ class LoginRegisterPage(QMainWindow):
 
             if len(password) >= 6:            
                 try:
-                    response = asyncio.run(verification.register_user(email, password, username, phone_number))
+                    response = await verification.register_user(email, password, username, phone_number)
                     if response:
+                        page.email_field.clear()
+                        page.password_field.clear()
+                        page.username_field.clear()
+                        page.phone_number_field.clear()
                         self.switch_to_login()
 
                 except RuntimeError as e:
@@ -194,6 +219,20 @@ class LoginRegisterPage(QMainWindow):
         page.register_button.clicked.connect(handle_register)
         self.stack.addWidget(page)
         return page
+    
+    def keyPressEvent(self, event):
+        super().keyPressEvent(event)
+
+        if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
+            if self.stack.currentWidget() == self.login_page:
+
+                if self.login_page.email_field.hasFocus() or self.login_page.password_field.hasFocus() or self.login_page.login_button.hasFocus():
+                    self.login_page.login_button.click()
+                elif self.login_page.register_button.hasFocus():
+                    self.login_page.register_button.click()
+
+            elif self.stack.currentWidget() == self.register_page and (self.register_page.email_field.hasFocus() or self.register_page.password_field.hasFocus() or self.register_page.username_field.hasFocus() or self.register_page.phone_number_field.hasFocus() or self.register_page.register_button.hasFocus()):
+                self.register_page.register_button.click()
 
 
 class MainWindow(QMainWindow):
@@ -243,6 +282,10 @@ if __name__ == "__main__":
     thread.start()
     
     app = QApplication([])
+    loop = QEventLoop(app)
+    asyncio.set_event_loop(loop)
     window = MainWindow()
     window.show()
-    sys.exit(app.exec_())
+    
+    with loop:
+        loop.run_forever()
