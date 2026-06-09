@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 from supabase import create_async_client
 from friends import get_username
+from datetime import datetime, timezone
 
 # Load the environment variables from the .env file for Supabase configuration
 load_dotenv()
@@ -97,6 +98,16 @@ async def load_messages(chat_id: str):
         sender_username = response.data[0]["username"]
         formatted_messages.append(f"{sender_username}: {message.get('content', '')}")
     return formatted_messages
+
+async def send_message_to_db(chat_id: str, sender_user_id: str, content: str):
+
+    client = await create_async_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
+    try:
+        timestamp = datetime.now(timezone.utc).isoformat()
+        response = await client.from_("messages").insert({"chat_id": chat_id, "sender_user_id": sender_user_id, "content": content, "created_at": timestamp}).execute()
+        return True
+    except Exception as e:
+        print(f"Error occurred while sending message: {e}")
 
 def start_realtime():
     """

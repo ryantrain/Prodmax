@@ -55,7 +55,7 @@ class Homepage(QMainWindow):
         self.email = email
         self.password = password
 
-        chat.signals.message_received.connect(self.update_message_preview)
+        chat.signals.message_received.connect(self.add_message)
 
     @asyncSlot()
     async def initialize_friends_list(self):
@@ -83,21 +83,29 @@ class Homepage(QMainWindow):
         self.profile_container = page.profile_container
         self.profile_layout = QVBoxLayout(self.profile_container)
         self.messages_window = page.chat_window
+        self.message_input_field = page.message_input_field
        
         self.messages_window.hide()
+        self.message_input_field.hide()
         self.profile_container.layout().setContentsMargins(0, 0, 0, 0)
         self.message_preview.setPlainText("im poo")
 
         page.friends_list.itemClicked.connect(self.select_profile_pane)
         page.friends_list.itemClicked.connect(self.show_messages_window)
+        page.message_input_field.returnPressed.connect(self.send_message)
         page.textEdit.setReadOnly(True)
 
         return page
 
-    def update_message_preview(self, message):
-        print(message)
-        self.message_preview.setPlainText(message)
+    def add_message(self, message):
+        self.messages_window.addItem(message)
 
+    @asyncSlot()
+    async def send_message(self):
+        message = self.message_input_field.text()
+        self.message_input_field.clear()
+        await chat.send_message_to_db("9e5628ee-877d-40d8-8b4f-382a409546ae", friends.client.auth.get_user().user.id, message)
+       
     def select_profile_pane(self, item):
 
         while self.profile_container.layout().count():
@@ -131,9 +139,11 @@ class Homepage(QMainWindow):
         messages = await chat.load_messages("9e5628ee-877d-40d8-8b4f-382a409546ae")
         self.messages_window.addItems(reversed(messages))
         self.messages_window.show()
+        self.message_input_field.show()
 
     def close_messages_window(self):
         self.messages_window.hide()
+        self.message_input_field.hide()
 
 
 class LoginRegisterPage(QMainWindow):
@@ -172,11 +182,11 @@ class LoginRegisterPage(QMainWindow):
         async def handle_login(*args):
             email = page.email_field.text()
             password = page.password_field.text()
-            page.email_field.clear()
-            page.password_field.clear()
 
             try:
                 response = await verification.login_user(email, password)
+                page.email_field.clear()
+                page.password_field.clear()
 
                 if response:
                     if response.session:

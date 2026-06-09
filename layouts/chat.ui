@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>882</width>
-    <height>679</height>
+    <width>969</width>
+    <height>759</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -75,6 +75,29 @@ p, li { white-space: pre-wrap; }
     </property>
     <property name="wordWrap">
      <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="message_input_field">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>661</y>
+      <width>451</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+      <strikeout>false</strikeout>
+      <stylestrategy>PreferAntialias</stylestrategy>
+      <kerning>true</kerning>
+     </font>
+    </property>
+    <property name="placeholderText">
+     <string>Message ...</string>
     </property>
    </widget>
   </widget>
