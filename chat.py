@@ -24,7 +24,7 @@ class Signals(QObject):
         - message_received: Signal emitted when a new message is received from the Supabase realtime channel. 
                             The signal carries the formatted message as a string.
     """
-    message_received = pyqtSignal(str)
+    message_received = pyqtSignal(object)
 
 signals = Signals()
 client = None
@@ -42,16 +42,15 @@ def format_message(payload):
     """
     data = payload.get("data", {}) if isinstance(payload, dict) else {}
     row = data.get("record") if isinstance(data, dict) else None
-    event_type = data.get("type") if isinstance(data, dict) else None
 
     if isinstance(row, dict):
         sender = row.get("sender_user_id")
         content = row.get("content")
+        channel_id = row.get("chat_id")
         
         if sender and content:
             sender = get_username(sender)
-            return f"{sender}: {content}"
-        return f"{event_type or 'CHANGE'}: {row}"
+            return (f"{sender}: {content}", channel_id)
 
     return str(payload)
 

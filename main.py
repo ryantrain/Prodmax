@@ -25,12 +25,9 @@ class Signals(QObject):
     the asynchronous Supabase realtime listener and the PyQt5 backend. 
 
     Instance attributes:
-        - message_received: Signal emitted when a new message is received from the Supabase realtime channel. 
-                            The signal carries the formatted message as a string.
         - status_received: Signal emitted when the status of the Supabase realtime connection changes. 
                         The signal carries the status message as a string.
     """
-    message_received = pyqtSignal(str)
     change_to_chat = pyqtSignal()
 
 signals = Signals()
@@ -85,6 +82,7 @@ class Homepage(QMainWindow):
         self.profile_layout = QVBoxLayout(self.profile_container)
         self.messages_window = page.chat_window
         self.message_input_field = page.message_input_field
+        self.current_channel_id = None
        
         self.messages_window.hide()
         self.message_input_field.hide()
@@ -99,7 +97,16 @@ class Homepage(QMainWindow):
         return page
 
     def add_message(self, message):
-        self.messages_window.addItem(message)
+        if self.current_channel_id and message[1] == self.current_channel_id:
+            self.messages_window.addItem(message[0])
+
+        else:
+            for index in range(self.friends_list.count()):
+                item = self.friends_list.item(index)
+                if item.data(Qt.UserRole) == message[1]:
+                    item.setText(item.text() + " (new)")
+                    self.friends_list.update()
+                    break
 
     def send_message(self, *args):
         message = self.message_input_field.text()
@@ -109,11 +116,15 @@ class Homepage(QMainWindow):
        
     def select_profile_pane(self, item):
 
+        # Removes the "new" notification text
+        self.friends_list.currentItem().setText(self.friends_list.currentItem().text().replace(" (new)", ""))
+
         while self.profile_container.layout().count():
             child = self.profile_layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
 
+        item.setText(item.text().replace(" (new)", ""))
         profile_pane = ProfilePane(item)
         self.profile_container.layout().addWidget(profile_pane)
         self.profile_container.show()        
@@ -146,6 +157,7 @@ class Homepage(QMainWindow):
     def close_messages_window(self):
         self.messages_window.hide()
         self.message_input_field.hide()
+        self.current_channel_id = None
 
 
 class LoginRegisterPage(QMainWindow):
