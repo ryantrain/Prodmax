@@ -109,6 +109,16 @@ async def send_message_to_db(chat_id: str, sender_user_id: str, content: str):
     except Exception as e:
         print(f"Error occurred while sending message: {e}")
 
+async def load_channel_list():
+    """
+    Load existing list of channels in a user's channel list.
+    """
+    
+    client = await create_async_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
+    response = await client.from_("user_information").select("channel_list").eq("user_id", client.auth.get_user().user.id).execute()
+    channel_list = response.data[0]["channel_list"] if response.data and response.data[0] else []
+    return channel_list
+
 def start_realtime():
     """
     Starts the asychronous event loop to listen for realtime changes in the Supabase database.

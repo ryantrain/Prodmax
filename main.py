@@ -1,6 +1,6 @@
 import asyncio
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QStackedWidget, QTextEdit, QVBoxLayout, QWidget, QLineEdit
+from PyQt5.QtWidgets import QApplication, QMainWindow, QStackedWidget, QTextEdit, QVBoxLayout, QWidget, QLineEdit, QListWidgetItem
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 from PyQt5 import uic
 from dotenv import load_dotenv
@@ -63,18 +63,22 @@ class Homepage(QMainWindow):
         def update_friends_list(friends_list: list):
             self.friends_list.clear()
             for friend in friends_list:
-                self.friends_list.addItem(str(friend))
+                item = QListWidgetItem(str(friend))
+                item.setData(Qt.UserRole, friends.get_channel_id(friend))
+                self.friends_list.addItem(item)
 
         async def run_get_friends():
             if not friends.client:
                 friends.start_friends_client()
-
+            
+            await friends.verify_channels(self.email, self.password)
+            
             friends_list = await (friends.get_friends(self.email, self.password))
             if friends_list is not None:
                 update_friends_list(friends_list)
         
         await run_get_friends()
-
+        
     def create_chat_page(self):
 
         page = uic.loadUi(resource_path("layouts/chat.ui"))
@@ -91,7 +95,7 @@ class Homepage(QMainWindow):
         self.message_preview.setPlainText("im poo")
 
         page.friends_list.itemClicked.connect(self.select_profile_pane)
-        page.friends_list.itemClicked.connect(self.show_messages_window)
+        page.friends_list.itemClicked.connect(lambda item: self.show_messages_window(item))
         page.message_input_field.returnPressed.connect(self.send_message)
         page.textEdit.setReadOnly(True)
 
@@ -101,10 +105,11 @@ class Homepage(QMainWindow):
         self.messages_window.addItem(message)
 
     @asyncSlot()
-    async def send_message(self):
+    async def send_message(self, *args):
         message = self.message_input_field.text()
+        channel_id = self.current_channel_id
         self.message_input_field.clear()
-        await chat.send_message_to_db("9e5628ee-877d-40d8-8b4f-382a409546ae", friends.client.auth.get_user().user.id, message)
+        await chat.send_message_to_db(channel_id, client.auth.get_user().user.id, message)
        
     def select_profile_pane(self, item):
 
@@ -134,9 +139,11 @@ class Homepage(QMainWindow):
                 self.close_messages_window()
 
     @asyncSlot()
-    async def show_messages_window(self, *args):
+    async def show_messages_window(self, item):
+        channel_id = item.data(Qt.UserRole)
+        self.current_channel_id = channel_id
         self.messages_window.clear()
-        messages = await chat.load_messages("9e5628ee-877d-40d8-8b4f-382a409546ae")
+        messages = await chat.load_messages(channel_id)
         self.messages_window.addItems(reversed(messages))
         self.messages_window.show()
         self.message_input_field.show()

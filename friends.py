@@ -2,6 +2,7 @@ from supabase import Client
 import os
 import sys
 from dotenv import load_dotenv
+from datetime import datetime, timezone
 
 load_dotenv()
 
@@ -13,7 +14,7 @@ def resource_path(relative_path):
 
 async def get_friends(email, password) -> list:
 
-    if client:
+    if client:  # Think of a measure to prevent passing around user's password
         client.auth.sign_in_with_password({"email": email, "password": password})
         user_uuid = client.auth.get_user().user.id
         if not user_uuid:
@@ -28,19 +29,15 @@ async def get_friends(email, password) -> list:
         
         if not friends:
             return []
-        
-        # Turns friends dictionairy into a list of uuid pairs
-        result = list(friends[0].values())
 
         # Returns a list of dictionaries of length 1 with the username of each friend in each dictionary                        
         friends_list = []
-        for friends in result:
-            uuid = friends[0] if friends[0] != user_uuid else friends[1]
+        for row in friends:
+            uuid_pair = row.get("uuid_pair")
 
-            friend_username = client.from_('user_information')\
-                                    .select("username")\
-                                    .eq("user_id", uuid) \
-                                    .execute().data[0]["username"]
+            uuid = uuid_pair[0] if uuid_pair[0] != user_uuid else uuid_pair[1]
+
+            friend_username = get_username(uuid)
             
             friends_list.append(friend_username)
 
@@ -98,3 +95,26 @@ def get_username(uuid: str):
                                 .execute().data[0]["username"]
         return username
     raise RuntimeError("client does not exist")
+
+def get_channel_id(friend_username: str):
+    friend_uuid = get_uuid(friend_username)
+    user_id = client.auth.get_user().user.id
+    response = client.from_("channel_list").select("channel_id").eq("channel_type", "private").contains("channel_members", [user_id, friend_uuid]).execute().data
+    if response:
+        return response[0]["channel_id"]
+    else:
+        raise ValueError("No channel found for the given friend username.")
+
+async def verify_channels(email, password):  # Think of a measure to prevent passing around user's password
+    """
+    Verifies that a channel exists for each friend in the user's friend list.
+    If a channel does not exist between the user and a friend, then create a channel for the user and that friend.
+    """
+    friend_list = await get_friends(email, password)
+    for friend in friend_list:
+        try:
+            get_channel_id(friend)
+        except Exception as e:
+            friend_uuid = get_uuid(friend)
+            user_id = client.auth.get_user().user.id
+            client.from_("channel_list").insert({"created_at": datetime.now(timezone.utc).isoformat(), "channel_members": [user_id, friend_uuid] }).execute()
