@@ -31,7 +31,7 @@ class Signals(QObject):
                         The signal carries the status message as a string.
     """
     message_received = pyqtSignal(str)
-    change_to_chat = pyqtSignal(str, str)
+    change_to_chat = pyqtSignal()
 
 signals = Signals()
 
@@ -44,16 +44,13 @@ class Homepage(QMainWindow):
     chat_page: QStackedWidget
     message_preview: QTextEdit
 
-    def __init__(self, email, password):
+    def __init__(self):
         super().__init__()
         self.setWindowTitle('Prodmax')
         self.setGeometry(100, 100, 1200, 1000)
 
         self.chat_window = self.create_chat_page()
         self.setCentralWidget(self.chat_window)
-        
-        self.email = email
-        self.password = password
 
         chat.signals.message_received.connect(self.add_message)
 
@@ -71,9 +68,9 @@ class Homepage(QMainWindow):
             if not friends.client:
                 friends.start_friends_client()
             
-            await friends.verify_channels(self.email, self.password)
+            await friends.verify_channels()
             
-            friends_list = await (friends.get_friends(self.email, self.password))
+            friends_list = await (friends.get_friends())
             if friends_list is not None:
                 update_friends_list(friends_list)
         
@@ -191,17 +188,17 @@ class LoginRegisterPage(QMainWindow):
             password = page.password_field.text()
 
             try:
-                response = await verification.login_user(email, password)
+                response = await verification.login_user(email, password)  # Possibly dont need but a lot of work
+                client.auth.sign_in_with_password({"email": email, "password": password})
                 page.email_field.clear()
                 page.password_field.clear()
 
-                if response:
-                    if response.session:
-                        friends.client.auth.set_session(
-                            response.session.access_token,
-                            response.session.refresh_token,
-                        )
-                    signals.change_to_chat.emit(email, password)
+                if response and response.session:
+                    friends.client.auth.set_session(
+                        response.session.access_token,
+                        response.session.refresh_token,
+                    )
+                signals.change_to_chat.emit()
 
 
             except RuntimeError as e:
@@ -267,8 +264,8 @@ class MainWindow(QMainWindow):
 
         signals.change_to_chat.connect(self.handle_change_to_chat)
 
-    def handle_change_to_chat(self, email, password):
-        self.chat_window = Homepage(email, password)
+    def handle_change_to_chat(self):
+        self.chat_window = Homepage()
         self.chat_window.initialize_friends_list()
         self.setCentralWidget(self.chat_window)
 

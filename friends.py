@@ -12,10 +12,10 @@ def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.abspath('.'))
     return os.path.join(base_path, relative_path) 
 
-async def get_friends(email, password) -> list:
+async def get_friends() -> list:
 
     if client:  # Think of a measure to prevent passing around user's password
-        client.auth.sign_in_with_password({"email": email, "password": password})
+
         user_uuid = client.auth.get_user().user.id
         if not user_uuid:
             raise RuntimeError("No authenticated user is available on the friends client")
@@ -105,12 +105,12 @@ def get_channel_id(friend_username: str):
     else:
         raise ValueError("No channel found for the given friend username.")
 
-async def verify_channels(email, password):  # Think of a measure to prevent passing around user's password
+async def verify_channels():  # Think of a measure to prevent passing around user's password
     """
     Verifies that a channel exists for each friend in the user's friend list.
     If a channel does not exist between the user and a friend, then create a channel for the user and that friend.
     """
-    friend_list = await get_friends(email, password)
+    friend_list = await get_friends()
     for friend in friend_list:
         try:
             get_channel_id(friend)
