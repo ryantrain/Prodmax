@@ -101,12 +101,11 @@ class Homepage(QMainWindow):
     def add_message(self, message):
         self.messages_window.addItem(message)
 
-    @asyncSlot()
-    async def send_message(self, *args):
+    def send_message(self, *args):
         message = self.message_input_field.text()
         channel_id = self.current_channel_id
         self.message_input_field.clear()
-        await chat.send_message_to_db(channel_id, client.auth.get_user().user.id, message)
+        chat.send_message_to_db(channel_id, client.auth.get_user().user.id, message, client)
        
     def select_profile_pane(self, item):
 
@@ -135,12 +134,11 @@ class Homepage(QMainWindow):
                 self.close_profile_pane()
                 self.close_messages_window()
 
-    @asyncSlot()
-    async def show_messages_window(self, item):
+    def show_messages_window(self, item):
         channel_id = item.data(Qt.UserRole)
         self.current_channel_id = channel_id
         self.messages_window.clear()
-        messages = await chat.load_messages(channel_id)
+        messages = chat.load_messages(channel_id, client)
         self.messages_window.addItems(reversed(messages))
         self.messages_window.show()
         self.message_input_field.show()
@@ -188,18 +186,20 @@ class LoginRegisterPage(QMainWindow):
             password = page.password_field.text()
 
             try:
-                response = await verification.login_user(email, password)  # Possibly dont need but a lot of work
-                client.auth.sign_in_with_password({"email": email, "password": password})
+                response = await verification.login_user(email, password)
+                
+                # Sets other clients to also be logged in as well with the same session 
+                # to keep clients centralized and avoid multiple clients being created in different files.
+                if response and response.session:
+                    access_token = response.session.access_token
+                    refresh_token = response.session.refresh_token
+                    client.auth.set_session(access_token, refresh_token)
+                    if getattr(chat, "client", None):
+                        await chat.client.auth.set_session(access_token, refresh_token)
+
                 page.email_field.clear()
                 page.password_field.clear()
-
-                if response and response.session:
-                    friends.client.auth.set_session(
-                        response.session.access_token,
-                        response.session.refresh_token,
-                    )
                 signals.change_to_chat.emit()
-
 
             except RuntimeError as e:
 

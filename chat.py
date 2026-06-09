@@ -27,6 +27,7 @@ class Signals(QObject):
     message_received = pyqtSignal(str)
 
 signals = Signals()
+client = None
 
 def format_message(payload):
     """
@@ -69,9 +70,10 @@ async def start_realtime_async():
         - "public:messages" for changes in the "messages" table in the "public" schema    
     """
 
-    async_client = await create_async_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
+    global client
+    client = await create_async_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
     # Creates a client channel to listen for changes on the "public" schema and in the "messages" table
-    channel = async_client.channel("public:messages")
+    channel = client.channel("public:messages")
 
     # Subscribe to changes, specifically, inserts, on the "messages" table in the "public" schema
     # Note: Whenever on_postgres_changes() is triggered, it will automatically call on_message() and pass
@@ -82,29 +84,27 @@ async def start_realtime_async():
     while True:
         await asyncio.sleep(60)
 
-async def load_messages(chat_id: str):
+def load_messages(chat_id: str, client):
     """
-    Asynchronous function that loads up to 10 messages in the
+    Synchronous function that loads up to 10 messages in the
     message history from the table "messages" in the "public" schema.
     """
 
-    client = await create_async_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
-    response = await client.from_("messages").select("content", "sender_user_id").eq("chat_id", chat_id).order("created_at", desc=True).limit(10).execute()
+    response = client.from_("messages").select("content", "sender_user_id").eq("chat_id", chat_id).order("created_at", desc=True).limit(10).execute()
     messages = response.data if response.data else []
     formatted_messages = []
     for message in messages:
         sender_id = message.get("sender_user_id")
-        response = await client.from_("user_information").select("username").eq("user_id", sender_id).execute()
+        response = client.from_("user_information").select("username").eq("user_id", sender_id).execute()
         sender_username = response.data[0]["username"]
         formatted_messages.append(f"{sender_username}: {message.get('content', '')}")
     return formatted_messages
 
-async def send_message_to_db(chat_id: str, sender_user_id: str, content: str):
+def send_message_to_db(chat_id: str, sender_user_id: str, content: str, client):
 
-    client = await create_async_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
     try:
         timestamp = datetime.now(timezone.utc).isoformat()
-        response = await client.from_("messages").insert({"chat_id": chat_id, "sender_user_id": sender_user_id, "content": content, "created_at": timestamp}).execute()
+        response = client.from_("messages").insert({"chat_id": chat_id, "sender_user_id": sender_user_id, "content": content, "created_at": timestamp}).execute()
         return True
     except Exception as e:
         print(f"Error occurred while sending message: {e}")
