@@ -119,13 +119,34 @@ async def load_channel_list():
     user = await client.auth.get_user()
     user_id = user.user.id
     response = await client.from_("user_information").select("channel_list").eq("user_id", user_id).execute()
+    channel_response = await client.from_("channel_list").select("channel_id", "channel_members", "channel_type", "channel_name")\
+                    .contains("channel_members", [user_id]).execute()
+    
     channel_list_ids = response.data[0]["channel_list"] if response.data and response.data[0] else []
     channel_list_names = []
+    
     try:
         for channel_id in channel_list_ids:
-            channel_response = friends.get_channel_members_without_self(channel_id)
-            channel_list_names.append(", ".join(channel_response))
+            for row in channel_response.data:
+                if row["channel_id"] == channel_id:
+                    try:
+                        if row["channel_type"] == "private":
+                            friend_uuid = row["channel_members"][0]
+                            if friend_uuid == user_id:
+                                channel_list_names.append(friends.get_username(row["channel_members"][1]))
+                            else:
+                                channel_list_names.append(friends.get_username(row["channel_members"][0]))
+                            
+                            continue
+                        else:
+                            channel_list_names.append(row["channel_name"])
+                            continue
+
+                    except Exception:
+                        raise ValueError("No channel found for the given channel id.")
+
         return channel_list_ids, channel_list_names
+    
     except Exception:
         raise ValueError("Error loading channel list.")
 

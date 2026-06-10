@@ -100,14 +100,27 @@ class Homepage(QMainWindow):
     def add_message(self, message):
         if self.current_channel_id and message[1] == self.current_channel_id:
             self.messages_window.addItem(message[0])
+            index = self.channel_list.currentRow()
+            new_item = self.channel_list.takeItem(index)
+            self.channel_list.insertItem(0, new_item)
+            self.channel_list.update()
 
         else:
-            for index in range(self.friends_list.count()):
-                item = self.friends_list.item(index)
+            for index in range(self.channel_list.count()):
+                item = self.channel_list.item(index)
                 if item.data(Qt.UserRole) == message[1]:
-                    item.setText(item.text() + " (new)")
-                    self.friends_list.update()
-                    break
+
+                    if self.channel_list.currentItem().data(Qt.UserRole) != message[1]:
+                        item.setText(item.text() + " (new)")
+
+                        # Set updated channel to the top
+                        new_item = self.channel_list.takeItem(index)
+                        self.channel_list.insertItem(0, new_item)
+
+                        self.channel_list.update()
+                        break
+
+
 
     def send_message(self, *args):
         message = self.message_input_field.text()
@@ -117,9 +130,6 @@ class Homepage(QMainWindow):
 
     def select_profile_pane(self, item):
 
-        # Removes the "new" notification text
-        self.friends_list.currentItem().setText(self.friends_list.currentItem().text().replace(" (new)", ""))
-
         while self.profile_container.layout().count():
             child = self.profile_layout.takeAt(0)
             if child.widget():
@@ -127,7 +137,7 @@ class Homepage(QMainWindow):
 
         profile_pane = ProfilePane(item)
         self.profile_container.layout().addWidget(profile_pane)
-        self.profile_container.show()        
+        self.profile_container.show()
 
     def close_profile_pane(self):
 
@@ -146,6 +156,7 @@ class Homepage(QMainWindow):
                 # self.close_messages_window()
 
     def on_channel_list_itemClicked(self, item):
+        self.channel_list.currentItem().setText(self.channel_list.currentItem().text().replace(" (new)", ""))
         self.current_channel_id = item.data(Qt.UserRole)
         self.messages_window.clear()
         messages = chat.load_messages(self.current_channel_id, client)
@@ -297,6 +308,21 @@ class MainWindow(QMainWindow):
         screen_center = QDesktopWidget().availableGeometry().center()
         window_geometry.moveCenter(screen_center)
         self.move(window_geometry.topLeft())
+    
+    def closeEvent(self, event):
+        if self.centralWidget() == self.chat_window:
+            try:
+                user_id = client.auth.get_user().user.id
+                channel_list = [self.chat_window.channel_list.item(index).data(Qt.UserRole) for 
+                                index in range(self.chat_window.channel_list.count())]
+                
+                client.from_("user_information").update({"channel_list": channel_list}).eq("user_id", user_id).execute()
+
+            except Exception:
+                print("Error occurred while saving channel list on close.")
+
+        super().closeEvent(event)
+
 
 class ProfilePane(QWidget):
 

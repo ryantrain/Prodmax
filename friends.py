@@ -127,11 +127,11 @@ def get_channel_members(channel_id: str):
     except Exception:
         raise ValueError("No channel found for the given channel id.")
     
-def get_channel_members_without_self(channel_id: str):
-    user_id = client.auth.get_user().user.id
-    response = client.from_("channel_list").select("channel_members").eq("channel_id", channel_id).execute()
-    try:
-        names = [get_username(uuid) for uuid in response.data[0]["channel_members"] if user_id != uuid]
-        return names
-    except Exception:
-        raise ValueError("No channel found for the given channel id.")
+# def get_channel_members_without_self(channel_id: str):
+#     user_id = client.auth.get_user().user.id
+#     response = client.from_("channel_list").select("channel_members").eq("channel_id", channel_id).execute()
+#     try:
+#         names = [get_username(uuid) for uuid in response.data[0]["channel_members"] if user_id != uuid]
+#         return names
+#     except Exception:
+#         raise ValueError("No channel found for the given channel id.")
