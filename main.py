@@ -1,6 +1,6 @@
 import asyncio
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QStackedWidget, QTextEdit, QVBoxLayout, QWidget, QLineEdit, QListWidgetItem
+from PyQt5.QtWidgets import QApplication, QDesktopWidget, QMainWindow, QStackedWidget, QTextEdit, QVBoxLayout, QWidget, QLineEdit, QListWidgetItem
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 from PyQt5 import uic
 from dotenv import load_dotenv
@@ -273,6 +273,7 @@ class MainWindow(QMainWindow):
 
         self.login_register_page = LoginRegisterPage()
         self.setCentralWidget(self.login_register_page)
+        self.center_on_screen()
 
         signals.change_to_chat.connect(self.handle_change_to_chat)
 
@@ -280,6 +281,12 @@ class MainWindow(QMainWindow):
         self.chat_window = Homepage()
         self.chat_window.initialize_friends_list()
         self.setCentralWidget(self.chat_window)
+
+    def center_on_screen(self):
+        window_geometry = self.frameGeometry()
+        screen_center = QDesktopWidget().availableGeometry().center()
+        window_geometry.moveCenter(screen_center)
+        self.move(window_geometry.topLeft())
 
 class ProfilePane(QWidget):
 

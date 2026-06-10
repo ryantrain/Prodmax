@@ -14,7 +14,7 @@ def resource_path(relative_path):
 
 async def get_friends() -> list:
 
-    if client:  # Think of a measure to prevent passing around user's password
+    if client:
 
         user_uuid = client.auth.get_user().user.id
         if not user_uuid:
@@ -105,7 +105,7 @@ def get_channel_id(friend_username: str):
     else:
         raise ValueError("No channel found for the given friend username.")
 
-async def verify_channels():  # Think of a measure to prevent passing around user's password
+async def verify_channels():
     """
     Verifies that a channel exists for each friend in the user's friend list.
     If a channel does not exist between the user and a friend, then create a channel for the user and that friend.
