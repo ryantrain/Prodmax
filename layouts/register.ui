@@ -10,6 +10,11 @@
     <height>876</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <pointsize>20</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -21,6 +26,11 @@
      <width>451</width>
      <height>151</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>36</pointsize>
+    </font>
    </property>
    <property name="text">
     <string>register</string>

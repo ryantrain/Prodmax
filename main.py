@@ -29,6 +29,7 @@ class Signals(QObject):
                         The signal carries the status message as a string.
     """
     change_to_chat = pyqtSignal()
+    load_channel_list = pyqtSignal()
 
 signals = Signals()
 
@@ -58,7 +59,6 @@ class Homepage(QMainWindow):
             self.friends_list.clear()
             for friend in friends_list:
                 item = QListWidgetItem(str(friend))
-                item.setData(Qt.UserRole, friends.get_channel_id(friend))
                 self.friends_list.addItem(item)
 
         async def run_get_friends():
@@ -83,16 +83,17 @@ class Homepage(QMainWindow):
         self.messages_window = page.chat_window
         self.message_input_field = page.message_input_field
         self.current_channel_id = None
+        self.channel_list = page.channel_list
        
         self.messages_window.hide()
         self.message_input_field.hide()
         self.profile_container.layout().setContentsMargins(0, 0, 0, 0)
-        self.message_preview.setPlainText("im poo")
 
         page.friends_list.itemClicked.connect(self.select_profile_pane)
-        page.friends_list.itemClicked.connect(lambda item: self.show_messages_window(item))
         page.message_input_field.returnPressed.connect(self.send_message)
         page.textEdit.setReadOnly(True)
+        page.channel_list.itemClicked.connect(self.on_channel_list_itemClicked)
+        signals.load_channel_list.connect(self.load_channel_list)
 
         return page
 
@@ -113,7 +114,7 @@ class Homepage(QMainWindow):
         channel_id = self.current_channel_id
         self.message_input_field.clear()
         chat.send_message_to_db(channel_id, client.auth.get_user().user.id, message, client)
-       
+
     def select_profile_pane(self, item):
 
         # Removes the "new" notification text
@@ -124,7 +125,6 @@ class Homepage(QMainWindow):
             if child.widget():
                 child.widget().deleteLater()
 
-        item.setText(item.text().replace(" (new)", ""))
         profile_pane = ProfilePane(item)
         self.profile_container.layout().addWidget(profile_pane)
         self.profile_container.show()        
@@ -143,13 +143,12 @@ class Homepage(QMainWindow):
 
             if not self.profile_container.geometry().contains(event.pos()) or not self.messages_window.geometry().contains(event.pos()):
                 self.close_profile_pane()
-                self.close_messages_window()
+                # self.close_messages_window()
 
-    def show_messages_window(self, item):
-        channel_id = item.data(Qt.UserRole)
-        self.current_channel_id = channel_id
+    def on_channel_list_itemClicked(self, item):
+        self.current_channel_id = item.data(Qt.UserRole)
         self.messages_window.clear()
-        messages = chat.load_messages(channel_id, client)
+        messages = chat.load_messages(self.current_channel_id, client)
         self.messages_window.addItems(reversed(messages))
         self.messages_window.show()
         self.message_input_field.show()
@@ -158,6 +157,15 @@ class Homepage(QMainWindow):
         self.messages_window.hide()
         self.message_input_field.hide()
         self.current_channel_id = None
+    
+    @asyncSlot()
+    async def load_channel_list(self, *args):
+        self.channel_list.clear()
+        channel_list = await chat.load_channel_list()
+        for index in range(len(channel_list[0])):
+            item = QListWidgetItem(channel_list[1][index])
+            item.setData(Qt.UserRole, channel_list[0][index])
+            self.channel_list.addItem(item)
 
 
 class LoginRegisterPage(QMainWindow):
@@ -191,6 +199,7 @@ class LoginRegisterPage(QMainWindow):
     
     def create_login_page(self):
         page = uic.loadUi(resource_path("layouts/login.ui"))
+        page.password_field.setEchoMode(QLineEdit.Password)
 
         @asyncSlot()
         async def handle_login(*args):
@@ -212,6 +221,7 @@ class LoginRegisterPage(QMainWindow):
                 page.email_field.clear()
                 page.password_field.clear()
                 signals.change_to_chat.emit()
+                signals.load_channel_list.emit()
 
             except RuntimeError as e:
 

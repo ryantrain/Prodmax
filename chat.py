@@ -6,6 +6,9 @@ import os
 from supabase import create_async_client
 from friends import get_username
 from datetime import datetime, timezone
+from qasync import asyncSlot
+
+import friends
 
 # Load the environment variables from the .env file for Supabase configuration
 load_dotenv()
@@ -85,7 +88,7 @@ async def start_realtime_async():
 
 def load_messages(chat_id: str, client):
     """
-    Synchronous function that loads up to 10 messages in the
+    (A)Synchronous function that loads up to 10 messages in the
     message history from the table "messages" in the "public" schema.
     """
 
@@ -103,7 +106,7 @@ def send_message_to_db(chat_id: str, sender_user_id: str, content: str, client):
 
     try:
         timestamp = datetime.now(timezone.utc).isoformat()
-        response = client.from_("messages").insert({"chat_id": chat_id, "sender_user_id": sender_user_id, "content": content, "created_at": timestamp}).execute()
+        client.from_("messages").insert({"chat_id": chat_id, "sender_user_id": sender_user_id, "content": content, "created_at": timestamp}).execute()
         return True
     except Exception as e:
         print(f"Error occurred while sending message: {e}")
@@ -111,12 +114,20 @@ def send_message_to_db(chat_id: str, sender_user_id: str, content: str, client):
 async def load_channel_list():
     """
     Load existing list of channels in a user's channel list.
+    Return a tuple of two lists: (list of channel ids, list of channel names)
     """
-    
-    client = await create_async_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
-    response = await client.from_("user_information").select("channel_list").eq("user_id", client.auth.get_user().user.id).execute()
-    channel_list = response.data[0]["channel_list"] if response.data and response.data[0] else []
-    return channel_list
+    user = await client.auth.get_user()
+    user_id = user.user.id
+    response = await client.from_("user_information").select("channel_list").eq("user_id", user_id).execute()
+    channel_list_ids = response.data[0]["channel_list"] if response.data and response.data[0] else []
+    channel_list_names = []
+    try:
+        for channel_id in channel_list_ids:
+            channel_response = friends.get_channel_members_without_self(channel_id)
+            channel_list_names.append(", ".join(channel_response))
+        return channel_list_ids, channel_list_names
+    except Exception:
+        raise ValueError("Error loading channel list.")
 
 def start_realtime():
     """

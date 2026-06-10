@@ -1,8 +1,7 @@
 from supabase_auth.errors import AuthApiError
 import os
-
 from supabase import create_async_client
-from supabase_auth.errors import AuthApiError
+from supabase_auth.errors import AuthApiError, AuthInvalidCredentialsError
 from dotenv import load_dotenv
 from postgrest.exceptions import APIError
 import friends
@@ -26,7 +25,10 @@ async def login_user(email: str, password: str):
         return response
     
     except AuthApiError:
-        raise RuntimeError("Login failed: Invalid email or password.")
+        raise RuntimeError("Invalid email or password.")
+    
+    except AuthInvalidCredentialsError:
+        raise RuntimeError("Invalid email, phone number, or password.")
     
 async def register_user(email: str, password: str, username: str, phone_number: str = ""):
     """
@@ -35,10 +37,10 @@ async def register_user(email: str, password: str, username: str, phone_number: 
     """
 
     if not email or not password or not username:
-        raise RuntimeError("Registration failed: Email, password, and username are required.")
+        raise RuntimeError("Email, password, and username are required.")
     
     if len(password) < 6:
-        raise RuntimeError("Registration failed: Password must be at least 6 characters long.")
+        raise RuntimeError("Password must be at least 6 characters long.")
     
     try:
         async_client = await create_async_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
@@ -59,7 +61,7 @@ async def register_user(email: str, password: str, username: str, phone_number: 
         raise RuntimeError(e.message) from e
     
     except RuntimeError as e:
-        raise RuntimeError("Registration failed: invalid username or password.") from e
+        raise RuntimeError("Invalid username or password.") from e
     
     except AuthApiError as e:
-        raise RuntimeError("Registration failed: unable to validate email address.") from e
+        raise RuntimeError("Unable to validate email address.") from e
