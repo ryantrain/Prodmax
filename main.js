@@ -1,21 +1,24 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow , Menu} = require('electron');
 const { spawn } = require('child_process');
 const path = require('path');
+
+let pythonProcess = null;
+
+Menu.setApplicationMenu(null);
 
 const createWindow = () => {
     const win = new BrowserWindow({
         width: 800,
         height: 600,
-        titleBarStyle: 'hidden',
         titleBarOverlay: {
             color: '#3b3b3b',
-            symbolColor: '#FFFFFF'
+            symbolColor: '#FFFFFF',
+            height: 32,
         },
     });
 
     //   win.setMenu(null);
-    transparent: true;
-
+   
     win.loadFile('templates/login.html')
 };
 
@@ -30,34 +33,18 @@ app.whenReady().then(() => {
     StartMainWindow();
 });
 
-async function fetchWithError (url, options, retries = 5) {
-    try {
-        const response = await fetch(url, options);
-        return await response.json();
-    } catch (error) {
-        if (retries > 0) {
-            await new Promise(resolve => setTimeout(resolve, 250));
-            return fetchWithError(url, options, retries - 1);
-        }
-        throw error;
-    }
-}
-
-// async function sendToPython() {
+// async function fetchWithError (url, options, retries = 5) {
 //     try {
-//         const response = await fetchWithError(
-//             "http://127.0.0.1:8000/api/run-logic", {
-//                 method: "POST",
-//                 headers: {"Content-Type": 'application/json'},
-//                 body: JSON.stringify({param1: "Hello Python!", param2: 42 })
-//             });
-
-//         console.log("Response from Python:", response["message"]);
-
+//         const response = await fetch(url, options);
+//         return await response.json();
 //     } catch (error) {
-//         console.error("sadge:", error);
-//     };
-// };
+//         if (retries > 0) {
+//             await new Promise(resolve => setTimeout(resolve, 250));
+//             return fetchWithError(url, options, retries - 1);
+//         }
+//         throw error;
+//     }
+// }
 
 function StartPythonServer() {
     pythonProcess = spawn('python', ['-m', 'uvicorn', 'server:app', '--port', '8000', '--host', '127.0.0.1']);
