@@ -6,8 +6,6 @@ import os
 from supabase import create_async_client
 from friends import get_username
 from datetime import datetime, timezone
-from qasync import asyncSlot
-
 import friends
 
 # Load the environment variables from the .env file for Supabase configuration

@@ -1,0 +1,25 @@
+{
+  "name": "thinking-about-the-repo-name---copy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryantrain/thinking-about-the-repo-name.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ryantrain/thinking-about-the-repo-name/issues"
+  },
+  "homepage": "https://github.com/ryantrain/thinking-about-the-repo-name#readme",
+  "devDependencies": {
+    "electron": "^42.4.0"
+  }
+}

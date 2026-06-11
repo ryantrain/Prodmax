@@ -1,0 +1,21 @@
+body {
+    background-color: #3b3b3b;
+    color: white;
+}
+
+.main-container {
+    display: grid;
+    grid-template-areas:
+        "header header header"
+        "channel_list chat-area chat-area";
+    grid-template-columns: 1fr 3fr 1fr;
+}
+
+.channel_container {
+    grid-area: channel_list;
+    background-color: #ffffff1c;
+    display: grid;
+    grid-template-rows: 2rem;
+    width: 100%;
+    height: 100%;
+}
