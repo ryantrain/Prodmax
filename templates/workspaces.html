@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="../styles/navbar.css">
+    <link rel="stylesheet" href="../styles/workspaces.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workspaces</title>
+</head>
+<body>
+    <nav class="navbar">
+            <button class="menu-btn" onclick="toggleSidebar()">
+                ☰
+            </button>
+
+            <h2 class="logo">My App</h2>
+        </nav>
+
+        <div id="sidebar" class="sidebar">
+            <a href="dashboard.html">Home</a>
+            <a href="taskboards.html">Taskboards</a>
+            <a href="workspaces.html">Workspaces</a>
+            <a href="settings.html">Settings</a>
+        </div>
+        
+        <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+
+        <main class="content">
+            <h1>Welcome</h1>
+            <p>Your page content goes here.</p>
+        </main>
+
+        <script>
+            function toggleSidebar() {
+                document.getElementById("sidebar").classList.toggle("open");
+                document.getElementById("overlay").classList.toggle("show");
+            }
+        </script>
+
+        
+        
+</body>
+</html>
+!

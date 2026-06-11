@@ -1,4 +1,5 @@
 import os
+import threading
 import chat
 import chat
 import friends
@@ -7,11 +8,13 @@ from pydantic import BaseModel
 from verification import login_user, register_user
 from dotenv import load_dotenv
 from supabase import create_client
+import asyncio
 
 load_dotenv()
 client = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
 friends.client = client
 app = FastAPI()
+threading.Thread(target=asyncio.run, args=(chat.start_realtime_async(),)).start()
 
 class ProcessData(BaseModel):
     param1: str
@@ -42,8 +45,8 @@ async def login(username: str = Form(...), password: str = Form(...)):
     except RuntimeError as e:
         return {"message": str(e)}
 
-@app.post("/api/dashboard")
-def dashboard():
-     friends_list = friends.get_friends()
-     channel_list = chat.get_channels()
+@app.get("/api/dashboard")
+async def dashboard():
+     friends_list = await friends.get_friends()
+     channel_list = await chat.load_channel_list()
      return {"friends": friends_list, "channels": channel_list}

@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 
 <head>
+    <link rel="stylesheet" href="../styles/navbar.css">
     <link rel="stylesheet" href="../styles/dashboard.css">
+
+    <script src="../scripts/dashboard.js" defer></script>
     <meta charset="UTF-8" />
     <meta
         http-equiv="Content-Security-Policy"
@@ -19,8 +22,91 @@
 <body>
 
     <div class="main-container">
+
+        <nav class="navbar">
+            <button class="menu-btn" onclick="toggleSidebar()">
+                ☰
+            </button>
+
+            <h2 class="logo">My App</h2>
+        </nav>
+
+        <div id="sidebar" class="sidebar">
+            <a href="dashboard.html">Home</a>
+            <a href="taskboards.html">Taskboards</a>
+            <a href="workspaces.html">Workspaces</a>
+            <a href="settings.html">Settings</a>
+        </div>
+
+        <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+
+        <main class="content">
+            <h1>Welcome</h1>
+            <p>Your page content goes here.</p>
+        </main>
+
         
+        <script>
+            function toggleSidebar() {
+                document.getElementById("sidebar").classList.toggle("open");
+                document.getElementById("overlay").classList.toggle("show");
+            }
+        </script>
+
+        <section class="tasks-section">
+
+            <div class="tasks-header">
+                <h2>Tasks</h2>
+                <button class="create-task-button" id="create_button">Create</button>
+                
+                <div class="modal-overlay" id="modal-overlay">
+                    <div class="modal">
+                        <h2>Create Task</h2>
+
+                        <input
+                            id="task-input"
+                            type="text"
+                            placeholder="Task name"
+                        >
+
+                        <div class="modal-buttons">
+                            <button id="cancel-button" class="cancel-button">Cancel</button>
+                            <button id="add-button" class="add-button">Add Task</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="emptyState">
+                <h2>No Tasks!</h2>
+                <p>Create your first task to get started.</p>
+            </div>
+            <div class="task-list" id="task-list">
+            </div>
+
+        </section>
+
+        <div class="channel_container" id="channel_list"></div>
     </div>
+    
+    <script>
+
+        async function fetchData() {
+            try {
+                response = await fetch('http://localhost:8000/api/dashboard');
+                data = await response.json();
+
+                const list = document.getElementById('channel_list');
+                list.innerHTML = data.channels[1].map(channel => `<div class="channel_item">${channel}</div>`).join('');
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+            }
+        }
+
+        fetchData();
+
+    </script>
 </body>
 
 </html>
