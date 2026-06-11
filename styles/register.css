@@ -1,0 +1,100 @@
+.main-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+html {
+    overflow: hidden;
+}
+
+body {
+    background-color: #3b3b3b;
+    color: white;
+}
+
+.register-container{
+    width: 60vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.register-fields {
+    display: grid;
+    grid-template-areas:
+        "title"
+        "username"
+        "password"
+        "email"
+        "phone"
+        "register";
+
+    gap: 0.5rem;
+    grid-template-columns: 1fr;
+    width: 20rem;
+}
+
+.register-fields p {
+    grid-area: title;
+    font-size: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.register-item {
+    width: 100%;
+    height: 2rem;
+    margin-bottom: 1rem;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    padding-left: 0.5rem;
+    outline: none;
+}
+
+.register {
+    grid-area: register;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    background-color: #9191911c;
+    width: 100%;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 2.5rem;
+    border-width: 2px;
+    border-color: transparent;
+    transition: border-color 0.1s ease-in-out;
+    border-style: solid;
+}
+
+.register:hover {
+    background-color: #9191911c;
+    border-color: white;
+}
+
+.previous-button-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.previous-button {
+    background: #3b3b3b;
+    border: 2px solid white;
+    color: white;
+    padding: 0.5rem 1rem;
+    transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+    border-radius: 0.5rem;
+}
+
+.previous-button:hover {
+    transform: scale(1.05);
+    box-shadow: 4px 4px 10px rgb(0, 0, 0);
+}

@@ -50,3 +50,14 @@ async def dashboard():
      friends_list = await friends.get_friends()
      channel_list = await chat.load_channel_list()
      return {"friends": friends_list, "channels": channel_list}
+
+@app.post('/api/register')
+async def register(username: str = Form(...), password: str = Form(...), email: str = Form(...), phone_number: str = Form(None)):
+    try:
+        response = await register_user(email, password, username, phone_number)
+        if response:
+            return {"message": "Registration successful", "data": response}
+        else:
+            return {"message": "Registration failed"}
+    except Exception:
+        return {"message": "An error occurred during registration"}

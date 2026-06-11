@@ -4,7 +4,7 @@ const path = require('path');
 
 let pythonProcess = null;
 
-Menu.setApplicationMenu(null);
+// Menu.setApplicationMenu(null);
 
 const createWindow = () => {
     const win = new BrowserWindow({
