@@ -21,8 +21,9 @@
             <div class="login-container">
 
                 <form method="POST" action="http://localhost:8000/api/login" id="login-form" class="login-fields">
-                    <p>Login</p>
-                    <p class="invalid-login">Invalid username or password.*</p>
+                    <p class="login-title">Login</p>
+                    <p class="invalid-login" id="invalid-login" hidden>Invalid username or password.*</p>
+                    
                     <input type="text" name="username" placeholder="Username" required class="username"/>
                     <input type="password" name="password" placeholder="Password" required class="password"/>
                     <button type="submit" class="submit">Login</button>
@@ -46,7 +47,8 @@
                             if (data.message === 'Login successful') {
                                 window.location.href = 'dashboard.html';
                             } else {
-                                // alert(data.message);
+                                document.getElementById('invalid-login').toggleAttribute('hidden');
+                                console.log(data.message);
                             }
 
                         } catch (error) {

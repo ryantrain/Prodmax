@@ -37,12 +37,22 @@ body {
     width: 20rem;
 }
 
-.login-fields p {
+.login-fields .login-title {
+    margin-bottom: 10px;
     grid-area: title;
     font-size: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.login-fields .invalid-login {
+    margin-top: 0;
+    margin-bottom: 0;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 400;
+    color: rgb(211, 88, 88);
 }
 
 .username {
@@ -116,4 +126,8 @@ body {
 .register:hover {
     background-color: #9191911c;
     border-color: white;
+}
+
+.hidden{
+    display: none;
 }
