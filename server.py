@@ -1,7 +1,6 @@
 import os
 import threading
 import chat
-import chat
 import friends
 from fastapi import FastAPI, Form
 from pydantic import BaseModel
@@ -44,7 +43,7 @@ async def login(username: str = Form(...), password: str = Form(...)):
     
     except RuntimeError as e:
         return {"message": str(e)}
-
+# Turn this into a 'POST' request later
 @app.get("/api/dashboard")
 async def dashboard():
      friends_list = await friends.get_friends()
@@ -61,3 +60,24 @@ async def register(username: str = Form(...), password: str = Form(...), email: 
             return {"message": "Registration failed"}
     except Exception:
         return {"message": "An error occurred during registration"}
+    
+@app.post('/api/load_messages/{channel_id}')
+async def load_messages(channel_id: str):
+    channel_id = str(channel_id)
+    try:
+        messages = await chat.load_messages(channel_id)
+        return {"messages": messages}
+    except Exception as e:
+        return {"message": f"An error occurred while loading messages: {str(e)}"}
+
+@app.post('/api/send_message')
+async def send_message(channel_id: str = Form(...), content: str = Form(...)):
+    user = client.auth.get_user()
+    sender_user_id = user.user.id
+    try:
+        response = await chat.send_message_to_db(channel_id, sender_user_id, content)
+        username = friends.get_username(sender_user_id)
+
+        return {"message": f"{username}: {content}", "data": response}
+    except Exception as e:
+        return {"message": f"An error occurred while sending message: {str(e)}"}

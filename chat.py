@@ -84,27 +84,27 @@ async def start_realtime_async():
     while True:
         await asyncio.sleep(60)
 
-def load_messages(chat_id: str, client):
+async def load_messages(chat_id: str):
     """
-    (A)Synchronous function that loads up to 10 messages in the
+    Asynchronous function that loads up to 10 messages in the
     message history from the table "messages" in the "public" schema.
     """
 
-    response = client.from_("messages").select("content", "sender_user_id").eq("chat_id", chat_id).order("created_at", desc=True).limit(10).execute()
+    response = await client.from_("messages").select("content", "sender_user_id").eq("chat_id", chat_id).order("created_at", desc=True).limit(10).execute()
     messages = response.data if response.data else []
     formatted_messages = []
     for message in messages:
         sender_id = message.get("sender_user_id")
-        response = client.from_("user_information").select("username").eq("user_id", sender_id).execute()
+        response = await client.from_("user_information").select("username").eq("user_id", sender_id).execute()
         sender_username = response.data[0]["username"]
         formatted_messages.append(f"{sender_username}: {message.get('content', '')}")
     return formatted_messages
 
-def send_message_to_db(chat_id: str, sender_user_id: str, content: str, client):
+async def send_message_to_db(chat_id: str, sender_user_id: str, content: str):
 
     try:
         timestamp = datetime.now(timezone.utc).isoformat()
-        client.from_("messages").insert({"chat_id": chat_id, "sender_user_id": sender_user_id, "content": content, "created_at": timestamp}).execute()
+        await client.from_("messages").insert({"chat_id": chat_id, "sender_user_id": sender_user_id, "content": content, "created_at": timestamp}).execute()
         return True
     except Exception as e:
         print(f"Error occurred while sending message: {e}")

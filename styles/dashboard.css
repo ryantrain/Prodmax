@@ -6,11 +6,17 @@ body {
 .main-container {
     display: grid;
     grid-template-areas:
-        "header header header"
-        "chat-area chat-area channel_list"
-        "chat-area chat-area channel_list";
-    grid-template-columns: 1fr 3fr 10rem;
+        "header header"
+        "chat-area channel_list";
+    grid-template-columns: 3fr 0;
     height: 100vh;
+    grid-template-rows: 60px auto;
+    transition: grid-template-columns 0.3s ease;
+    overflow: hidden;
+}
+
+.main-container.channel-open{
+    grid-template-columns: 3fr 20rem;
 }
 
 .tasks-section {
@@ -24,6 +30,10 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border-width: 3px;
     border-color:rgb(106, 106, 106);
+}
+
+.navbar {
+    grid-area: header;
 }
 
 .tasks-header {
@@ -175,7 +185,9 @@ body {
     height: 100%;
     border-radius: 12px 0 0 0;
     padding-top: 2rem;
-    align-content: start
+    align-content: start;
+    overflow: hidden;
+    z-index: 998;
 }
 
 * {
@@ -189,10 +201,14 @@ body {
     display: flex;
     align-content: center;
     justify-content: center;
-    transition: background-color 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease;
     flex-wrap: wrap;
     padding: 0.75rem;
     margin: 0.25rem 0;
+    background: transparent;
+    border: none;
+    color: white;
+    z-index: 998;
 }
 
 .channel_item:hover {
@@ -200,6 +216,120 @@ body {
     cursor: pointer;
 }
 
+.channel_item:active {
+    transform: scale(0.95);
+    color: gray;
+}
+
 .hidden {
     display: none;
+}
+
+.channel_list_toggler {
+    margin-left: auto;
+    right: 1rem;
+    cursor: pointer;
+    background-color: black;
+    border: none;
+    transition: transform 0.1s ease;
+}
+
+.channel_list_toggler:active {
+    transform: scale(0.9);
+}
+
+.channel_list_toggler img {
+    width: 40px;
+    height: 40px;
+}
+
+.message_pane {
+    display: grid;
+    position: relative;
+    grid-template-rows: auto 5rem;
+    background-color: #4d4d4d;
+    border-radius: 12px 0 0 0;
+    color: white;
+    grid-area: channel_list;
+    width: 100%;
+    height: auto;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 999;
+    grid-template-areas:
+        "messages"
+        "input";
+    overflow: hidden;
+    text-wrap: wrap;
+}
+
+.message_pane.show_message_pane {
+    transform: translateX(0);
+}
+
+.messages_section {
+    grid-area: messages;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    margin: 0.25rem;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.messages_list {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.message_item {
+    padding: 0.75rem;
+    margin: 0.25rem;
+    background: transparent;
+    border: none;
+    color: white;
+}
+
+.message_input_form {
+    display: flex;
+    grid-area: input;
+    border: none;
+    color: white;
+    border-radius: 12px;
+    width: 95%;
+    height: 70%;
+    outline: none;
+    background-color: rgb(100, 100, 100);
+    justify-self: center;
+    align-self: center;
+    font-size: 1.2rem;
+    padding: 0 1rem;
+}
+
+.message_pane_toggler {
+    display: inline-flex;
+    align-self: start;
+    justify-self: start;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: black;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    transition: transform 0.1s ease;
+    cursor: pointer;
+}
+
+.message_pane_toggler:active {
+    transform: scale(0.95);
 }
