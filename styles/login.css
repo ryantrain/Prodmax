@@ -28,6 +28,7 @@ body {
     display: grid;
     grid-template-areas:
         "title title"
+        "invalidtext invalidtext"
         "username username"
         "password password"
         "submit register";

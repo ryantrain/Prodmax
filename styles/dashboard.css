@@ -16,8 +16,10 @@ body {
 .tasks-section {
     grid-area: chat-area;
     background-color: black;
-    border-radius: 25px;
+    border-radius: 75px;
     padding: 25px;
+    padding-top: 15px;
+    padding-left: 50px;
     margin: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border-width: 3px;

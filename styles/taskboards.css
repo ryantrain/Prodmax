@@ -1,0 +1,65 @@
+body {
+    background-color: #3b3b3b;
+    color: white;
+}
+
+.main-container{
+    width: 80vw;
+    margin: 0 auto;
+    padding: 0 24px;
+    box-sizing: border-box;
+    height: 100vh;
+}
+
+.organization-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 30px;
+    width: 100%;
+}
+
+.organization-card {
+    display: flex;
+    padding: 15px;
+    background-color: rgb(38, 38, 38);
+    border-radius: 12px;
+    transition: background-color 0.2s ease-in-out;
+    height: 200px;
+    color: white;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+}
+
+.organization-card:hover {
+    background-color: #212121;
+    cursor: pointer;
+}
+
+.card-title{
+    margin-top: auto;
+    display: flex;
+    align-items: flex-end;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-title h3 {
+    margin: 0;
+}
+
+.card-description-container{   
+    height: 50%;
+    padding-left: 5px;
+    padding-right: 5px;
+    font-size: 14px;  
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
