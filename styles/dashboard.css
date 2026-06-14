@@ -23,13 +23,15 @@ body {
     grid-area: chat-area;
     background-color: black;
     border-radius: 75px;
-    padding: 25px;
-    padding-top: 15px;
-    padding-left: 50px;
+    padding: 1rem 3rem;
     margin: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border-width: 3px;
     border-color:rgb(106, 106, 106);
+}
+
+#emptyState {
+    line-height: 3rem;
 }
 
 .navbar {
@@ -44,7 +46,6 @@ body {
 }
 
 .tasks-section h2 {
-    margin-bottom: 20px;
     font-size: 24px;
     color: white;
 }
@@ -68,7 +69,6 @@ body {
 .create-task-button:active {
     transform: scale(0.97);
 }
-
 
 .modal-overlay {
     position: fixed;

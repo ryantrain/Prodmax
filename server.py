@@ -2,6 +2,7 @@ import os
 import threading
 import chat
 import friends
+import tasks
 from fastapi import FastAPI, Form
 from pydantic import BaseModel
 from verification import login_user, register_user
@@ -12,20 +13,9 @@ import asyncio
 load_dotenv()
 client = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
 friends.client = client
+tasks.client = client
 app = FastAPI()
 threading.Thread(target=asyncio.run, args=(chat.start_realtime_async(),)).start()
-
-class ProcessData(BaseModel):
-    param1: str
-    param2: int
-
-@app.post("/api/run-logic")
-async def run_logic(data: ProcessData):
-
-
-    result = f"Received param1: {data.param1} and param2: {data.param2}"
-    
-    return {"message": result}
 
 @app.post("/api/login")
 async def login(username: str = Form(...), password: str = Form(...)):
@@ -81,3 +71,18 @@ async def send_message(channel_id: str = Form(...), content: str = Form(...)):
         return {"message": f"{username}: {content}", "data": response}
     except Exception as e:
         return {"message": f"An error occurred while sending message: {str(e)}"}
+    
+@app.post('/api/add_taskboard')
+def add_taskboard(taskboard_name: str = Form(...)):
+    try:
+        tasks.add_taskboard_to_db(taskboard_name)
+    except Exception as e:
+        return f"An error occured while adding taskboard:{str(e)}"
+    
+@app.post('/api/get_taskboards')
+def get_taskboards():
+    try:
+        taskboards = tasks.get_taskboards_for_user()
+        return {"taskboards": taskboards}
+    except Exception as e:
+        return {"message": f"An error occurred while fetching taskboards: {str(e)}"}
