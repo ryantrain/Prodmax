@@ -5,7 +5,6 @@ const addButton = document.getElementById("add-button");
 const taskInput = document.getElementById("task-input");
 const taskList = document.getElementById("task-list");
 const emptyText = document.getElementById("emptyState")
-const addFriendsButton = document.getElementById('add_friends_submit');
 
 createTaskButton.addEventListener("click", () => {
     modalOverlay.classList.add("show");
@@ -98,6 +97,16 @@ function load_taskboards(data) {
             const friendList = document.getElementById('friends_sidebar');
             friendList.innerHTML += data.friends.map(name => `<p class="friends_item">${name}</p>`).join('');
 
+            const friendRequestList = document.getElementById('friend_requests_list');
+            friendRequestList.innerHTML += data.friend_requests.map(name => 
+                `<div class="friend_request_item">
+                    <p>${name}</p>
+                    <div class="friend_request_buttons_section">
+                        <button id="accept_friend_request_button" data-username="${name}" onclick="acceptFriendRequest(this)" class="friend_request_button">✓</button>
+                        <button id="reject_friend_request_button" data-username="${name}" onclick="rejectFriendRequest(this)" class="friend_request_button">✗</button>
+                    </div>
+                </div>`).join('');
+
             sessionStorage.removeItem('preFetchedData');
         }
     } catch (error) {
@@ -172,10 +181,6 @@ function toggleFriendRequests() {
     document.getElementById("friends_sidebar").classList.toggle("friends_open");
 }
 
-function toggleAddFriends() {
-    document.getElementById("add_friends_container").classList.toggle("add_friends_open");
-}
-
 function sendFriendRequest() {
     const query = document.getElementById('add_friends_input').value;
 
@@ -197,6 +202,39 @@ function sendFriendRequest() {
         console.error('Error sending friend request:', error);
     }
 }
+function toggleFriendRequestPane() {
+    document.getElementById('friend_requests_pane').classList.toggle('open');
+}
+
+function closeFriendRequestPane() {
+    document.getElementById('friend_requests_pane').classList.remove('open');
+}
+
+async function acceptFriendRequest(button) {
+    const username = button.dataset.username;
+    const formData = new FormData();
+
+    formData.append('addressee_username', username);
+
+    try {
+        const response = await fetch('http://localhost:8000/api/accept_friend_request', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok){
+            const data = await response.json();
+            button.parentElement.parentElement.remove();
+
+            document.getElementById('friends_sidebar').innerHTML += `<p class="friends_item">${username}</p>`;
+
+            document.getElementById('channel_list').innerHTML += `<button onclick="display_messages_pane(this)" data-channel_id="${data.data.channel_id}" class="channel_item">${username}</button>`;
+        }
+
+    } catch (error) {
+        console.error('Error accepting friend request:', error);
+    }
+};
 
 // Updates the message history with the new message
 document.getElementById('message_input_form').addEventListener('submit', async(e) => {

@@ -3,6 +3,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from datetime import datetime, timezone
+import chat
 
 load_dotenv()
 
@@ -19,7 +20,7 @@ async def get_friends() -> list:
         user_uuid = client.auth.get_user().user.id
         if not user_uuid:
             raise RuntimeError("No authenticated user is available on the friends client")
-        
+
         # Returns a dictionary with each key containing a list of length 2 uuid pairs
 
         friends = client.from_('friendships')\
@@ -81,13 +82,13 @@ def send_friend_request(addressee_username: str):
     except Exception as e:
         raise ValueError(f"An error occurred while sending friend request: {str(e)}")
     
-def accept_friend_request(addressee_username: str):
+async def accept_friend_request(addressee_username: str):
     addressee_uuid = get_uuid(addressee_username)
     
-    client.from_("friendships").update({"status": "accepted"})\
-            .contains("uuid_pair", [client.auth.get_user().user.id]) \
-            .contains("uuid_pair", [addressee_uuid])\
-            .execute()
+    client.rpc("update_friendship_status", {"addressee_uuid": addressee_uuid, "new_status": "accepted"}).execute()
+    await chat.add_channel_to_db(channel_type="private", channel_members=[addressee_uuid, client.auth.get_user().user.id], channel_name=None)
+    channel_id = get_channel_id(addressee_username)
+    return {"channel_id": channel_id}
 
 def decline_friend_request(addressee_username: str):
     addressee_uuid = get_uuid(addressee_username)
@@ -127,9 +128,9 @@ async def verify_channels():
         except Exception as e:
             friend_uuid = get_uuid(friend)
             user_id = client.auth.get_user().user.id
-            client.from_("channel_list").insert({"created_at": datetime.now(timezone.utc).isoformat(), "channel_members": [user_id, friend_uuid] }).execute()
+            await chat.add_channel_to_db(channel_type="private", channel_members=[user_id, friend_uuid], channel_name=None)
 
-def get_channel_members(channel_id: str):
+async def get_channel_members(channel_id: str):
     response = client.from_("channel_list").select("channel_members").eq("channel_id", channel_id).execute()
     try:
         names = [get_username(uuid) for uuid in response.data[0]["channel_members"]]
@@ -145,3 +146,14 @@ def get_channel_members(channel_id: str):
 #         return names
 #     except Exception:
 #         raise ValueError("No channel found for the given channel id.")
+
+def get_friend_requests() -> list:
+    user_id = client.auth.get_user().user.id
+    response = client.from_("friendships").select("uuid_pair").contains("uuid_pair", [user_id]).eq("status", "pending").execute()
+    friend_requests = []
+    for request in response.data:
+        uuid_pair = request["uuid_pair"]
+        friend_uuid = uuid_pair[0] if uuid_pair[0] != user_id else uuid_pair[1]
+        friend_username = get_username(friend_uuid)
+        friend_requests.append(friend_username)
+    return friend_requests

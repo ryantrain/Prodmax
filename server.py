@@ -40,7 +40,8 @@ async def dashboard():
      friends_list = await friends.get_friends()
      channel_list = await chat.load_channel_list()
      taskboards = tasks.get_taskboards_for_user()
-     return {"friends": friends_list, "channels": channel_list, "taskboards": taskboards}
+     friend_requests = friends.get_friend_requests()
+     return {"friends": friends_list, "channels": channel_list, "taskboards": taskboards, "friend_requests": friend_requests}
 
 @app.post('/api/register')
 async def register(username: str = Form(...), password: str = Form(...), email: str = Form(...), phone_number: str = Form(None)):
@@ -92,4 +93,12 @@ def add_friend(query: str = Form(...)):
             raise ValueError("Failed to send friend request.")
     except Exception as e:
         return {"message": f"An error occurred while sending friend request: {str(e)}"}
+    
+@app.post('/api/accept_friend_request')
+async def accept_friend_request(addressee_username: str = Form(...)):
+    try:
+        response = await friends.accept_friend_request(addressee_username)
+        return {"message": "Friend request accepted", "data": response}
+    except Exception as e:
+        return {"message": f"An error occurred while accepting friend request: {str(e)}"}
 

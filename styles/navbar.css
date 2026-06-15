@@ -157,53 +157,57 @@
 }
 
 .add_friends_container {
-    position: absolute;
-    align-self: flex-end;
-    display: grid;
-    grid-template-areas:
-        "input submit";
-    grid-template-columns: 1fr 1.5rem;
-    height: 2.5rem;
-    width: 95%;
-    align-self: center;
-    gap: 0.5rem;
-    border-radius: 1rem;
-    bottom: -5rem;
-    transition: bottom 0.3s ease-in-out;
-    background-color: #242424;
-    justify-self: center;
-}
-
-.add_friends_container.add_friends_open {
-    bottom: 1rem;
+    position: static;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    width: 100%;
+    padding: 0.5rem 0.6rem;
+    border-top: 1px solid #555;
+    background-color: transparent;
+    border-radius: 0;
+    height: auto;
+    margin: 0;
 }
 
 .add_friends_input {
-    grid-area: input;
+    flex: 1;
     border: none;
-    border-radius: 1rem;
-    background-color: black;
+    border-radius: 8px;
+    background-color: #111;
     color: white;
-    padding: 0.5rem;
-    height: 2.5rem;
-    align-self: center;
+    padding: 0.3rem 0.6rem;
+    height: 2rem;
     outline: none;
-    font-size: 1.5rem;
-    overflow: hidden;
-    width: 100%;
+    font-size: 0.9rem;
+    width: 80%;
+    min-width: 0;
 }
 
 .add_friends_submit {
     display: flex;
-    grid-area: submit;
-    align-self: center;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    color: white;
+    font-size: 1rem;
     cursor: pointer;
     transition: transform 0.1s ease-in-out;
-    font-size: 1.25rem;
+    flex-shrink: 0;
+    width: 3rem;
+    border: 1px solid white;
+    border-radius: 8px;
+    height: 100%;
+    background-color: #171717;
 }
 
 .add_friends_submit:hover {
-    transform: scale(1.3);
+    transform: scale(1.15);
+}
+
+.add_friends_submit:active {
+    transform: scale(1.05);
+    background: #666666;
 }
 
 .channel_container {
@@ -357,3 +361,98 @@
     transform: scale(0.95);
 }
 
+.friend_requests_pane {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #3a3a3a;
+    border-radius: 12px 0 0 0;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 2;
+}
+
+.friend_requests_pane.open {
+    transform: translateX(0);
+}
+
+.friend_requests_pane_header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid #555;
+}
+
+.friend_requests_pane_back {
+    background: #111;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease;
+    flex-shrink: 0;
+}
+
+.friend_requests_pane_back:active {
+    transform: scale(0.9);
+}
+
+.friend_requests_pane_title {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.friend_requests_list {
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.friend_request_item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background: #4a4a4a;
+    border-radius: 8px;
+    padding: 0.4rem 0.6rem;
+    margin-bottom: 0.4rem;
+    align-items: center;
+}
+
+.friend_request_buttons_section {
+    display: grid;
+    gap: 0.25rem;
+    grid-auto-flow: column;
+    flex: 0 0 50%;
+}
+
+.friend_request_button {
+    background: #282828;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    height: 2rem;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease;
+    width: 100%;
+}
+
+.friend_request_button:active {
+    transform: scale(0.9);
+    background: #555;
+}

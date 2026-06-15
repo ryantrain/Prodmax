@@ -154,3 +154,15 @@ def start_realtime():
     Tracked databases are listed in the start_realtime_async function docstring.
     """
     asyncio.run(start_realtime_async())
+
+async def add_channel_to_db(channel_type: str, channel_members: list, channel_name: str = None):
+    """
+    Adds a channel to the "channel_list" table in the "public" schema in the Supabase database.
+    The channel can be of type "private" or "group". If the channel is of type "private", then the channel name is not needed
+    and will be set to None. If the channel is of type "group", then the channel name is needed.
+    """
+    try:
+        timestamp = datetime.now(timezone.utc).isoformat()
+        await client.from_("channel_list").insert({"created_at": timestamp, "channel_members": channel_members, "channel_type": channel_type, "channel_name": channel_name}).execute()
+    except Exception as e:
+        print(f"Error occurred while adding channel: {e}")
