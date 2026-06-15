@@ -1,7 +1,12 @@
+const spinner = document.getElementById('spinner');
+
 document.getElementById('login-form').addEventListener('submit', async(e) => {
     e.preventDefault();
 
     try {
+        
+        spinner.classList.toggle('hidden');
+
         const formData = new FormData(e.target);
 
         const response = await fetch('http://localhost:8000/api/login', {
