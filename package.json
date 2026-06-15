@@ -21,5 +21,9 @@
   "homepage": "https://github.com/ryantrain/thinking-about-the-repo-name#readme",
   "devDependencies": {
     "electron": "^42.4.0"
+  },
+  "dependencies": {
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
   }
 }

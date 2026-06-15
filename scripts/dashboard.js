@@ -72,20 +72,113 @@ function updateTaskCount(){
     };
 };
 
-function load_taskboards() {
+function load_taskboards(data) {
 
-    fetch("http://localhost:8000/api/get_taskboards", {
-        method: "POST"
-    }).then(response => {
-        return response.json();
-    }).then(data => {
-        for (const taskboard of data.taskboards) {
-            const taskCard = document.createElement("div");
-            taskCard.classList.add("task-card");
-            taskCard.textContent = taskboard.taskboard_name;
-            taskList.appendChild(taskCard);
-        }
-    }).then(updateTaskCount)
+    for (const taskboard of data.taskboards) {
+        const taskCard = document.createElement("div");
+        taskCard.classList.add("task-card");
+        taskCard.textContent = taskboard.taskboard_name;
+        taskList.appendChild(taskCard);
+    }
+
+    updateTaskCount();
 }
 
-load_taskboards();
+ async function fetchData() {
+    try {
+        const rawData = sessionStorage.getItem('preFetchedData');
+
+        if (rawData) {
+            const data = JSON.parse(rawData);
+            load_taskboards(data);
+
+            const list = document.getElementById('channel_list');
+            list.innerHTML = data.channels[1].map((name, index) => `<button onclick="display_messages_pane(this)" data-channel_id="${data.channels[0][index]}" class="channel_item">${name}</button>`).join('');
+
+            sessionStorage.removeItem('preFetchedData');
+        }
+    } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+    }
+}
+
+function display_messages_pane(button) {
+    document.getElementById('message_pane').classList.add('show_message_pane');
+    load_messages(button.dataset.channel_id);
+    button.classList.add('active_channel');
+}
+
+async function load_messages(channel_id) {
+    const response = await fetch('http://localhost:8000/api/load_messages/' + channel_id, {
+        method: 'POST'
+    });
+
+    const data = await response.json();
+
+    const messages = data.messages || [];
+
+    const messageSection = document.getElementById('messages_section');
+    messageSection.innerHTML = messages.toReversed().map(message => `<p class="message_item">${message}</p>`).join('');
+    messageSection.scrollTop = messageSection.scrollHeight;
+}
+
+async function send_message(channel_id, message) {
+    const formData = new FormData();
+    formData.append('channel_id', channel_id);
+    formData.append('content', message);
+    const response = await fetch('http://localhost:8000/api/send_message', {
+        method: 'POST',
+        body: formData,
+        });
+    
+    return await response.json();
+}
+
+function closeMessagePane() {
+    document.getElementById('message_pane').classList.toggle('open_message_pane');
+    document.getElementById('message_pane').classList.remove('show_message_pane');
+
+    document.getElementById('message_pane').addEventListener('transitionend', () => {
+        setTimeout(() => {
+            document.querySelectorAll('.message_item').forEach(item => item.remove());
+        }, 100);
+    });
+    
+    const activeButton = document.querySelector('.channel_item.active_channel');
+    if (activeButton) {
+        activeButton.classList.remove('active_channel');
+    }
+}
+
+// Updates the message history with the new messagez
+document.getElementById('message_input_form').addEventListener('submit', async(e) => {
+    e.preventDefault();
+    const messageInput = e.target.elements['message_input'];
+
+    const channel_id = document.querySelector('.channel_item.active_channel').dataset.channel_id;
+    const message = messageInput.value;
+
+    response = await send_message(channel_id, message);
+    messageInput.value = '';
+    const new_message = response.message
+
+    document.getElementById('messages_section').innerHTML += `<p class="message_item">${new_message}</p>`;
+    const messageSection = document.getElementById('messages_section');
+    messageSection.scrollTop = messageSection.scrollHeight;
+
+})
+
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("overlay").classList.toggle("show");
+}
+
+function toggleChannelList() {
+    document.querySelector(".main-container").classList.toggle("channel-open");
+    document.getElementById("channel_list").classList.toggle("open_channel_list");
+    if (document.getElementById("message_pane").classList.contains("show_message_pane")) {
+        document.getElementById("message_pane").classList.remove("open_message_pane");
+    }
+}
+
+fetchData();

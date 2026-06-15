@@ -33,12 +33,14 @@ async def login(username: str = Form(...), password: str = Form(...)):
     
     except RuntimeError as e:
         return {"message": str(e)}
+    
 # Turn this into a 'POST' request later
-@app.get("/api/dashboard")
+@app.post("/api/dashboard")
 async def dashboard():
      friends_list = await friends.get_friends()
      channel_list = await chat.load_channel_list()
-     return {"friends": friends_list, "channels": channel_list}
+     taskboards = tasks.get_taskboards_for_user()
+     return {"friends": friends_list, "channels": channel_list, "taskboards": taskboards}
 
 @app.post('/api/register')
 async def register(username: str = Form(...), password: str = Form(...), email: str = Form(...), phone_number: str = Form(None)):
@@ -78,11 +80,3 @@ def add_taskboard(taskboard_name: str = Form(...)):
         tasks.add_taskboard_to_db(taskboard_name)
     except Exception as e:
         return f"An error occured while adding taskboard:{str(e)}"
-    
-@app.post('/api/get_taskboards')
-def get_taskboards():
-    try:
-        taskboards = tasks.get_taskboards_for_user()
-        return {"taskboards": taskboards}
-    except Exception as e:
-        return {"message": f"An error occurred while fetching taskboards: {str(e)}"}
