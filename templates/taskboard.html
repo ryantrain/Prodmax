@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="../styles/navbar.css">
-    <link rel="stylesheet" href="../styles/taskboards.css">
+    <link rel="stylesheet" href="../styles/taskboard.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taskboards</title>
@@ -13,8 +13,17 @@
             <button class="menu-btn" onclick="toggleSidebar()">
                 ☰
             </button>
-
+            
             <h2 class="logo">My App</h2>
+
+            <button class="friend_requests_toggler" onclick="toggleFriendRequests()" id="friend_requests_toggle">
+                <img src="../assets/svgs/friends.svg">
+            </button>
+
+            <button class="channel_list_toggler" onclick="toggleChannelList()" id="channel_list_toggle">
+                <img src="../assets/images/messages.png">
+            </button>
+ 
         </nav>
 
         <div id="sidebar" class="sidebar">
@@ -92,10 +101,6 @@
         </div>
 
     </div>
-    
-
-
-
 
 </body>
 </html>

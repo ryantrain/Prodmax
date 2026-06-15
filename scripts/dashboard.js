@@ -63,7 +63,6 @@ modalOverlay.addEventListener("click", (event) => {
 
 function updateTaskCount(){
     const taskCount = taskList.querySelectorAll(".task-card").length;
-    console.log(taskCount)
     if (taskCount === 0) {
         emptyText.classList.remove("hidden");
     }
@@ -75,7 +74,7 @@ function updateTaskCount(){
 function load_taskboards(data) {
 
     for (const taskboard of data.taskboards) {
-        const taskCard = document.createElement("div");
+        const taskCard = document.createElement("button");
         taskCard.classList.add("task-card");
         taskCard.textContent = taskboard.taskboard_name;
         taskList.appendChild(taskCard);
@@ -94,6 +93,9 @@ function load_taskboards(data) {
 
             const list = document.getElementById('channel_list');
             list.innerHTML = data.channels[1].map((name, index) => `<button onclick="display_messages_pane(this)" data-channel_id="${data.channels[0][index]}" class="channel_item">${name}</button>`).join('');
+
+            const friendList = document.getElementById('friends_sidebar');
+            friendList.innerHTML += data.friends.map(name => `<p class="friends_item">${name}</p>`).join('');
 
             sessionStorage.removeItem('preFetchedData');
         }
@@ -150,7 +152,26 @@ function closeMessagePane() {
     }
 }
 
-// Updates the message history with the new messagez
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("open");
+    document.getElementById("overlay").classList.toggle("show");
+}
+
+function toggleChannelList() {
+    document.querySelector(".main-container").classList.toggle("channel-open");
+    document.getElementById("channel_list").classList.toggle("open_channel_list");
+    if (document.getElementById("message_pane").classList.contains("show_message_pane")) {
+        document.getElementById("message_pane").classList.remove("open_message_pane");
+    }
+}
+
+function toggleFriendRequests() {
+    document.querySelector(".main-container").classList.toggle("friends_open");
+    document.getElementById("friends_overlay").classList.toggle("friends_open");
+    document.getElementById("friends_sidebar").classList.toggle("friends_open");
+}
+
+// Updates the message history with the new message
 document.getElementById('message_input_form').addEventListener('submit', async(e) => {
     e.preventDefault();
     const messageInput = e.target.elements['message_input'];
@@ -166,19 +187,6 @@ document.getElementById('message_input_form').addEventListener('submit', async(e
     const messageSection = document.getElementById('messages_section');
     messageSection.scrollTop = messageSection.scrollHeight;
 
-})
-
-function toggleSidebar() {
-    document.getElementById("sidebar").classList.toggle("open");
-    document.getElementById("overlay").classList.toggle("show");
-}
-
-function toggleChannelList() {
-    document.querySelector(".main-container").classList.toggle("channel-open");
-    document.getElementById("channel_list").classList.toggle("open_channel_list");
-    if (document.getElementById("message_pane").classList.contains("show_message_pane")) {
-        document.getElementById("message_pane").classList.remove("open_message_pane");
-    }
-}
+});
 
 fetchData();
