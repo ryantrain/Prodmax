@@ -5,6 +5,7 @@ const addButton = document.getElementById("add-button");
 const taskInput = document.getElementById("task-input");
 const taskList = document.getElementById("task-list");
 const emptyText = document.getElementById("emptyState")
+const addFriendsButton = document.getElementById('add_friends_submit');
 
 createTaskButton.addEventListener("click", () => {
     modalOverlay.classList.add("show");
@@ -171,6 +172,32 @@ function toggleFriendRequests() {
     document.getElementById("friends_sidebar").classList.toggle("friends_open");
 }
 
+function toggleAddFriends() {
+    document.getElementById("add_friends_container").classList.toggle("add_friends_open");
+}
+
+function sendFriendRequest() {
+    const query = document.getElementById('add_friends_input').value;
+
+    if (query === '') {
+        return;
+    }
+
+    document.getElementById('add_friends_input').value = '';
+
+    const formData = new FormData();
+    formData.append('query', query);
+
+    try {
+        fetch('http://localhost:8000/api/add_friend', {
+            method: 'POST',
+            body: formData
+        });
+    } catch (error) {
+        console.error('Error sending friend request:', error);
+    }
+}
+
 // Updates the message history with the new message
 document.getElementById('message_input_form').addEventListener('submit', async(e) => {
     e.preventDefault();
@@ -179,14 +206,22 @@ document.getElementById('message_input_form').addEventListener('submit', async(e
     const channel_id = document.querySelector('.channel_item.active_channel').dataset.channel_id;
     const message = messageInput.value;
 
-    response = await send_message(channel_id, message);
-    messageInput.value = '';
-    const new_message = response.message
+    if (message === '') {
+        return;
+    }
 
-    document.getElementById('messages_section').innerHTML += `<p class="message_item">${new_message}</p>`;
+    const response = await send_message(channel_id, message);
+    messageInput.value = '';
+
+    document.getElementById('messages_section').innerHTML += `<p class="message_item">${response.message}</p>`;
     const messageSection = document.getElementById('messages_section');
     messageSection.scrollTop = messageSection.scrollHeight;
+});
 
+document.getElementById('add_friends_input').addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === 'Return') {
+        sendFriendRequest();
+    }
 });
 
 fetchData();

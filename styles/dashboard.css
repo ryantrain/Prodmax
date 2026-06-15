@@ -139,6 +139,7 @@ button {
     cursor: pointer;
     font-weight: 600;
     transition: 0.2s;
+    color: black;
 }
 
 .add-button{
@@ -178,6 +179,7 @@ button {
     background-color: rgb(106, 106, 106);
     border-radius: 12px;
     transition: background-color 0.2s ease-in-out;
+    font-size: 2rem;
 }
 
 .task-card:hover {

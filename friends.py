@@ -47,7 +47,7 @@ async def get_friends() -> list:
 
 def get_uuid(addressee_username: str):
     # find uuid of that username
-    addressee_uuid = client.from_("user_information")\
+    addressee_uuid = client.from_("user_public_view")\
                             .select("user_id")\
                             .eq("username", addressee_username)\
                             .execute()\
@@ -55,22 +55,32 @@ def get_uuid(addressee_username: str):
     return addressee_uuid
 
 def send_friend_request(addressee_username: str):
-    addressee_uuid = get_uuid(addressee_username)
-    
-    # set status of friendship to pending with the right uuid pair
-    request_exists = client.from_("friendships").select("status")\
-                            .contains("uuid_pair", [client.auth.get_user().user.id]) \
-                            .contains("uuid_pair", [addressee_uuid]) \
-                            .execute().data
-    
-    if addressee_uuid and not request_exists:
-        client.from_("friendships")\
-                .insert({"uuid_pair": [client.auth.get_user().user.id, addressee_uuid], "status": "pending"})\
-                .execute()
-    else:
-        # tell error that it failed
-        raise ValueError("Friend request already exists or user not found")
+    try:
+        addressee_uuid = get_uuid(addressee_username)
+        
+        # set status of friendship to pending with the right uuid pair
+        request_exists = client.from_("friendships").select("status")\
+                                .contains("uuid_pair", [client.auth.get_user().user.id]) \
+                                .contains("uuid_pair", [addressee_uuid]) \
+                                .execute().data
 
+        if request_exists:
+            raise ValueError("Friend request already exists")
+        
+        if addressee_uuid:
+            response = client.from_("friendships")\
+                    .insert({"uuid_pair": [client.auth.get_user().user.id, addressee_uuid], "status": "pending"})\
+                    .execute()
+        if response:
+            return {"success": True, "data": response}
+            
+        else:
+            # tell error that it failed
+            raise ValueError("Friend request already exists or user not found")
+
+    except Exception as e:
+        raise ValueError(f"An error occurred while sending friend request: {str(e)}")
+    
 def accept_friend_request(addressee_username: str):
     addressee_uuid = get_uuid(addressee_username)
     

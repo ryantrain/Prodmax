@@ -80,3 +80,16 @@ def add_taskboard(taskboard_name: str = Form(...)):
         tasks.add_taskboard_to_db(taskboard_name)
     except Exception as e:
         return f"An error occured while adding taskboard:{str(e)}"
+    
+@app.post('/api/add_friend')
+def add_friend(query: str = Form(...)):
+    try:
+        response = friends.send_friend_request(query)
+
+        if response['success']:
+            return True
+        else:
+            raise ValueError("Failed to send friend request.")
+    except Exception as e:
+        return {"message": f"An error occurred while sending friend request: {str(e)}"}
+
