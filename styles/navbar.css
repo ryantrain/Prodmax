@@ -306,7 +306,7 @@
     color: white;
     font-size: 1rem;
     min-height: 0;
-    overflow: hidden;
+    overflow-y: auto;
 }
 
 .messages_list {

@@ -21,8 +21,6 @@ async function fetchData() {
                     </div>
                 </div>`).join('');
 
-            console.log("check1");
-
             sessionStorage.removeItem('preFetchedData');
         }
     } catch (error) {
@@ -63,14 +61,20 @@ async function send_message(channel_id, message) {
 }
 
 function closeMessagePane() {
-    document.getElementById('message_pane').classList.toggle('open_message_pane');
-    document.getElementById('message_pane').classList.remove('show_message_pane');
+    const messagePane = document.getElementById('message_pane');
 
-    document.getElementById('message_pane').addEventListener('transitionend', () => {
+    messagePane.classList.toggle('open_message_pane');
+    messagePane.classList.remove('show_message_pane');
+
+    messagePane.addEventListener('transitionend', (event) => {
+        if (event.target !== messagePane || event.propertyName !== 'transform') {
+            return;
+        }
+
         setTimeout(() => {
             document.querySelectorAll('.message_item').forEach(item => item.remove());
         }, 100);
-    });
+    }, { once: true });
     
     const activeButton = document.querySelector('.channel_item.active_channel');
     if (activeButton) {

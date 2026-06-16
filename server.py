@@ -55,7 +55,7 @@ async def register(username: str = Form(...), password: str = Form(...), email: 
             return {"message": "Registration failed"}
     except Exception:
         return {"message": "An error occurred during registration"}
-    
+
 @app.post('/api/load_messages/{channel_id}')
 async def load_messages(channel_id: str):
     channel_id = str(channel_id)
