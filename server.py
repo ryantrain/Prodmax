@@ -33,15 +33,18 @@ async def login(username: str = Form(...), password: str = Form(...)):
     
     except RuntimeError as e:
         return {"message": str(e)}
-    
-# Turn this into a 'POST' request later
+
 @app.post("/api/dashboard")
 async def dashboard():
-     friends_list = friends.get_friends()
-     channel_list = await chat.load_channel_list()
      taskboards = tasks.get_taskboards_for_user()
-     friend_requests = friends.get_friend_requests()
-     return {"friends": friends_list, "channels": channel_list, "taskboards": taskboards, "friend_requests": friend_requests}
+     return {"taskboards": taskboards}
+
+@app.post('/api/navbar')
+async def navbar():
+    friends_list = friends.get_friends()
+    channel_list = await chat.load_channel_list()
+    friend_requests = friends.get_friend_requests()
+    return {"friends": friends_list, "channels": channel_list, "friend_requests": friend_requests}
 
 @app.post('/api/register')
 async def register(username: str = Form(...), password: str = Form(...), email: str = Form(...), phone_number: str = Form(None)):

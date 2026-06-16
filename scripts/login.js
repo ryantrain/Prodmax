@@ -22,9 +22,14 @@ document.getElementById('login-form').addEventListener('submit', async(e) => {
                 method: 'POST'
             });
 
-            const dashboardData = await response_dashboard.json();
+            const response_navbar = await fetch('http://localhost:8000/api/navbar', {
+                method: 'POST'
+            });
 
-            sessionStorage.setItem('preFetchedData', JSON.stringify(dashboardData));
+            const dashboardData = await response_dashboard.json();
+            const navbarData = await response_navbar.json();
+
+            sessionStorage.setItem('preFetchedData', JSON.stringify({ ...dashboardData, ...navbarData }));
 
             window.location.href = 'dashboard.html';
 
