@@ -38,7 +38,7 @@ addButton.addEventListener("click", () => {
     formData.append("taskboard_name", taskName);
 
     try {
-        response = fetch ("http://localhost:8000/api/add_taskboard", {
+        response = fetch ("http://localhost:8000/api/add_personal_taskboard", {
         method: "POST",
         body: formData
     });
@@ -73,7 +73,7 @@ function updateTaskCount(){
 
 async function renderTaskboard(taskboard_id) {
     try {
-        const taskboard_response = await fetch(`http://localhost:8000/api/taskboard/${taskboard_id}`, {
+        const taskboard_response = await fetch(`http://localhost:8000/api/my_taskboard/${taskboard_id}`, {
             method: 'POST'
         });
 
@@ -86,7 +86,7 @@ async function renderTaskboard(taskboard_id) {
 
         sessionStorage.setItem('preFetchedData', JSON.stringify({ ...taskboard_data, ...navbar_data}));
 
-        window.location.href = 'taskboard.html';
+        window.location.href = 'my_taskboard.html';
 
     } catch (error) {
         console.error(`Error fetching taskboard data for ID ${taskboard_id}:`, error);

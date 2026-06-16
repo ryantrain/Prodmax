@@ -77,7 +77,7 @@ async def send_message(channel_id: str = Form(...), content: str = Form(...)):
     except Exception as e:
         return {"message": f"An error occurred while sending message: {str(e)}"}
     
-@app.post('/api/add_taskboard')
+@app.post('/api/add_personal_taskboard')
 def add_taskboard(taskboard_name: str = Form(...)):
     try:
         tasks.add_taskboard_to_db(taskboard_name)
@@ -112,7 +112,7 @@ def decline_friend_request(addressee_username: str = Form(...)):
     except Exception as e:
         return {"message": f"An error occurred while declining friend request: {str(e)}"}
     
-@app.post('/api/taskboard/{taskboard_id}')
+@app.post('/api/my_taskboard/{taskboard_id}')
 def get_taskboard(taskboard_id: str):
     try:
         task_list = tasks.retrieve_tasks_for_taskboard(taskboard_id)
