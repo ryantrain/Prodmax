@@ -37,7 +37,7 @@ async def login(username: str = Form(...), password: str = Form(...)):
 # Turn this into a 'POST' request later
 @app.post("/api/dashboard")
 async def dashboard():
-     friends_list = await friends.get_friends()
+     friends_list = friends.get_friends()
      channel_list = await chat.load_channel_list()
      taskboards = tasks.get_taskboards_for_user()
      friend_requests = friends.get_friend_requests()
@@ -101,4 +101,12 @@ async def accept_friend_request(addressee_username: str = Form(...)):
         return {"message": "Friend request accepted", "data": response}
     except Exception as e:
         return {"message": f"An error occurred while accepting friend request: {str(e)}"}
+    
+@app.post('/api/decline_friend_request')
+def decline_friend_request(addressee_username: str = Form(...)):
+    try:
+        friends.decline_friend_request(addressee_username)
+        return {"message": "Friend request declined"}
+    except Exception as e:
+        return {"message": f"An error occurred while declining friend request: {str(e)}"}
 

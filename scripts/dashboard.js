@@ -236,6 +236,24 @@ async function acceptFriendRequest(button) {
     }
 };
 
+function rejectFriendRequest(button) {
+    const username = button.dataset.username;
+    const formData = new FormData();
+    
+    formData.append('addressee_username', username);
+
+    try {
+        fetch('http://localhost:8000/api/decline_friend_request', {
+            method: 'POST',
+            body: formData
+        });
+    } catch (error) {
+        console.error('Error rejecting friend request:', error);
+    }
+
+    button.parentElement.parentElement.remove();
+}
+
 // Updates the message history with the new message
 document.getElementById('message_input_form').addEventListener('submit', async(e) => {
     e.preventDefault();

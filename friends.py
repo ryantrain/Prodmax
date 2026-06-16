@@ -13,7 +13,7 @@ def resource_path(relative_path):
     base_path = getattr(sys, '_MEIPASS', os.path.abspath('.'))
     return os.path.join(base_path, relative_path) 
 
-async def get_friends() -> list:
+def get_friends() -> list:
 
     if client:
 
@@ -93,10 +93,7 @@ async def accept_friend_request(addressee_username: str):
 def decline_friend_request(addressee_username: str):
     addressee_uuid = get_uuid(addressee_username)
     
-    client.from_("friendships")\
-            .delete()\
-            .contains("uuid_pair", [client.auth.get_user().user.id]) \
-            .contains("uuid_pair", [addressee_uuid])
+    client.rpc("decline_friend_request", {"addressee_uuid": addressee_uuid}).execute()
     
 def get_username(uuid: str):
     if client:
@@ -121,7 +118,7 @@ async def verify_channels():
     Verifies that a channel exists for each friend in the user's friend list.
     If a channel does not exist between the user and a friend, then create a channel for the user and that friend.
     """
-    friend_list = await get_friends()
+    friend_list = get_friends()
     for friend in friend_list:
         try:
             get_channel_id(friend)
