@@ -35,7 +35,7 @@ async def login(username: str = Form(...), password: str = Form(...)):
 
 @app.post("/api/dashboard")
 async def dashboard():
-     taskboards = tasks.get_taskboards_for_user()
+     taskboards = tasks.get_personal_taskboards_for_user()
      return {"taskboards": taskboards}
 
 @app.post('/api/navbar')

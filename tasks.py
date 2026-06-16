@@ -7,10 +7,10 @@ def add_taskboard_to_db(taskboard_name: str):
     except Exception as e:
         print(f"An error occurred while adding taskboard: {str(e)}")
 
-def get_taskboards_for_user():
+def get_personal_taskboards_for_user():
     try:
         user_id = client.auth.get_user().user.id
-        response = client.from_("taskboards").select("*").contains("members", [user_id]).execute()
+        response = client.from_("taskboards").select("*").contains("members", [user_id]).eq("privacy", "private").execute()
         if response.data:
             return response.data
         else:
@@ -18,7 +18,19 @@ def get_taskboards_for_user():
     except Exception as e:
         print(f"An error occurred while fetching taskboards: {str(e)}")
         return []
-    
+
+def get_shared_taskboards_for_user():
+    try:
+        user_id = client.auth.get_user().user.id
+        response = client.from_("taskboards").select("*").contains("members", [user_id]).eq("privacy", "public").execute()
+        if response.data:
+            return response.data
+        else:
+            return []
+    except Exception as e:
+        print(f"An error occurred while fetching taskboards: {str(e)}")
+        return []
+
 def retrieve_tasks_for_taskboard(taskboard_id: str):
     try:
         response = client.from_("tasks").select("*").eq("parent_taskboard", taskboard_id).execute()
