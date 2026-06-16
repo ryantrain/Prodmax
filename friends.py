@@ -81,7 +81,7 @@ def send_friend_request(addressee_username: str):
 
     except Exception as e:
         raise ValueError(f"An error occurred while sending friend request: {str(e)}")
-    
+
 async def accept_friend_request(addressee_username: str):
     addressee_uuid = get_uuid(addressee_username)
     

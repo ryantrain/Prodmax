@@ -4,7 +4,6 @@ import chat
 import friends
 import tasks
 from fastapi import FastAPI, Form
-from pydantic import BaseModel
 from verification import login_user, register_user
 from dotenv import load_dotenv
 from supabase import create_client
@@ -104,7 +103,7 @@ async def accept_friend_request(addressee_username: str = Form(...)):
         return {"message": "Friend request accepted", "data": response}
     except Exception as e:
         return {"message": f"An error occurred while accepting friend request: {str(e)}"}
-    
+
 @app.post('/api/decline_friend_request')
 def decline_friend_request(addressee_username: str = Form(...)):
     try:
@@ -112,4 +111,13 @@ def decline_friend_request(addressee_username: str = Form(...)):
         return {"message": "Friend request declined"}
     except Exception as e:
         return {"message": f"An error occurred while declining friend request: {str(e)}"}
+    
+@app.post('/api/taskboard/{taskboard_id}')
+def get_taskboard(taskboard_id: str):
+    try:
+        task_list = tasks.retrieve_tasks_for_taskboard(taskboard_id)
+        return {"tasks": task_list}
+    
+    except Exception as e:
+        return {"message": f"An error occurred while retrieving tasks for taskboard: {str(e)}"}
 

@@ -18,3 +18,14 @@ def get_taskboards_for_user():
     except Exception as e:
         print(f"An error occurred while fetching taskboards: {str(e)}")
         return []
+    
+def retrieve_tasks_for_taskboard(taskboard_id: str):
+    try:
+        response = client.from_("tasks").select("*").eq("parent_taskboard", taskboard_id).execute()
+        if response.data:
+            return response.data
+        else:
+            return []
+    except Exception as e:
+        print(f"An error occurred while fetching tasks for taskboard: {str(e)}")
+        return []

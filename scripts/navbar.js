@@ -21,6 +21,8 @@ async function fetchData() {
                     </div>
                 </div>`).join('');
 
+            console.log("check1");
+
             sessionStorage.removeItem('preFetchedData');
         }
     } catch (error) {
@@ -59,7 +61,6 @@ async function send_message(channel_id, message) {
     
     return await response.json();
 }
-
 
 function closeMessagePane() {
     document.getElementById('message_pane').classList.toggle('open_message_pane');
@@ -167,6 +168,27 @@ function rejectFriendRequest(button) {
     }
 
     button.parentElement.parentElement.remove();
+}
+
+async function renderDashboard() {
+    try {
+        const dashboard_response = await fetch('http://localhost:8000/api/dashboard', {
+            method: 'POST'
+        });
+
+        const navbar_response = await fetch('http://localhost:8000/api/navbar', {
+            method: 'POST'
+        });
+
+        const dashboardData = await dashboard_response.json();
+        const navbarData = await navbar_response.json();
+
+        sessionStorage.setItem('preFetchedData', JSON.stringify({ ...dashboardData, ...navbarData }));
+    } catch (error) {
+        console.error('Error rendering dashboard:', error);
+    }
+
+    window.location.href = 'dashboard.html';
 }
 
 // Updates the message history with the new message

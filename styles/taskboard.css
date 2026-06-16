@@ -3,12 +3,20 @@ body {
     color: white;
 }
 
-.main-container{
-    width: 80vw;
-    margin: 0 auto;
-    padding: 0 24px;
-    box-sizing: border-box;
+.main-container {
+    display: grid;
+    grid-template-areas:
+        "header header"
+        "chat-area channel_list";
+    grid-template-columns: 3fr 0;
     height: 100vh;
+    grid-template-rows: 60px auto;
+    transition: grid-template-columns 0.3s ease;
+    overflow: hidden;
+}
+
+.main-container.channel-open{
+    grid-template-columns: 3fr 20rem;
 }
 
 .organization-list {
@@ -16,6 +24,7 @@ body {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 30px;
     width: 100%;
+    margin-top: 60px;
 }
 
 .organization-card {

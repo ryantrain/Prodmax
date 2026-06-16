@@ -71,12 +71,38 @@ function updateTaskCount(){
     };
 };
 
-function load_taskboards() {
+async function renderTaskboard(taskboard_id) {
+    try {
+        const taskboard_response = await fetch(`http://localhost:8000/api/taskboard/${taskboard_id}`, {
+            method: 'POST'
+        });
+
+        const navbar_response = await fetch('http://localhost:8000/api/navbar', {
+            method: 'POST'
+        });
+
+        const taskboard_data = await taskboard_response.json();
+        const navbar_data = await navbar_response.json();
+
+        sessionStorage.setItem('preFetchedData', JSON.stringify({ ...taskboard_data, ...navbar_data}));
+
+        window.location.href = 'taskboard.html';
+
+    } catch (error) {
+        console.error(`Error fetching taskboard data for ID ${taskboard_id}:`, error);
+        return { taskboards: [] };
+    }
+}
+
+async function load_taskboards() {
     const rawData = sessionStorage.getItem('preFetchedData');
     const data = rawData ? JSON.parse(rawData) : { taskboards: [] };
 
     for (const taskboard of data.taskboards) {
         const taskCard = document.createElement("button");
+        taskCard.onclick = () => {
+            renderTaskboard(taskboard.uuid);
+        };
         taskCard.classList.add("task-card");
         taskCard.textContent = taskboard.taskboard_name;
         taskList.appendChild(taskCard);
@@ -86,4 +112,3 @@ function load_taskboards() {
 }
 
 load_taskboards();
-fetchData();

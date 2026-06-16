@@ -163,6 +163,14 @@ async def add_channel_to_db(channel_type: str, channel_members: list, channel_na
     """
     try:
         timestamp = datetime.now(timezone.utc).isoformat()
-        await client.from_("channel_list").insert({"created_at": timestamp, "channel_members": channel_members, "channel_type": channel_type, "channel_name": channel_name}).execute()
+        response = await client.from_("channel_list").insert({"created_at": timestamp, "channel_members": channel_members, "channel_type": channel_type, "channel_name": channel_name}).execute()
+            # Update each user's channel list to include the new channel
+        channel_id = response.data[0]["channel_id"]
+        for member in channel_members:
+            user_response = await client.from_("user_information").select("channel_list").eq("user_id", member).execute()
+            channel_list = user_response.data[0]["channel_list"] if user_response.data and user_response.data[0] else []
+            channel_list.append(channel_id)
+            await client.from_("user_information").update({"channel_list": channel_list}).eq("user_id", member).execute()
+
     except Exception as e:
         print(f"Error occurred while adding channel: {e}")
