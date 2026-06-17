@@ -33,6 +33,7 @@ def get_shared_taskboards_for_user():
 
 def retrieve_tasks_for_taskboard(taskboard_id: str):
     try:
+        print(taskboard_id)
         response = client.from_("tasks").select("*").eq("parent_taskboard", taskboard_id).execute()
         if response.data:
             return response.data

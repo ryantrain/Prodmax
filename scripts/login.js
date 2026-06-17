@@ -35,7 +35,8 @@ document.getElementById('login-form').addEventListener('submit', async(e) => {
             const dashboardData = await response_dashboard.json();
             const navbarData = await response_navbar.json();
 
-            sessionStorage.setItem('preFetchedData', JSON.stringify({ ...dashboardData, ...navbarData }));
+            sessionStorage.setItem('preFetchedData_navbar', JSON.stringify(navbarData));
+            sessionStorage.setItem('preFetchedData_dashboard', JSON.stringify(dashboardData));
 
             window.location.href = 'dashboard.html';
 

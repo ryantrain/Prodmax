@@ -1,6 +1,6 @@
 async function fetchData() {
     try {
-        const rawData = sessionStorage.getItem('preFetchedData');
+        const rawData = sessionStorage.getItem('preFetchedData_navbar');
 
         if (rawData) {
             const data = JSON.parse(rawData);
@@ -24,7 +24,7 @@ async function fetchData() {
                 </div>`).join('');
             friendRequestList.insertAdjacentHTML('beforeend', friendRequestList_HTML);
 
-            sessionStorage.removeItem('preFetchedData');
+            sessionStorage.removeItem('preFetchedData_navbar');
         }
     } catch (error) {
         console.error('Error fetching dashboard data:', error);
@@ -193,7 +193,8 @@ async function renderDashboard() {
         const dashboardData = await dashboard_response.json();
         const navbarData = await navbar_response.json();
 
-        sessionStorage.setItem('preFetchedData', JSON.stringify({ ...dashboardData, ...navbarData }));
+        sessionStorage.setItem('preFetchedData_navbar', JSON.stringify(navbarData));
+        sessionStorage.setItem('preFetchedData_dashboard', JSON.stringify(dashboardData));
     } catch (error) {
         console.error('Error rendering dashboard:', error);
     }

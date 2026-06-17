@@ -84,7 +84,8 @@ async function renderTaskboard(taskboard_id) {
         const taskboard_data = await taskboard_response.json();
         const navbar_data = await navbar_response.json();
 
-        sessionStorage.setItem('preFetchedData', JSON.stringify({ ...taskboard_data, ...navbar_data}));
+        sessionStorage.setItem('preFetchedData_my_taskboard', JSON.stringify(taskboard_data));
+        sessionStorage.setItem('preFetchedData_navbar', JSON.stringify(navbar_data));
 
         window.location.href = 'my_taskboard.html';
 
@@ -95,7 +96,7 @@ async function renderTaskboard(taskboard_id) {
 }
 
 async function load_taskboards() {
-    const rawData = sessionStorage.getItem('preFetchedData');
+    const rawData = sessionStorage.getItem('preFetchedData_dashboard');
     const data = rawData ? JSON.parse(rawData) : { taskboards: [] };
 
     for (const taskboard of data.taskboards) {
@@ -107,6 +108,8 @@ async function load_taskboards() {
         taskCard.textContent = taskboard.taskboard_name;
         taskList.appendChild(taskCard);
     }
+
+    sessionStorage.removeItem('preFetchedData_dashboard');
 
     updateTaskCount();
 }

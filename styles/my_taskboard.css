@@ -1,6 +1,7 @@
 body {
     background-color: #3b3b3b;
     color: white;
+    overflow-y: auto;
 }
 
 .main-container {
@@ -12,7 +13,6 @@ body {
     height: 100vh;
     grid-template-rows: 60px auto;
     transition: grid-template-columns 0.3s ease;
-    overflow: hidden;
 }
 
 .main-container.channel-open{
@@ -53,8 +53,9 @@ body {
     padding-right: 5px;
     width: 100%;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow-y: hidden;
+    word-break: break-word;
+    white-space: normal;
 }
 
 .card-title h3 {
@@ -66,9 +67,10 @@ body {
     padding-left: 5px;
     padding-right: 5px;
     font-size: 14px;  
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 5;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow-y: auto;
+}
+
+.card-description-text {
+    word-break: break-word;
+    white-space: normal;
 }
