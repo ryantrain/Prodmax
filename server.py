@@ -17,9 +17,9 @@ app = FastAPI()
 threading.Thread(target=asyncio.run, args=(chat.start_realtime_async(),)).start()
 
 @app.post("/api/login")
-async def login(username: str = Form(...), password: str = Form(...)):
+async def login(email: str = Form(...), password: str = Form(...)):
     try:
-        response = await login_user(username, password)
+        response = await login_user(email, password)
 
         if response:
             access_token = response.session.access_token
@@ -121,3 +121,10 @@ def get_taskboard(taskboard_id: str):
     except Exception as e:
         return {"message": f"An error occurred while retrieving tasks for taskboard: {str(e)}"}
 
+@app.post('/api/user/{user_id}')
+def get_user_info(user_id: str):
+    try:
+        response = friends.get_username(user_id)
+        return {"username": response}
+    except Exception as e:
+        return {"message": f"An error occurred while retrieving user information: {str(e)}"}

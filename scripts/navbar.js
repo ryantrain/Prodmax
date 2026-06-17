@@ -5,21 +5,24 @@ async function fetchData() {
         if (rawData) {
             const data = JSON.parse(rawData);
 
-            const list = document.getElementById('channel_list');
-            list.innerHTML = data.channels[1].map((name, index) => `<button onclick="display_messages_pane(this)" data-channel_id="${data.channels[0][index]}" class="channel_item">${name}</button>`).join('');
+            const channel_list = document.getElementById('channel_list');
+            const channel_list_HTML = data.channels[1].map((name, index) => `<button data-channel_id="${data.channels[0][index]}" class="channel_item">${name}</button>`).join('');
+            channel_list.insertAdjacentHTML('beforeend', channel_list_HTML);
 
             const friendList = document.getElementById('friends_sidebar');
-            friendList.innerHTML += data.friends.map(name => `<p class="friends_item">${name}</p>`).join('');
+            const friendsListHTML = data.friends.map(name => `<p class="friends_item">${name}</p>`).join('');
+            friendList.insertAdjacentHTML('beforeend', friendsListHTML);
 
             const friendRequestList = document.getElementById('friend_requests_list');
-            friendRequestList.innerHTML += data.friend_requests.map(name => 
+            const friendRequestList_HTML = data.friend_requests.map(name => 
                 `<div class="friend_request_item">
                     <p>${name}</p>
                     <div class="friend_request_buttons_section">
-                        <button id="accept_friend_request_button" data-username="${name}" onclick="acceptFriendRequest(this)" class="friend_request_button">✓</button>
-                        <button id="reject_friend_request_button" data-username="${name}" onclick="rejectFriendRequest(this)" class="friend_request_button">✗</button>
+                        <button id="accept_friend_request_button" data-username="${name}" class="friend_request_button">✓</button>
+                        <button id="reject_friend_request_button" data-username="${name}" class="friend_request_button">✗</button>
                     </div>
                 </div>`).join('');
+            friendRequestList.insertAdjacentHTML('beforeend', friendRequestList_HTML);
 
             sessionStorage.removeItem('preFetchedData');
         }
@@ -44,7 +47,10 @@ async function load_messages(channel_id) {
     const messages = data.messages || [];
 
     const messageSection = document.getElementById('messages_section');
-    messageSection.innerHTML = messages.toReversed().map(message => `<p class="message_item">${message}</p>`).join('');
+    while (messageSection.firstChild) {
+        messageSection.removeChild(messageSection.firstChild);
+    }
+    messageSection.insertAdjacentHTML('beforeend', messages.toReversed().map(message => `<p class="message_item">${message}</p>`).join(''));
     messageSection.scrollTop = messageSection.scrollHeight;
 }
 
@@ -146,9 +152,9 @@ async function acceptFriendRequest(button) {
             const data = await response.json();
             button.parentElement.parentElement.remove();
 
-            document.getElementById('friends_sidebar').innerHTML += `<p class="friends_item">${username}</p>`;
+            document.getElementById('friends_sidebar').insertAdjacentHTML('beforeend', `<p class="friends_item">${username}</p>`);
 
-            document.getElementById('channel_list').innerHTML += `<button onclick="display_messages_pane(this)" data-channel_id="${data.data.channel_id}" class="channel_item">${username}</button>`;
+            document.getElementById('channel_list').insertAdjacentHTML('beforeend', `<button data-channel_id="${data.data.channel_id}" class="channel_item">${username}</button>`);
         }
 
     } catch (error) {
@@ -209,10 +215,6 @@ document.getElementById('message_input_form').addEventListener('submit', async(e
 
     const response = await send_message(channel_id, message);
     messageInput.value = '';
-
-    document.getElementById('messages_section').innerHTML += `<p class="message_item">${response.message}</p>`;
-    const messageSection = document.getElementById('messages_section');
-    messageSection.scrollTop = messageSection.scrollHeight;
 });
 
 document.getElementById('add_friends_input').addEventListener('keydown', (event) => {
@@ -220,5 +222,36 @@ document.getElementById('add_friends_input').addEventListener('keydown', (event)
         sendFriendRequest();
     }
 });
+
+document.getElementById('channel_list').addEventListener('click', (event) => {
+    event.preventDefault();
+    if (event.target.innerText.endsWith(' *')) {
+            event.target.innerText = event.target.innerText.slice(0, -2);
+        }
+    if (event.target.classList.contains('channel_item')) {
+        display_messages_pane(event.target);
+    }
+});
+
+document.getElementById('friend_requests_list').addEventListener('click', (event) => {
+    event.preventDefault();
+    if (event.target.id === 'accept_friend_request_button') {
+        acceptFriendRequest(event.target);
+    } else if (event.target.id === 'reject_friend_request_button') {
+        rejectFriendRequest(event.target);
+    }
+});
+
+document.getElementById('menu-btn').addEventListener('click', toggleSidebar);
+document.getElementById('friends_toggle').addEventListener('click', toggleFriendRequests);
+document.getElementById('channel_list_toggle').addEventListener('click', toggleChannelList);
+document.getElementById('home_link').addEventListener('click', renderDashboard);
+document.getElementById('overlay').addEventListener('click', toggleSidebar);
+document.getElementById('friends_overlay').addEventListener('click', toggleFriendRequests);
+document.querySelector('#add_friends_button').addEventListener('click', toggleFriendRequestPane);
+document.getElementById('friend_requests_pane_back').addEventListener('click', closeFriendRequestPane);
+document.getElementById('add_friends_submit').addEventListener('click', sendFriendRequest);
+document.getElementById('message_pane_toggler').addEventListener('click', closeMessagePane);
+
 
 fetchData();

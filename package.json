@@ -2,7 +2,7 @@
   "name": "thinking-about-the-repo-name---copy",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "scripts/main.js",
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -23,6 +23,8 @@
     "electron": "^42.4.0"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.108.2",
+    "dotenv": "^17.4.2",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   }

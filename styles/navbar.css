@@ -149,7 +149,7 @@
     display: block;
     width: 3rem;
     height: 3rem;
-    
+    pointer-events: none;
 }
 
 .add_friends_button:active {

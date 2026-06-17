@@ -4,14 +4,11 @@
         <link rel="stylesheet" href="../styles/login.css">
         <meta charset="UTF-8" />
         <script src="../scripts/login.js" defer></script>
-        <meta
-            http-equiv="Content-Security-Policy"
-            content="default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src http://localhost:8000"
-        />
-        <meta
-            http-equiv="X-Content-Security-Policy"
-            content="default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src http://localhost:8000"
-        />
+        <meta 
+            http-equiv="Content-Security-Policy" 
+            content="default-src 'self'; connect-src http://localhost:8000 https://*.supabase.co wss://*.supabase.co"
+        >
+
         <title>Prodmax</title>
   </head>
 
@@ -23,9 +20,9 @@
 
                 <form method="POST" action="http://localhost:8000/api/login" id="login-form" class="login-fields">
                     <p class="login-title">Login</p>
-                    <p class="invalid-login" id="invalid-login" hidden>Invalid username or password.*</p>
-                    
-                    <input type="text" name="username" placeholder="Username" required class="username"/>
+                    <p class="invalid-login" id="invalid-login" hidden>Invalid email or password.*</p>
+
+                    <input type="email" name="email" placeholder="Email" required class="username"/>
                     <input type="password" name="password" placeholder="Password" required class="password"/>
                     <button type="submit" class="submit">Login</button>
                     <button type="button" class="register" onclick="window.location.href='register.html'">Register</button>

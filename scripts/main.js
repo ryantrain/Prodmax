@@ -1,4 +1,4 @@
-const { app, BrowserWindow , Menu} = require('electron');
+const { app, BrowserWindow , Menu } = require('electron');
 const { spawn } = require('child_process');
 const path = require('path');
 
@@ -15,6 +15,10 @@ const createWindow = () => {
             symbolColor: '#FFFFFF',
             height: 32,
         },
+        webPreferences: {
+            nodeIntegration: true,
+            contextIsolation: false,
+        }
     });
 
     //   win.setMenu(null);

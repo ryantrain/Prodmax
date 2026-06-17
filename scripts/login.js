@@ -1,4 +1,5 @@
 const spinner = document.getElementById('spinner');
+const { supabase } = require('../scripts/supabaseClient.js');
 
 document.getElementById('login-form').addEventListener('submit', async(e) => {
     e.preventDefault();
@@ -17,6 +18,11 @@ document.getElementById('login-form').addEventListener('submit', async(e) => {
         const data = await response.json();
 
         if (data.message === 'Login successful') {
+
+            await supabase.auth.signInWithPassword({
+                email: formData.get('email'),
+                password: formData.get('password')
+            });
            
             const response_dashboard = await fetch('http://localhost:8000/api/dashboard', {
                 method: 'POST'
@@ -35,7 +41,6 @@ document.getElementById('login-form').addEventListener('submit', async(e) => {
 
         } else {
             document.getElementById('invalid-login').toggleAttribute('hidden');
-            console.log(data.message);
         }
 
     } catch (error) {
