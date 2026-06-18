@@ -1,8 +1,12 @@
 import os
+import sys
+current_dir = os.path.dirname(os.path.abspath(__file__))
+src_path = os.path.abspath(os.path.join(current_dir, "../src"))
+sys.path.append(src_path)
 import threading
-import chat
-import friends
-import tasks
+import chat as chat
+import friends as friends
+import tasks as tasks
 from fastapi import FastAPI, Form
 from verification import login_user, register_user
 from dotenv import load_dotenv

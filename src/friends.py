@@ -3,7 +3,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from datetime import datetime, timezone
-import chat
+import chat as chat
 
 load_dotenv()
 

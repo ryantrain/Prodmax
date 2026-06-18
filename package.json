@@ -1,24 +1,24 @@
 {
-  "name": "thinking-about-the-repo-name---copy",
+  "name": "Prodmax",
   "version": "1.0.0",
   "description": "",
-  "main": "scripts/main.js",
+  "main": "config/main.js",
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ryantrain/thinking-about-the-repo-name.git"
+    "url": "git+https://github.com/ryantrain/Prodmax.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {
-    "url": "https://github.com/ryantrain/thinking-about-the-repo-name/issues"
+    "url": "https://github.com/ryantrain/Prodmax/issues"
   },
-  "homepage": "https://github.com/ryantrain/thinking-about-the-repo-name#readme",
+  "homepage": "https://github.com/ryantrain/Prodmax#readme",
   "devDependencies": {
     "electron": "^42.4.0"
   },

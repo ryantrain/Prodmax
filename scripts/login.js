@@ -1,5 +1,5 @@
 const spinner = document.getElementById('spinner');
-const { supabase } = require('../scripts/supabaseClient.js');
+const { supabase } = require('../config/supabaseClient.js');
 
 document.getElementById('login-form').addEventListener('submit', async(e) => {
     e.preventDefault();

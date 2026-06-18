@@ -5,7 +5,7 @@ import os
 from supabase import create_async_client
 from friends import get_username
 from datetime import datetime, timezone
-import friends
+import friends as friends
 
 # Load the environment variables from the .env file for Supabase configuration
 load_dotenv()

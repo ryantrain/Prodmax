@@ -129,7 +129,6 @@ button {
 
 .add_task_container {
     position: fixed;
-    align-self: center;
     justify-self: center;
     width: 50rem;
     height: 20rem;
@@ -149,6 +148,8 @@ button {
     grid-template-columns: 1fr 1fr;
     font-size: 1.5rem;
     gap: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .add_task_container.active {

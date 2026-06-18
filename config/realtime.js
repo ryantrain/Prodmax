@@ -1,4 +1,4 @@
-const { supabase } = require('../scripts/supabaseClient');
+const { supabase } = require('../config/supabaseClient');
 
 async function initializeRealtime() {
     await supabase.auth.getUser();

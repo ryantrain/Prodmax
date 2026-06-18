@@ -4,7 +4,7 @@ from supabase import create_async_client
 from supabase_auth.errors import AuthApiError, AuthInvalidCredentialsError
 from dotenv import load_dotenv
 from postgrest.exceptions import APIError
-import friends
+import friends as friends
 
 load_dotenv()
 

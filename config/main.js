@@ -51,7 +51,7 @@ app.whenReady().then(() => {
 // }
 
 function StartPythonServer() {
-    pythonProcess = spawn('python', ['-m', 'uvicorn', 'server:app', '--port', '8000', '--host', '127.0.0.1']);
+    pythonProcess = spawn('python', ['-m', 'uvicorn', 'config.server:app', '--port', '8000', '--host', '127.0.0.1']);
 
     pythonProcess.stdout.on('data', (data) => {
         console.log(`Python: ${data.toString()}`);
