@@ -42,6 +42,8 @@ document.getElementById('login-form').addEventListener('submit', async(e) => {
 
         } else {
             document.getElementById('invalid-login').toggleAttribute('hidden');
+            spinner.classList.toggle('hidden');
+            document.getElementById('password').value = '';
         }
 
     } catch (error) {
