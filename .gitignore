@@ -6,3 +6,4 @@ password.txt
 dockerfile
 TODO
 node_modules/*
+config/__pycache__/*
