@@ -112,7 +112,7 @@ def decline_friend_request(addressee_username: str = Form(...)):
     except Exception as e:
         return {"message": f"An error occurred while declining friend request: {str(e)}"}
     
-@app.post('/api/my_taskboard/{taskboard_id}')
+@app.post('/api/taskboard/{taskboard_id}')
 def get_taskboard(taskboard_id: str):
     try:
         task_list = tasks.retrieve_tasks_for_taskboard(taskboard_id)
@@ -128,3 +128,12 @@ def get_user_info(user_id: str):
         return {"username": response}
     except Exception as e:
         return {"message": f"An error occurred while retrieving user information: {str(e)}"}
+    
+@app.post('/api/taskboard/{taskboard_id}/add_personal_task')
+def add_task_to_taskboard(taskboard_id: str, task_name: str = Form(...), task_description: str = Form(...)):
+    try:
+        response = tasks.add_task_to_private_taskboard(taskboard_id, task_name, task_description)
+        print(response)
+        return {"message": "Task added successfully", "data": response, "ok": True}
+    except Exception as e:
+        return {"message": f"An error occurred while adding task to taskboard: {str(e)}"}

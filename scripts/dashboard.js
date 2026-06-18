@@ -73,7 +73,7 @@ function updateTaskCount(){
 
 async function renderTaskboard(taskboard_id) {
     try {
-        const taskboard_response = await fetch(`http://localhost:8000/api/my_taskboard/${taskboard_id}`, {
+        const taskboard_response = await fetch(`http://localhost:8000/api/taskboard/${taskboard_id}`, {
             method: 'POST'
         });
 
@@ -84,8 +84,9 @@ async function renderTaskboard(taskboard_id) {
         const taskboard_data = await taskboard_response.json();
         const navbar_data = await navbar_response.json();
 
-        sessionStorage.setItem('preFetchedData_my_taskboard', JSON.stringify(taskboard_data));
+        sessionStorage.setItem('preFetchedData_private_taskboard', JSON.stringify(taskboard_data));
         sessionStorage.setItem('preFetchedData_navbar', JSON.stringify(navbar_data));
+        sessionStorage.setItem('taskboard_id', taskboard_id);
 
         window.location.href = 'my_taskboard.html';
 

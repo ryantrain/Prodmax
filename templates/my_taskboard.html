@@ -41,7 +41,9 @@
 
         <div id="overlay" class="overlay"></div>
 
-            <div id="friends_overlay" class="overlay"></div>
+        <div id="friends_overlay" class="overlay"></div>
+        
+        <div class="add_task_overlay"></div>
 
         <div id="friends_sidebar" class="friends_sidebar">
             <button class="add_friends_button" id="add_friends_button">
@@ -126,6 +128,13 @@
                 <div class="card-description-container">
                     <p class="card-description-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat voluptas, atque consequuntur, quibusdam, aspernatur accusamus officiis magni error sed dicta aliquam dolorum? Veritatis ipsam magni voluptate dolorem amet nemo praesentium!</p> 
                 </div>            
+            </div>
+
+            <div class="add_task_container">
+                <input class="task_title_input" id="task_title_input" type="text" placeholder="Enter title..." required/>
+                <textarea class="task_description_input" id="task_description_input" placeholder="Enter task content..." required></textarea>
+                <button class="submit_task_button" id="submit_task_button">Add Task</button>
+                <button class="close_add_task_button" id="close_add_task_button">Cancel</button>
             </div>
         </div>
 
