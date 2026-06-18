@@ -7,3 +7,4 @@ dockerfile
 TODO
 node_modules/*
 config/__pycache__/*
+src/__pycache__/*
