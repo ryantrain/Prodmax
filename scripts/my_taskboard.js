@@ -1,5 +1,6 @@
 var taskboard_id = null;
 var current_editing_task = null;
+var current_deleting_task = null;
 
 function loadTaskboard() {
     const taskboardData = sessionStorage.getItem('preFetchedData_private_taskboard');
@@ -169,7 +170,8 @@ function ToggleCardOptionsDropdown(card) {
             deleteOption.classList.add('card-options-dropdown-item');
             deleteOption.textContent = 'Delete';
             deleteOption.onclick = () => {
-                // Handle delete option click 
+                current_deleting_task = card;
+                deleteTask(card.dataset.task_id); 
                 dropdown.remove();
             };
         dropdown.appendChild(deleteOption);
@@ -214,6 +216,21 @@ async function EditTask(task_id) {
 
     } catch (error) {
         console.error('Error editing task:', error);
+    }
+}
+
+async function deleteTask(task_id) {
+    try {
+        const response = await fetch('http://localhost:8000/api/taskboard/' + taskboard_id + '/delete_task/' + task_id, {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            current_deleting_task.remove();
+            current_deleting_task = null;
+        }
+    } catch (error) {
+        console.error('Error deleting task:', error);
     }
 }
 

@@ -84,7 +84,6 @@ def send_friend_request(addressee_username: str):
 
 async def accept_friend_request(addressee_username: str):
     addressee_uuid = get_uuid(addressee_username)
-    
     client.rpc("update_friendship_status", {"addressee_uuid": addressee_uuid, "new_status": "accepted"}).execute()
     await chat.add_channel_to_db(channel_type="private", channel_members=[addressee_uuid, client.auth.get_user().user.id], channel_name=None)
     channel_id = get_channel_id(addressee_username)
@@ -134,15 +133,6 @@ async def get_channel_members(channel_id: str):
         return names
     except Exception:
         raise ValueError("No channel found for the given channel id.")
-    
-# def get_channel_members_without_self(channel_id: str):
-#     user_id = client.auth.get_user().user.id
-#     response = client.from_("channel_list").select("channel_members").eq("channel_id", channel_id).execute()
-#     try:
-#         names = [get_username(uuid) for uuid in response.data[0]["channel_members"] if user_id != uuid]
-#         return names
-#     except Exception:
-#         raise ValueError("No channel found for the given channel id.")
 
 def get_friend_requests() -> list:
     user_id = client.auth.get_user().user.id

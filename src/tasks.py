@@ -60,3 +60,11 @@ def edit_task_in_taskboard(task_id: str, task_name: str, task_description: str):
     except Exception as e:
         print(f"An error occurred while editing task in taskboard: {str(e)}")
         return None
+    
+def delete_task_from_taskboard(taskboard_id: str, task_id: str):
+    try:
+        response = client.rpc("delete_task_from_taskboard", {"taskboard_id": taskboard_id, "task_id": task_id}).execute()
+        return response
+    except Exception as e:
+        print(f"An error occurred while deleting task from taskboard: {str(e)}")
+        return {"message": f"An error occurred while deleting task from taskboard: {str(e)}"}

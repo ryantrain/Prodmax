@@ -149,3 +149,11 @@ def edit_task_in_taskboard(taskboard_id: str, task_id: str, task_name: str = For
         return {"message": "Task edited successfully", "data": response, "ok": True}
     except Exception as e:
         return {"message": f"An error occurred while editing task in taskboard: {str(e)}"}
+    
+@app.post('/api/taskboard/{taskboard_id}/delete_task/{task_id}')
+def delete_task_from_taskboard(taskboard_id: str, task_id: str):
+    try:
+        tasks.delete_task_from_taskboard(taskboard_id, task_id)
+        return {"message": "Task deleted successfully"}
+    except Exception as e:
+        return {"message": f"An error occurred while deleting task from taskboard: {str(e)}"}
