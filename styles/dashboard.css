@@ -36,6 +36,7 @@ button {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border-width: 3px;
     border-color:rgb(106, 106, 106);
+    overflow-y: auto;
 }
 
 #emptyState {
