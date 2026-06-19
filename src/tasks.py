@@ -52,3 +52,11 @@ def add_task_to_private_taskboard(taskboard_id: str, task_name: str, task_descri
     except Exception as e:
         print(f"An error occurred while adding task to private taskboard: {str(e)}")
         return None
+    
+def edit_task_in_taskboard(task_id: str, task_name: str, task_description: str):
+    try:
+        response = client.rpc("edit_task_in_taskboard", {"task_id": task_id, "task_name_new": task_name, "task_description_new": task_description}).execute()
+        return response
+    except Exception as e:
+        print(f"An error occurred while editing task in taskboard: {str(e)}")
+        return None

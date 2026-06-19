@@ -9,14 +9,14 @@ body {
     grid-template-areas:
         "header header"
         "chat-area channel_list";
-    grid-template-columns: 3fr 0;
+    grid-template-columns: 1fr 0;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     grid-template-rows: 60px auto;
-    transition: grid-template-columns 0.3s ease;
+    transition: grid-template-columns 0.4s ease;
 }
 
-.main-container.channel-open{
+.main-container.channel-open {
     grid-template-columns: 3fr 20rem;
 }
 
@@ -43,6 +43,7 @@ body {
     justify-content: flex-end;
     overflow: hidden;
     align-self: center;
+    position: relative;
 }
 
 .organization-card:hover {
@@ -78,6 +79,16 @@ body {
 .card-description-text {
     word-break: break-word;
     white-space: normal;
+}
+
+.card-options-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.5rem;
+    background: transparent;
 }
 
 .create-task-button {
@@ -197,6 +208,11 @@ button {
     align-items: center;
     text-align: center;
     margin-top: 1rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.submit_task_button:hover {
+    background-color: #3f3f3f;
 }
 
 .close_add_task_button {
@@ -213,4 +229,71 @@ button {
     align-items: center;
     text-align: center;
     margin-top: 1rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.close_add_task_button:hover {
+    background-color: #c6c6c6;
+}
+
+.card-options-button {
+    position: absolute;
+    display: flex;
+    top: 10px;
+    right: 10px;
+    background-color: rgb(23, 23, 23);
+    border: none;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1rem;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 5;
+    height: 0.25rem;
+    width: 2rem;
+    line-height: 2;
+    padding-bottom: 1rem;
+}
+
+.card-options-dropdown {
+    position: absolute;
+    top: 3rem; 
+    right: 10px;
+    background-color: #222;
+    border: 1px solid #444;
+    border-radius: 6px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 995;
+    display: flex;
+    flex-direction: column;
+    min-width: 100px;
+    overflow: hidden;
+    
+    /* Animation properties */
+    transform-origin: top center;
+    animation: slideDown 0.2s ease-out forwards;
+}
+
+.card-options-dropdown-item {
+    padding: 10px 14px;
+    color: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.card-options-dropdown-item:hover {
+    background-color: #333;
+}
+
+@keyframes slideDown {
+    from {
+        transform: scaleY(0);
+        opacity: 0;
+    }
+    to {
+        transform: scaleY(1);
+        opacity: 1;
+    }
 }

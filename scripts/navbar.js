@@ -33,6 +33,7 @@ async function fetchData() {
 
 function display_messages_pane(button) {
     document.getElementById('message_pane').classList.add('show_message_pane');
+    document.getElementById('message_pane').classList.add('open_message_pane_on_toggle');
     load_messages(button.dataset.channel_id);
     button.classList.add('active_channel');
 }
@@ -69,7 +70,7 @@ async function send_message(channel_id, message) {
 function closeMessagePane() {
     const messagePane = document.getElementById('message_pane');
 
-    messagePane.classList.toggle('open_message_pane');
+    messagePane.classList.toggle('open_message_pane_on_toggle');
     messagePane.classList.remove('show_message_pane');
 
     messagePane.addEventListener('transitionend', (event) => {
@@ -97,7 +98,7 @@ function toggleChannelList() {
     document.querySelector(".main-container").classList.toggle("channel-open");
     document.getElementById("channel_list").classList.toggle("open_channel_list");
     if (document.getElementById("message_pane").classList.contains("show_message_pane")) {
-        document.getElementById("message_pane").classList.remove("open_message_pane");
+        document.getElementById("message_pane").classList.toggle("open_message_pane_on_toggle");
     }
 }
 

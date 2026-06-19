@@ -1,4 +1,5 @@
 var taskboard_id = null;
+var current_editing_task = null;
 
 function loadTaskboard() {
     const taskboardData = sessionStorage.getItem('preFetchedData_private_taskboard');
@@ -10,7 +11,20 @@ function loadTaskboard() {
 
         for (const task of data.tasks) {
             const taskElement = document.createElement('div');
+            taskElement.dataset.task_id = task.id;
             taskElement.classList.add('organization-card');
+
+                // Create task options button
+                const taskOptions = document.createElement('button');
+                taskOptions.classList.add('card-options-button');
+                taskOptions.textContent = '...';
+                taskOptions.onclick = (e) => {
+                    e.stopPropagation();
+                    // Handle task options click (e.g., show a dropdown menu with options)
+                    this.ToggleCardOptionsDropdown(taskElement);
+
+                }
+                taskElement.appendChild(taskOptions);
 
                 // Create task name/title element
                 const taskName = document.createElement('div')
@@ -99,7 +113,7 @@ function addTaskCard(task_title, task_description) {
 
 function toggleAddTaskOverlay() {
     const overlay = document.querySelector('.add_task_overlay');
-    const container = document.querySelector('.add_task_container');
+    const container = document.getElementById('add_task_container');
 
     if (container.classList.contains('active')) {
         document.getElementById('task_title_input').value = '';
@@ -110,11 +124,120 @@ function toggleAddTaskOverlay() {
     container.classList.toggle('active');
 }
 
-document.querySelector('.add_task_overlay').addEventListener('click', toggleAddTaskOverlay);
+function toggleEditTaskOverlay() {
+    const overlay = document.querySelector('.add_task_overlay');
+    const container = document.getElementById('edit_task_container');
+    if (container.classList.contains('active')) {
+        overlay.addEventListener('transitionend', () => {
+            document.getElementById('task_title_input_edit').value = '';
+        document.getElementById('task_description_input_edit').value = '';
+        }, {once: true});
+    }
+    overlay.classList.toggle('active');
+    container.classList.toggle('active');
+}
+
+function ToggleCardOptionsDropdown(card) {
+    const orglist = document.getElementById('organization-list');
+    // Check if dropdown already exists somewhere
+    const check_dropdown = orglist.querySelectorAll('.card-options-dropdown');
+    if (check_dropdown.length > 0) {
+        if (check_dropdown[0].parentElement === card) {
+            check_dropdown[0].remove();
+            return;
+        }
+        check_dropdown.forEach(dropdown => dropdown.remove());
+    }
+
+    // Create dropdown menu
+    const dropdown = document.createElement('div');
+    dropdown.classList.add('card-options-dropdown');
+
+        // Add options to dropdown
+        const editOption = document.createElement('div');
+            editOption.classList.add('card-options-dropdown-item');
+            editOption.textContent = 'Edit';
+            editOption.onclick = () => {
+                // Handle edit option click 
+                dropdown.remove();
+                current_editing_task = card
+                toggleEditTaskInterface(card);
+            };
+        dropdown.appendChild(editOption);
+
+        const deleteOption = document.createElement('div');
+            deleteOption.classList.add('card-options-dropdown-item');
+            deleteOption.textContent = 'Delete';
+            deleteOption.onclick = () => {
+                // Handle delete option click 
+                dropdown.remove();
+            };
+        dropdown.appendChild(deleteOption);
+
+    card.appendChild(dropdown);
+}
+
+function toggleEditTaskInterface(card) {
+    const overlay = document.querySelector('.add_task_overlay');
+    const container = document.getElementById('edit_task_container');
+
+    overlay.classList.toggle('active');
+    container.classList.toggle('active');
+
+    // Pre-fill the edit form with the current task details
+    const currentTitle = card.querySelector('.card-title').textContent;
+    const currentDescription = card.querySelector('.card-description-text').textContent;
+
+    document.getElementById('task_title_input_edit').value = currentTitle;
+    document.getElementById('task_description_input_edit').value = currentDescription;
+}
+
+async function EditTask(task_id) {
+    // Function updates the corresponding task to the db and updates the text on the card
+    const task_title = document.getElementById('task_title_input_edit').value;
+    const task_description = document.getElementById('task_description_input_edit').value;
+
+    const formData = new FormData();
+    formData.append('task_name', task_title);
+    formData.append('task_description', task_description);
+
+    try {
+        response = await fetch('http://localhost:8000/api/taskboard/' + taskboard_id + '/edit_task/' + task_id, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok) {
+            current_editing_task.querySelector('.card-title').querySelector('h3').textContent = task_title;
+            current_editing_task.querySelector('.card-description-text').textContent = task_description;
+        }
+
+    } catch (error) {
+        console.error('Error editing task:', error);
+    }
+}
+
+document.querySelector('.add_task_overlay').addEventListener('click', () => {
+    if (document.getElementById('add_task_container').classList.contains('active')) {
+        toggleAddTaskOverlay();
+    } else if (document.getElementById('edit_task_container').classList.contains('active')) {
+        toggleEditTaskOverlay();
+}});
+
 document.getElementById('close_add_task_button').addEventListener('click', toggleAddTaskOverlay);
 document.getElementById('submit_task_button').addEventListener('click', () => {
     addTask(taskboard_id);
     toggleAddTaskOverlay();
+});
+
+document.getElementById('close_edit_task_button').addEventListener('click', () => {
+    toggleEditTaskOverlay();
+});
+
+document.getElementById('confirm_edit_task_button').addEventListener('click', async () => {
+    await EditTask(current_editing_task.dataset.task_id);
+    current_editing_task = null; // Reset current editing task after edit
+    toggleEditTaskOverlay();
 });
 
 loadTaskboard();

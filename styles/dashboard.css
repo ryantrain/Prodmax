@@ -19,7 +19,7 @@ button {
     grid-template-columns: 3fr 0;
     height: 100vh;
     grid-template-rows: 60px auto;
-    transition: grid-template-columns 0.3s ease;
+    transition: grid-template-columns 0.4s ease;
     overflow: hidden;
 }
 
@@ -190,5 +190,4 @@ button {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Arial, sans-serif;
 }

@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <script src="../scripts/navbar.js" defer></script>
     <script src="../scripts/my_taskboard.js" defer></script>
-    <script src="../scripts/config.js" type="module" defer></script>
+    <script src="../config/realtime.js" type="module" defer></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Taskboards</title>
     <meta 
@@ -80,62 +80,32 @@
 
         <div class="organization-list" id="organization-list">
             <div class="organization-card">
+                <button class="card-options-button">...</button>
+                
                 <div class="card-title">
                     <h3>New Organization</h3>
                 </div>
+
                 <div class="card-description-container">
                     <p class="card-description-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab doloremque quae iste amet temporibus maiores incidunt totam ad laudantium magnam quibusdam, tempora iusto exercitationem unde minus nemo sed doloribus cupiditate?Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat voluptas, atque consequuntur, quibusdam, aspernatur accusamus officiis magni error sed dicta aliquam dolorum? Veritatis ipsam magni voluptate dolorem amet nemo praesentium!</p> 
                 </div>
+
             </div>
 
-            <div class="organization-card">
-                <div class="card-title">
-                    <h3>New Organization Lorem ipsum dolor sit, amet consectetur adipisicing elit. Error sapiente labore illum dicta maiores unde cum! Tenetur distinctio at velit officiis dolor fuga facere fugiat, neque molestiae maiores totam laboriosam.</h3>
-                </div>
-                <div class="card-description-container">
-                    <p class="card-description-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat voluptas, atque consequuntur, quibusdam, aspernatur accusamus officiis magni error sed dicta aliquam dolorum? Veritatis ipsam magni voluptate dolorem amet nemo praesentium!</p> 
-                </div>            
-            </div>
-
-            <div class="organization-card">
-                <div class="card-title">
-                    <h3>New Organization</h3>
-                </div>
-                <div class="card-description-container">
-                    <p class="card-description-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat voluptas, atque consequuntur, quibusdam, aspernatur accusamus officiis magni error sed dicta aliquam dolorum? Veritatis ipsam magni voluptate dolorem amet nemo praesentium!</p> 
-                </div>            
-            </div>
-
-            <div class="organization-card">
-            <div class="card-description-container">
-                    <p class="card-description-text">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deleniti minima nemo odio animi, odit iusto nihil reiciendis culpa corrupti nisi optio sit cumque ducimus explicabo debitis suscipit accusantium! Ab, praesentium.Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat voluptas, atque consequuntur, quibusdam, aspernatur accusamus officiis magni error sed dicta aliquam dolorum? Veritatis ipsam magni voluptate dolorem amet nemo praesentium!</p> 
-                </div>           
-             </div>
-
-            <div class="organization-card">
-                <div class="card-description-container">
-                    <p class="card-description-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat voluptas, atque consequuntur, quibusdam, aspernatur accusamus officiis magni error sed dicta aliquam dolorum? Veritatis ipsam magni voluptate dolorem amet nemo praesentium!</p> 
-                </div>            
-            </div>
-
-            <div class="organization-card">
-                <div class="card-description-container">
-                    <p class="card-description-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat voluptas, atque consequuntur, quibusdam, aspernatur accusamus officiis magni error sed dicta aliquam dolorum? Veritatis ipsam magni voluptate dolorem amet nemo praesentium!</p> 
-                </div>            
-            </div>
-
-            <div class="organization-card">
-                <div class="card-description-container">
-                    <p class="card-description-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat voluptas, atque consequuntur, quibusdam, aspernatur accusamus officiis magni error sed dicta aliquam dolorum? Veritatis ipsam magni voluptate dolorem amet nemo praesentium!</p> 
-                </div>            
-            </div>
-
-            <div class="add_task_container">
+            <div class="add_task_container" id="add_task_container">
                 <input class="task_title_input" id="task_title_input" type="text" placeholder="Enter title..." required/>
                 <textarea class="task_description_input" id="task_description_input" placeholder="Enter task content..." required></textarea>
                 <button class="submit_task_button" id="submit_task_button">Add Task</button>
                 <button class="close_add_task_button" id="close_add_task_button">Cancel</button>
             </div>
+
+            <div class="add_task_container" id="edit_task_container">
+                <input class="task_title_input" id="task_title_input_edit" type="text" placeholder="Enter title..." required/>
+                <textarea class="task_description_input" id="task_description_input_edit" placeholder="Enter task content..." required></textarea>
+                <button class="submit_task_button" id="confirm_edit_task_button">Confirm Edit</button>
+                <button class="close_add_task_button" id="close_edit_task_button">Cancel</button>
+            </div>
+
         </div>
 
     </div>

@@ -211,17 +211,26 @@
 }
 
 .channel_container {
-    grid-area: channel_list;
-    background-color: #ffffff1c;
+    grid-area: header;
+    width: 20rem;
+    position: fixed;
+    background-color: #4d4d4d;
     display: grid;
     grid-template-rows: max-content max-content;
-    width: 100%;
-    height: 100%;
+    height: 100vh;
     border-radius: 12px 0 0 0;
     padding-top: 2rem;
+    top: 60px;
     align-content: start;
     overflow: hidden;
+    overflow-y: auto;
     z-index: 995;
+    right: -20rem;
+    transition: right 0.4s ease;
+}
+
+.channel_container.open_channel_list {
+    right: 0;
 }
 
 .channel_item {
@@ -270,18 +279,19 @@
     height: 40px;
 }
 
-.message_pane {
+.message_pane { 
+    right: -40rem;
+    top: 60px;
+    bottom: 0;
+    width: 20rem;
+    grid-area: header;
     display: grid;
-    position: relative;
-    grid-template-rows: auto 5rem;
+    position: fixed;
+    grid-template-rows: 1fr 5rem;
     background-color: #4d4d4d;
     border-radius: 12px 0 0 0;
     color: white;
-    grid-area: channel_list;
-    width: 100%;
-    height: auto;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
+    transition: right 0.4s ease;
     z-index: 996;
     grid-template-areas:
         "messages"
@@ -290,8 +300,8 @@
     text-wrap: wrap;
 }
 
-.message_pane.show_message_pane {
-    transform: translateX(0);
+.message_pane.open_message_pane_on_toggle {
+    right: 0;
 }
 
 .messages_section {
@@ -339,6 +349,7 @@
     align-self: center;
     font-size: 1.2rem;
     padding: 0 1rem;
+    box-sizing: border-box;
 }
 
 .message_pane_toggler {

@@ -141,3 +141,11 @@ def add_task_to_taskboard(taskboard_id: str, task_name: str = Form(...), task_de
         return {"message": "Task added successfully", "data": response, "ok": True}
     except Exception as e:
         return {"message": f"An error occurred while adding task to taskboard: {str(e)}"}
+    
+@app.post('/api/taskboard/{taskboard_id}/edit_task/{task_id}')
+def edit_task_in_taskboard(taskboard_id: str, task_id: str, task_name: str = Form(...), task_description: str = Form(...)):
+    try:
+        response = tasks.edit_task_in_taskboard(task_id, task_name, task_description)
+        return {"message": "Task edited successfully", "data": response, "ok": True}
+    except Exception as e:
+        return {"message": f"An error occurred while editing task in taskboard: {str(e)}"}

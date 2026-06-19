@@ -37,19 +37,6 @@ app.whenReady().then(() => {
     StartMainWindow();
 });
 
-// async function fetchWithError (url, options, retries = 5) {
-//     try {
-//         const response = await fetch(url, options);
-//         return await response.json();
-//     } catch (error) {
-//         if (retries > 0) {
-//             await new Promise(resolve => setTimeout(resolve, 250));
-//             return fetchWithError(url, options, retries - 1);
-//         }
-//         throw error;
-//     }
-// }
-
 function StartPythonServer() {
     pythonProcess = spawn('python', ['-m', 'uvicorn', 'config.server:app', '--port', '8000', '--host', '127.0.0.1']);
 
