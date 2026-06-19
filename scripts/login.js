@@ -51,3 +51,7 @@ document.getElementById('login-form').addEventListener('submit', async(e) => {
     }
 
 });
+
+document.getElementById('register-button').addEventListener('click', () => {
+    window.location.href = 'register.html';
+});
