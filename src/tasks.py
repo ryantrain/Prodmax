@@ -74,5 +74,5 @@ def toggle_task_completed(task_id: str):
         response = client.rpc("toggle_task_completion", {"task_id": task_id}).execute()
         return response
     except Exception as e:
-        print(f"An error occurred while marking task as complete: {str(e)}")
-        return {"message": f"An error occurred while marking task as complete: {str(e)}"}
+        print(f"An error occurred while toggling task completion: {str(e)}")
+        return {"message": f"An error occurred while toggling task completion: {str(e)}"}

@@ -71,7 +71,7 @@ function updateTaskCount(){
     };
 };
 
-async function renderTaskboard(taskboard_id) {
+async function fetchPersonalTaskInfo(taskboard_id) {
     try {
         const taskboard_response = await fetch(`http://localhost:8000/api/taskboard/${taskboard_id}`, {
             method: 'POST'
@@ -96,14 +96,14 @@ async function renderTaskboard(taskboard_id) {
     }
 }
 
-async function load_taskboards() {
+function load_personal_tasks() {
     const rawData = sessionStorage.getItem('preFetchedData_dashboard');
     const data = rawData ? JSON.parse(rawData) : { taskboards: [] };
 
     for (const taskboard of data.taskboards) {
         const taskCard = document.createElement("button");
         taskCard.onclick = () => {
-            renderTaskboard(taskboard.uuid);
+            fetchPersonalTaskInfo(taskboard.uuid);
         };
         taskCard.classList.add("task-card");
         taskCard.textContent = taskboard.taskboard_name;
@@ -115,4 +115,4 @@ async function load_taskboards() {
     updateTaskCount();
 }
 
-load_taskboards();
+load_personal_tasks();
