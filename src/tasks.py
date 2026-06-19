@@ -68,3 +68,11 @@ def delete_task_from_taskboard(taskboard_id: str, task_id: str):
     except Exception as e:
         print(f"An error occurred while deleting task from taskboard: {str(e)}")
         return {"message": f"An error occurred while deleting task from taskboard: {str(e)}"}
+    
+def toggle_task_completed(task_id: str):
+    try:
+        response = client.rpc("toggle_task_completion", {"task_id": task_id}).execute()
+        return response
+    except Exception as e:
+        print(f"An error occurred while marking task as complete: {str(e)}")
+        return {"message": f"An error occurred while marking task as complete: {str(e)}"}

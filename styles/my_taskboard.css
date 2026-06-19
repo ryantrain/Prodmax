@@ -31,7 +31,7 @@ body {
     padding-bottom: 1rem;
 }
 
-.organization-card {
+.organization-card-incomplete {
     display: flex;
     padding: 1rem;
     background-color: rgb(38, 38, 38);
@@ -44,11 +44,51 @@ body {
     overflow: hidden;
     align-self: center;
     position: relative;
+}   
+.organization-card-completed {
+    display: flex;
+    padding: 1rem;
+    background-color: rgba(38, 38, 38, 0.42);
+    border-radius: 12px;
+    transition: background-color 0.2s ease-in-out;
+    height: 13rem;
+    color: white;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    align-self: center;
+    position: relative;
+    opacity: 0.6;
 }
 
-.organization-card:hover {
+.organization-card-incomplete:hover {
     background-color: #212121;
     cursor: pointer;
+}
+
+.organization-card-completed:hover {
+    background-color: rgba(18, 18, 18, 0.42);
+    cursor: pointer;
+}
+
+.mark-complete-button {
+    position: absolute;
+    top: 0.1rem;
+    right: 4.0rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    transition: transform 0.1s ease, scale 0.1s ease;
+    cursor: pointer;
+}
+
+.mark-complete-button:hover {
+    transform: translateY(-0.1rem) scale(1.2);
 }
 
 .card-title{

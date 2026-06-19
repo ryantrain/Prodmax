@@ -157,3 +157,11 @@ def delete_task_from_taskboard(taskboard_id: str, task_id: str):
         return {"message": "Task deleted successfully"}
     except Exception as e:
         return {"message": f"An error occurred while deleting task from taskboard: {str(e)}"}
+
+@app.post('/api/taskboard/{taskboard_id}/toggle_task_completed/{task_id}')
+def toggle_task_completed(taskboard_id: str, task_id: str):
+    try:
+        tasks.toggle_task_completed(task_id)
+        return {"message": "Task completion toggled"}
+    except Exception as e:
+        return {"message": f"An error occurred while toggling task completion: {str(e)}"}
