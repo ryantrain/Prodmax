@@ -176,6 +176,7 @@ def delete_organization_from_database(organization_id: str):
         return {"message": "Organization deleted successfully"}
     except Exception as e:
         return {"message": f"An error occurred while deleting organization from taskboard: {str(e)}"}
+    
 @app.post('/api/taskboard/{taskboard_id}/toggle_task_completed/{task_id}')
 def toggle_task_completed(taskboard_id: str, task_id: str):
     try:
@@ -183,3 +184,11 @@ def toggle_task_completed(taskboard_id: str, task_id: str):
         return {"message": "Task completion toggled"}
     except Exception as e:
         return {"message": f"An error occurred while toggling task completion: {str(e)}"}
+
+@app.post('/api/organizations/load')
+def load_organizations_for_users():
+    try:
+        response = organizations.retrieve_organizations_for_user()
+        return {"organizations": response}
+    except Exception as e:
+        return {"message": f"An error occurred while loading organizations for user: {str(e)}"}

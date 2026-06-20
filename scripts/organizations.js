@@ -2,8 +2,23 @@ var organizationboard_id = null;
 var current_editing_organization = null;
 var current_deleting_organization = null;
 
-function loadOrganizations() {
+async function loadOrganizations() {
     const orglist = document.getElementById('organization-list');
+
+    try {
+        response = await fetch('http://localhost:8000/api/organizations/load', {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            data = await response.json();
+            data.organizations.forEach(organization => {
+                addOrganizationCard(organization.organization_id, organization.name, organization.description)
+            });
+        }
+    } catch (error) {
+        console.error('Error occurred while loading organizations:', error);
+    }
     const createOrganizationButton = document.createElement('button');
     createOrganizationButton.textContent = '+';
     createOrganizationButton.classList.add('create-organization-button');
@@ -29,7 +44,8 @@ async function createOrganization() {
         });
 
         if (response.ok) {
-            addOrganizationCard(organization_title, organization_description);
+            data = await response.json();
+            addOrganizationCard(data.organization_id, organization_title, organization_description);
         }
 
     } catch (error) {
@@ -38,10 +54,11 @@ async function createOrganization() {
 }
 
 //draws the organization cards
-function addOrganizationCard(organization_title, organization_description) {
+function addOrganizationCard(organization_id, organization_title, organization_description) {
     const organization = document.getElementById('organization-list');
 
     const organizationElement = document.createElement('div');
+    organizationElement.dataset.organization_id = organization_id;
     organizationElement.classList.add('organization-card');
 
         // Create organization name/title element
