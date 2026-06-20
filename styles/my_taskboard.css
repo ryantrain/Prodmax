@@ -32,7 +32,11 @@ body {
     align-content: start;
 }
 
+<<<<<<< HEAD
 .task-card {
+=======
+.organization-card-incomplete {
+>>>>>>> 9332314979eeea73d37de8e7c40d4feef435d7b1
     display: flex;
     padding: 1rem;
     background-color: rgb(38, 38, 38);
@@ -45,11 +49,55 @@ body {
     overflow: hidden;
     align-self: center;
     position: relative;
+}   
+.organization-card-completed {
+    display: flex;
+    padding: 1rem;
+    background-color: rgba(38, 38, 38, 0.42);
+    border-radius: 12px;
+    transition: background-color 0.2s ease-in-out;
+    height: 13rem;
+    color: white;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    align-self: center;
+    position: relative;
+    opacity: 0.6;
 }
 
+<<<<<<< HEAD
 .task-card:hover {
+=======
+.organization-card-incomplete:hover {
+>>>>>>> 9332314979eeea73d37de8e7c40d4feef435d7b1
     background-color: #212121;
     cursor: pointer;
+}
+
+.organization-card-completed:hover {
+    background-color: rgba(18, 18, 18, 0.42);
+    cursor: pointer;
+}
+
+.mark-complete-button {
+    position: absolute;
+    top: 0.1rem;
+    right: 4.0rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    transition: transform 0.1s ease, scale 0.1s ease;
+    cursor: pointer;
+}
+
+.mark-complete-button:hover {
+    transform: translateY(-0.1rem) scale(1.2);
 }
 
 .card-title{

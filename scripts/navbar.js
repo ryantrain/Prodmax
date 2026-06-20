@@ -72,21 +72,13 @@ function closeMessagePane() {
 
     messagePane.classList.toggle('open_message_pane_on_toggle');
     messagePane.classList.remove('show_message_pane');
-
-    messagePane.addEventListener('transitionend', (event) => {
-        if (event.target !== messagePane || event.propertyName !== 'transform') {
-            return;
-        }
-
-        setTimeout(() => {
-            document.querySelectorAll('.message_item').forEach(item => item.remove());
-        }, 100);
-    }, { once: true });
     
     const activeButton = document.querySelector('.channel_item.active_channel');
     if (activeButton) {
         activeButton.classList.remove('active_channel');
     }
+
+    document.querySelectorAll('.message_item').forEach(item => item.remove());
 }
 
 function toggleSidebar() {

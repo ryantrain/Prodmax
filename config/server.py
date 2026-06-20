@@ -160,6 +160,7 @@ def delete_task_from_taskboard(taskboard_id: str, task_id: str):
     except Exception as e:
         return {"message": f"An error occurred while deleting task from taskboard: {str(e)}"}
 
+<<<<<<< HEAD
 @app.post('/api/organizations/add_organization')
 def add_organization_to_database(organization_name: str = Form(...), organization_description: str = Form(...)):
     try:
@@ -175,3 +176,12 @@ def delete_organization_from_database(organization_id: str):
         return {"message": "Organization deleted successfully"}
     except Exception as e:
         return {"message": f"An error occurred while deleting organization from taskboard: {str(e)}"}
+=======
+@app.post('/api/taskboard/{taskboard_id}/toggle_task_completed/{task_id}')
+def toggle_task_completed(taskboard_id: str, task_id: str):
+    try:
+        tasks.toggle_task_completed(task_id)
+        return {"message": "Task completion toggled"}
+    except Exception as e:
+        return {"message": f"An error occurred while toggling task completion: {str(e)}"}
+>>>>>>> 9332314979eeea73d37de8e7c40d4feef435d7b1
