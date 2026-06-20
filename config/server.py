@@ -7,6 +7,7 @@ import threading
 import chat as chat
 import friends as friends
 import tasks as tasks
+import organizations as organizations
 from fastapi import FastAPI, Form
 from verification import login_user, register_user
 from dotenv import load_dotenv
@@ -17,6 +18,7 @@ load_dotenv()
 client = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
 friends.client = client
 tasks.client = client
+organizations.client = client
 app = FastAPI()
 threading.Thread(target=asyncio.run, args=(chat.start_realtime_async(),)).start()
 
@@ -157,3 +159,19 @@ def delete_task_from_taskboard(taskboard_id: str, task_id: str):
         return {"message": "Task deleted successfully"}
     except Exception as e:
         return {"message": f"An error occurred while deleting task from taskboard: {str(e)}"}
+
+@app.post('/api/organizations/add_organization')
+def add_organization_to_database(organization_name: str = Form(...), organization_description: str = Form(...)):
+    try:
+        response = organizations.add_organization(organization_name, organization_description)
+        return {"message": "Organization added successfully", "data": response, "ok": True}
+    except Exception as e:
+        return {"message": f"An error occurred while adding organization to taskboard: {str(e)}"}
+
+@app.post('/api/organizations/{organization_id}/delete_organization/}')
+def delete_organization_from_database(organization_id: str):
+    try:
+        tasks.delete_task_from_taskboard(organization_id)
+        return {"message": "Organization deleted successfully"}
+    except Exception as e:
+        return {"message": f"An error occurred while deleting organization from taskboard: {str(e)}"}

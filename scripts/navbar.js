@@ -256,4 +256,34 @@ document.getElementById('add_friends_submit').addEventListener('click', sendFrie
 document.getElementById('message_pane_toggler').addEventListener('click', closeMessagePane);
 
 
+async function renderOrganizations() {
+    try {
+        const organization_response = await fetch('http://localhost:8000/api/organizations', {
+            method: 'POST'
+        });
+
+        const navbar_response = await fetch('http://localhost:8000/api/navbar', {
+            method: 'POST'
+        });
+
+        const organizationsData = await organization_response.json();
+        const navbarData = await navbar_response.json();
+
+        sessionStorage.setItem('preFetchedData_navbar', JSON.stringify(navbarData));
+        sessionStorage.setItem('preFetchedData_organizations', JSON.stringify(organizationsData));
+    } catch (error) {
+        console.error('Error rendering organizations:', error);
+    }
+
+    window.location.href = 'organizations.html';
+}
+
+document.getElementById('workspaces_link').addEventListener('click', () => {
+    window.location.href = 'workspaces.html';
+});
+
+document.getElementById('settings_link').addEventListener('click', () => {
+    window.location.href = 'settings.html';
+});
+
 fetchData();

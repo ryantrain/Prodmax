@@ -34,9 +34,9 @@
 
         <div id="sidebar" class="sidebar">
             <a id="home_link">Home</a>
-            <a href="taskboards.html">Taskboards</a>
-            <a href="workspaces.html">Workspaces</a>
-            <a href="settings.html">Settings</a>
+            <a id="organizations_link" href="organizations.html">Organizations</a>
+            <a id="workspaces_link" href="workspaces.html">Workspaces</a>
+            <a id="settings_link" href="settings.html">Settings</a>
         </div>
 
         <div id="overlay" class="overlay"></div>
@@ -67,23 +67,26 @@
         </div>
 
         <div class="channel_container" id="channel_list"></div>
-            <div class="message_pane" id="message_pane">
-                <div class="messages_section">
-                    <button type="button" id="message_pane_toggler" class="message_pane_toggler" aria-label="Back to channels">←</button>
-                    <div class="messages_list" id="messages_section"></div>
-                </div>
+        <div class="message_pane" id="message_pane">
+            <div class="messages_section">
+                <button type="button" id="message_pane_toggler" class="message_pane_toggler" aria-label="Back to channels">←</button>
+                <div class="messages_list" id="messages_section"></div>
+            </div>
 
-                <form id="message_input_form">
-                    <input class="message_input_form" type="text" name="message_input" placeholder="Type your message here..." required/>
-                </form>
+            <form id="message_input_form">
+                <input class="message_input_form" type="text" name="message_input" placeholder="Type your message here..." required/>
+            </form>
         </div>
 
-        <div class="organization-list" id="organization-list">
-            <div class="organization-card">
+
+
+        
+        <div class="task-list" id="task-list">
+            <div class="task-card">
                 <button class="card-options-button">...</button>
                 
                 <div class="card-title">
-                    <h3>New Organization</h3>
+                    <h3>New task</h3>
                 </div>
 
                 <div class="card-description-container">

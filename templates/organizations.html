@@ -1,25 +1,20 @@
 <!DOCTYPE html>
-
+<html lang="en">
 <head>
     <link rel="stylesheet" href="../styles/navbar.css">
-    <link rel="stylesheet" href="../styles/dashboard.css">
-
-    <script src="../scripts/dashboard.js" defer></script>
+    <link rel="stylesheet" href="../styles/organizations.css">
+    <meta charset="UTF-8">
     <script src="../scripts/navbar.js" defer></script>
-    <script src="../config/realtime.js" type="module" defer></script>
-    <meta charset="UTF-8" />
+    <script src="../scripts/organizations.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizations</title>
     <meta 
-    http-equiv="Content-Security-Policy" 
-    content="default-src 'self'; connect-src http://localhost:8000 https://*.supabase.co wss://*.supabase.co"
+        http-equiv="Content-Security-Policy" 
+        content="default-src 'self'; connect-src http://localhost:8000 https://*.supabase.co wss://*.supabase.co"
     >
-
-    <title>Prodmax</title>
 </head>
-
 <body>
-
     <div class="main-container">
-
         <nav class="navbar">
             <button class="menu-btn" id="menu-btn">
                 ☰
@@ -45,7 +40,9 @@
 
         <div id="overlay" class="overlay"></div>
 
-            <div id="friends_overlay" class="overlay"></div>
+        <div id="friends_overlay" class="overlay"></div>
+        
+        <div class="add_organization_overlay"></div>
 
         <div id="friends_sidebar" class="friends_sidebar">
             <button class="add_friends_button" id="add_friends_button">
@@ -65,53 +62,54 @@
                     <button type="button" id="add_friends_submit" class="add_friends_submit">+</button>
                 </div>
             </div>
-
         </div>
 
         <div class="channel_container" id="channel_list"></div>
-            <div class="message_pane" id="message_pane">
-                <div class="messages_section">
-                    <button type="button" id="message_pane_toggler" class="message_pane_toggler" aria-label="Back to channels">←</button>
-                    <div class="messages_list" id="messages_section"></div>
-                </div>
+        
+        <div class="message_pane" id="message_pane">
+            <div class="messages_section">
+                <button type="button" id="message_pane_toggler" class="message_pane_toggler" aria-label="Back to channels">←</button>
+                <div class="messages_list" id="messages_section"></div>
+            </div>
 
-                <form id="message_input_form">
-                    <input class="message_input_form" type="text" name="message_input" placeholder="Type your message here..." required/>
-                </form>
+            <form id="message_input_form">
+                <input class="message_input_form" type="text" name="message_input" placeholder="Type your message here..." required/>
+            </form>
         </div>
-        
-        <section class="tasks-section">
 
-            <div class="tasks-header">
-                <h2>Tasks</h2>
-                <button class="create-task-button" id="create_button">Create</button>
+        <div class="organization-list" id="organization-list">
+
+            <div class="organization-card">
+                <button class="card-options-button">...</button>
                 
-                <div class="modal-overlay" id="modal-overlay">
-                    <div class="modal">
-                        <h2>Create Task</h2>
+                <div class="card-title">
+                    <h3>New Organization</h3>
+                </div>
 
-                        <input id="task-input" type="text" placeholder="Task name" required/>
-
-                        <div class="modal-buttons">
-                            <button id="cancel-button" class="cancel-button">Cancel</button>
-                            <button id="add-button" class="add-button">Add Task</button>
-                        </div>
-                    </div>
+                <div class="card-description-container">
+                    <p class="card-description-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab doloremque quae iste amet temporibus maiores incidunt totam ad laudantium magnam quibusdam, tempora iusto exercitationem unde minus nemo sed doloribus cupiditate?Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugiat voluptas, atque consequuntur, quibusdam, aspernatur accusamus officiis magni error sed dicta aliquam dolorum? Veritatis ipsam magni voluptate dolorem amet nemo praesentium!</p> 
                 </div>
             </div>
 
-            <div class="hidden" id="emptyState">
-                <h2>No Tasks!</h2>
-                <p>Create your first task to get started.</p>
+            <div class="add_organization_container" id="add_organization_container" active>
+                <input class="organization_title_input" id="organization_title_input" type="text" placeholder="Enter title..." required/>
+                <textarea class="organization_description_input" id="organization_description_input" placeholder="Enter organization content..." required></textarea>
+                <button class="submit_organization_button" id="submit_organization_button">Create Organization</button>
+                <button class="close_add_organization_button" id="close_add_organization_button">Cancel</button>
             </div>
-            
-            <div class="task-list" id="task-list"></div>
 
-        </section>
-
-        
+            <div class="add_organization_container" id="edit_organization_container" active>
+                <input class="organization_title_input" id="organization_title_input_edit" type="text" placeholder="Enter title..." required/>
+                <textarea class="organization_description_input" id="organization_description_input_edit" placeholder="Enter organization content..." required></textarea>
+                <button class="submit_organization_button" id="confirm_edit_organization_button">Confirm Edit</button>
+                <button class="close_add_organization_button" id="close_edit_organization_button">Cancel</button>
+            </div>
+        </div>
     </div>
 
 </body>
 
 </html>
+
+
+        

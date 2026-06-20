@@ -20,7 +20,7 @@ body {
     grid-template-columns: 3fr 20rem;
 }
 
-.task-list {
+.organization-list {
     grid-area: chat-area;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -32,7 +32,7 @@ body {
     align-content: start;
 }
 
-.task-card {
+.organization-card {
     display: flex;
     padding: 1rem;
     background-color: rgb(38, 38, 38);
@@ -47,9 +47,11 @@ body {
     position: relative;
 }
 
-.task-card:hover {
-    background-color: #212121;
+.organization-card:hover {
+    background-color: hsl(0, 0%, 13%);
+    box-shadow: #c6c6c6;
     cursor: pointer;
+    
 }
 
 .card-title{
@@ -73,7 +75,11 @@ body {
     padding-left: 5px;
     padding-right: 5px;
     font-size: 14px;  
-    overflow-y: auto;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .card-description-text {
@@ -91,7 +97,7 @@ body {
     background: transparent;
 }
 
-.create-task-button {
+.create-organization-button {
     display: flex;
     padding: 1rem;
     background-color: rgba(90, 90, 90, 0.526);
@@ -114,15 +120,15 @@ button {
     all: unset;
 }
 
-.create-task-button:hover {
+.create-organization-button:hover {
     background-color: rgb(122, 122, 122);
 }
 
-.create-task-button:active {
+.create-organization-button:active {
     background-color: rgb(85, 85, 85);
 }
 
-.add_task_overlay {
+.add_organization_overlay {
     position: fixed;
     width: 100vw;
     height: 100vh;
@@ -133,12 +139,12 @@ button {
     transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-.add_task_overlay.active {
+.add_organization_overlay.active {
     opacity: 1;
     visibility: visible;
 }
 
-.add_task_container {
+.add_organization_container {
     position: fixed;
     justify-self: center;
     width: 50rem;
@@ -151,7 +157,6 @@ button {
         "description description"
         "submit cancel";
     opacity: 0;
-    visibility: hidden;
     border-radius: 12px;
     z-index: 994;
     transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -161,14 +166,16 @@ button {
     gap: 0.5rem;
     top: 50%;
     transform: translateY(-50%);
+    display: none;
 }
 
-.add_task_container.active {
+.add_organization_container.active {
     visibility: visible;
+    display: grid;
     opacity: 1;
 }
 
-.task_title_input {
+.organization_title_input {
     grid-area: title;
     width: 100%;
     height: 100%;
@@ -181,7 +188,7 @@ button {
     font-family: monospace;
 }
 
-.task_description_input {
+.organization_description_input {
     grid-area: description;
     width: 100%;
     height: 100%;
@@ -194,7 +201,7 @@ button {
     resize: none;
 }
 
-.submit_task_button {
+.submit_organization_button {
     background-color: #363636;
     color: white;
     padding: 0.5rem;
@@ -211,11 +218,11 @@ button {
     transition: background-color 0.2s ease-in-out;
 }
 
-.submit_task_button:hover {
+.submit_organization_button:hover {
     background-color: #3f3f3f;
 }
 
-.close_add_task_button {
+.close_add_organization_button {
     background-color: #a6a6a6;
     color: black;
     padding: 0.5rem;
@@ -232,7 +239,7 @@ button {
     transition: background-color 0.2s ease-in-out;
 }
 
-.close_add_task_button:hover {
+.close_add_organization_button:hover {
     background-color: #c6c6c6;
 }
 
