@@ -72,14 +72,6 @@ def delete_task_from_taskboard(taskboard_id: str, task_id: str):
         print(f"An error occurred while deleting task from taskboard: {str(e)}")
         return {"message": f"An error occurred while deleting task from taskboard: {str(e)}"} 
     
-def add_organization(organization_name: str, organization_description: str):
-    try:
-        response = client.from_("organizations").insert({"organization_name": organization_name, "organization_description": organization_description}).execute()
-        return response
-    except Exception as e:
-        print(f"An error occurred while adding organization: {str(e)}")
-        return {"message": f"An error occurred while adding organization: {str(e)}"}
-    
 def toggle_task_completed(task_id: str):
     try:
         response = client.rpc("toggle_task_completion", {"task_id": task_id}).execute()

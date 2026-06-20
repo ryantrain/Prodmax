@@ -45,9 +45,7 @@ body {
     overflow: hidden;
     align-self: center;
     position: relative;
-}
-
-.organization-card-completed {
+}organization-card-completed {
     display: flex;
     padding: 1rem;
     background-color: rgba(38, 38, 38, 0.42);
