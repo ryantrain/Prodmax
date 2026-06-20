@@ -86,10 +86,11 @@ async def send_message(channel_id: str = Form(...), content: str = Form(...)):
 @app.post('/api/add_personal_taskboard')
 def add_taskboard(taskboard_name: str = Form(...)):
     try:
-        tasks.add_taskboard_to_db(taskboard_name)
+        response = tasks.add_taskboard_to_db(taskboard_name)
+        return {"message": "Taskboard added successfully", "data": response}
     except Exception as e:
-        return f"An error occured while adding taskboard:{str(e)}"
-    
+        return {"message": f"An error occurred while adding taskboard: {str(e)}"}
+
 @app.post('/api/add_friend')
 def add_friend(query: str = Form(...)):
     try:

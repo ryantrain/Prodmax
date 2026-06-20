@@ -16,7 +16,7 @@ cancelTaskButton.addEventListener("click", () => {
     taskInput.value = "";
 });
 
-addButton.addEventListener("click", () => {
+addButton.addEventListener("click", async () => {
     const taskName = taskInput.value.trim();
 
     if (taskName === "") {
@@ -28,8 +28,6 @@ addButton.addEventListener("click", () => {
     taskCard.classList.add("task-card");
     taskCard.textContent = taskName;
 
-    taskList.appendChild(taskCard);
-
     taskInput.value = "";
     modalOverlay.classList.remove("show");
     updateTaskCount();
@@ -38,10 +36,19 @@ addButton.addEventListener("click", () => {
     formData.append("taskboard_name", taskName);
 
     try {
-        response = fetch ("http://localhost:8000/api/add_personal_taskboard", {
+        response = await fetch ("http://localhost:8000/api/add_personal_taskboard", {
         method: "POST",
         body: formData
-    });
+        });
+
+        if (response.ok) {
+            data = await response.json()
+            console.log(data);
+            taskList.onclick = () => {
+                fetchPersonalTaskInfo(data.data.data[0].uuid);
+            }
+            taskList.appendChild(taskCard);
+        }
     } catch (error) {
         console.error("Error occured while adding taskboard to db:", error);
     }
