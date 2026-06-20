@@ -67,7 +67,6 @@ def delete_task_from_taskboard(taskboard_id: str, task_id: str):
         return response
     except Exception as e:
         print(f"An error occurred while deleting task from taskboard: {str(e)}")
-<<<<<<< HEAD
         return {"message": f"An error occurred while deleting task from taskboard: {str(e)}"} 
     
 def add_task_to_private_taskboard(organization_id: str, organization_name: str, organization_description: str):
@@ -79,7 +78,6 @@ def add_task_to_private_taskboard(organization_id: str, organization_name: str, 
     except Exception as e:
         print(f"An error occurred while adding task to private taskboard: {str(e)}")
         return None
-=======
         return {"message": f"An error occurred while deleting task from taskboard: {str(e)}"}
     
 def toggle_task_completed(task_id: str):
@@ -89,4 +87,3 @@ def toggle_task_completed(task_id: str):
     except Exception as e:
         print(f"An error occurred while toggling task completion: {str(e)}")
         return {"message": f"An error occurred while toggling task completion: {str(e)}"}
->>>>>>> 9332314979eeea73d37de8e7c40d4feef435d7b1
