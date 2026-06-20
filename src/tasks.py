@@ -67,17 +67,6 @@ def delete_task_from_taskboard(taskboard_id: str, task_id: str):
         return response
     except Exception as e:
         print(f"An error occurred while deleting task from taskboard: {str(e)}")
-        return {"message": f"An error occurred while deleting task from taskboard: {str(e)}"} 
-    
-def add_task_to_private_taskboard(organization_id: str, organization_name: str, organization_description: str):
-    try:
-        response = client.from_("organizations").insert({"organization_name": organization_name, "task_description": task_description, "parent_taskboard": taskboard_id}).execute()
-        task_id = response.data[0]["id"]
-        client.rpc("insert_task_into_taskboard", {"organization_id": organization_id, "task_id": task_id}).execute()
-        return None
-    except Exception as e:
-        print(f"An error occurred while adding task to private taskboard: {str(e)}")
-        return None
         return {"message": f"An error occurred while deleting task from taskboard: {str(e)}"}
     
 def toggle_task_completed(task_id: str):
