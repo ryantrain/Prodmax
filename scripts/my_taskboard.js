@@ -19,9 +19,7 @@ function loadTaskboard() {
                 taskElement.classList.add('organization-card-incomplete');
             }
             taskElement.dataset.task_id = task.id;
-<<<<<<< HEAD
             taskElement.classList.add('task-card');
-=======
             
                 // Create mark complete button
                 const markCompleteButton = document.createElement('button');
@@ -44,7 +42,6 @@ function loadTaskboard() {
                     }
                 }
                 taskElement.appendChild(markCompleteButton);
->>>>>>> 9332314979eeea73d37de8e7c40d4feef435d7b1
 
                 // Create task options button
                 const taskOptions = document.createElement('button');
@@ -119,11 +116,8 @@ function addSubtaskCard(task_title, task_description) {
     const task = document.getElementById('task-list');
 
     const taskElement = document.createElement('div');
-<<<<<<< HEAD
     taskElement.classList.add('task-card');
-=======
     taskElement.classList.add('organization-card-incomplete');
->>>>>>> 9332314979eeea73d37de8e7c40d4feef435d7b1
 
         // Create task name/title element
         const taskName = document.createElement('div')

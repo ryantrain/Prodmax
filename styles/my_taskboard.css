@@ -32,11 +32,7 @@ body {
     align-content: start;
 }
 
-<<<<<<< HEAD
 .task-card {
-=======
-.organization-card-incomplete {
->>>>>>> 9332314979eeea73d37de8e7c40d4feef435d7b1
     display: flex;
     padding: 1rem;
     background-color: rgb(38, 38, 38);
@@ -66,11 +62,7 @@ body {
     opacity: 0.6;
 }
 
-<<<<<<< HEAD
 .task-card:hover {
-=======
-.organization-card-incomplete:hover {
->>>>>>> 9332314979eeea73d37de8e7c40d4feef435d7b1
     background-color: #212121;
     cursor: pointer;
 }
