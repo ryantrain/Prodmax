@@ -6,7 +6,11 @@ async function fetchData() {
             const data = JSON.parse(rawData);
 
             const channel_list = document.getElementById('channel_list');
-            const channel_list_HTML = data.channels[1].map((name, index) => `<button data-channel_id="${data.channels[0][index]}" class="channel_item">${name}</button>`).join('');
+            const channel_list_HTML = data.channels[1].map((name, index) => 
+                `<div class="channel_wrapper" data-channel_id="${data.channels[0][index]}">
+                    <input type="checkbox" class="channel_select_checkbox hidden">
+                    <button class="channel_item">${name}</button>
+                </div>`).join('');
             channel_list.insertAdjacentHTML('beforeend', channel_list_HTML);
 
             const friendList = document.getElementById('friends_sidebar');
@@ -34,7 +38,7 @@ async function fetchData() {
 function display_messages_pane(button) {
     document.getElementById('message_pane').classList.add('show_message_pane');
     document.getElementById('message_pane').classList.add('open_message_pane_on_toggle');
-    load_messages(button.dataset.channel_id);
+    load_messages(button.parentElement.dataset.channel_id);
     button.classList.add('active_channel');
 }
 
@@ -147,7 +151,10 @@ async function acceptFriendRequest(button) {
 
             document.getElementById('friends_sidebar').insertAdjacentHTML('beforeend', `<p class="friends_item">${username}</p>`);
 
-            document.getElementById('channel_list').insertAdjacentHTML('beforeend', `<button data-channel_id="${data.data.channel_id}" class="channel_item">${username}</button>`);
+            document.getElementById('channel_list').insertAdjacentHTML('beforeend', `<div class="channel_wrapper" data-channel_id="${data.data.channel_id}">
+                <input type="checkbox" class="channel_select_checkbox hidden">
+                <button class="channel_item">${username}</button>
+            </div>`);
         }
 
     } catch (error) {
@@ -195,58 +202,22 @@ async function renderDashboard() {
     window.location.href = 'dashboard.html';
 }
 
-// Updates the message history with the new message
-document.getElementById('message_input_form').addEventListener('submit', async(e) => {
-    e.preventDefault();
-    const messageInput = e.target.elements['message_input'];
+function toggleChannelCreation() {
+    const list = document.getElementById('channel_list');
+    const checkboxes = document.querySelectorAll('.channel_select_checkbox');
+    const channelItems = document.querySelectorAll('.channel_item');
+    
+    list.classList.toggle('channel_creation_mode'); 
+    document.getElementById('create_channel_button').classList.toggle('hidden');
+    document.getElementById('channel_creation_title').classList.toggle('hidden');
+    document.getElementById('selected_channels_counter').classList.toggle('hidden');
 
-    const channel_id = document.querySelector('.channel_item.active_channel').dataset.channel_id;
-    const message = messageInput.value;
-
-    if (message === '') {
-        return;
+    checkboxes.forEach(cb => cb.classList.toggle('hidden'));
+    
+    if (!list.classList.contains('channel_creation_mode')) {
+        checkboxes.forEach(cb => cb.checked = false);
     }
-
-    const response = await send_message(channel_id, message);
-    messageInput.value = '';
-});
-
-document.getElementById('add_friends_input').addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' || event.key === 'Return') {
-        sendFriendRequest();
-    }
-});
-
-document.getElementById('channel_list').addEventListener('click', (event) => {
-    event.preventDefault();
-    if (event.target.innerText.endsWith(' *')) {
-            event.target.innerText = event.target.innerText.slice(0, -2);
-        }
-    if (event.target.classList.contains('channel_item')) {
-        display_messages_pane(event.target);
-    }
-});
-
-document.getElementById('friend_requests_list').addEventListener('click', (event) => {
-    event.preventDefault();
-    if (event.target.id === 'accept_friend_request_button') {
-        acceptFriendRequest(event.target);
-    } else if (event.target.id === 'reject_friend_request_button') {
-        rejectFriendRequest(event.target);
-    }
-});
-
-document.getElementById('menu-btn').addEventListener('click', toggleSidebar);
-document.getElementById('friends_toggle').addEventListener('click', toggleFriendRequests);
-document.getElementById('channel_list_toggle').addEventListener('click', toggleChannelList);
-document.getElementById('home_link').addEventListener('click', renderDashboard);
-document.getElementById('overlay').addEventListener('click', toggleSidebar);
-document.getElementById('friends_overlay').addEventListener('click', toggleFriendRequests);
-document.querySelector('#add_friends_button').addEventListener('click', toggleFriendRequestPane);
-document.getElementById('friend_requests_pane_back').addEventListener('click', closeFriendRequestPane);
-document.getElementById('add_friends_submit').addEventListener('click', sendFriendRequest);
-document.getElementById('message_pane_toggler').addEventListener('click', closeMessagePane);
-
+}
 
 async function renderOrganizations() {
     try {
@@ -270,12 +241,133 @@ async function renderOrganizations() {
     window.location.href = 'organizations.html';
 }
 
+async function createGroupChannel() {
+    const selectedChannels = Array.from(document.querySelectorAll('.channel_select_checkbox:checked'))
+    // const channelName = document.getElementById('new_channel_name_input').value ???
+    const selectedFriendNames = selectedChannels.map(cb => cb.nextElementSibling.textContent);
+
+    if (selectedChannels.length > 0) {
+        const formData = new FormData();
+        selectedFriendNames.forEach(name => formData.append('selected_friend_names', name));
+
+        try {
+            response = await fetch('http://localhost:8000/api/channel/create_group_channel', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                data = await response.json();
+                const channel_id = data.data.channel_id;
+                const channel_list = document.getElementById('channel_list');
+                channel_list.insertAdjacentHTML('beforeend', 
+                    `<div class="channel_wrapper" data-channel_id="${data.data.channel_id}">
+                        <input type="checkbox" class="channel_select_checkbox">
+                        <button class="channel_item">${selectedFriendNames.join(', ')}</button>
+                    </div>`
+                );
+            }
+        } catch (error) {
+            console.error('Error creating group channel:', error);
+        }
+    }
+}
+
+// Updates the message history with the new message
+document.getElementById('message_input_form').addEventListener('submit', async(e) => {
+    e.preventDefault();
+    const messageInput = e.target.elements['message_input'];
+
+    const channel_id = document.querySelector('.channel_item.active_channel').parentElement.dataset.channel_id;
+    const message = messageInput.value;
+
+    if (message === '') {
+        return;
+    }
+
+    const response = await send_message(channel_id, message);
+    messageInput.value = '';
+});
+
+document.getElementById('add_friends_input').addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === 'Return') {
+        sendFriendRequest();
+    }
+});
+
+document.getElementById('channel_list').addEventListener('click', (event) => {
+    const selectedCounter = document.getElementById('selected_channels_counter');
+    
+    if (document.getElementById('channel_list').childElementCount <= 2) {
+        return;
+    }
+
+    if (document.getElementById('channel_list').classList.contains('channel_creation_mode')) {
+        if (event.target.classList.contains('channel_select_checkbox')) {
+            selectedCounter.textContent = `${document.querySelectorAll('.channel_select_checkbox:checked').length} Selected`;
+            return; 
+        }
+        
+        if (event.target.classList.contains('channel_item')) {
+            event.preventDefault();
+            const checkbox = event.target.previousElementSibling;
+            if (checkbox && checkbox.classList.contains('channel_select_checkbox')) {
+                checkbox.checked = !checkbox.checked;                
+                selectedCounter.textContent = `${document.querySelectorAll('.channel_select_checkbox:checked').length} Selected`;
+            }
+            return;
+        } else if (event.target.classList.contains('channel_wrapper')) {
+            event.preventDefault();
+            event.target.querySelector('.channel_select_checkbox').checked = !event.target.querySelector('.channel_select_checkbox').checked;
+            selectedCounter.textContent = `${document.querySelectorAll('.channel_select_checkbox:checked').length} Selected`;
+            return;
+        }
+    }
+
+    if (!document.getElementById('channel_list').classList.contains('channel_creation_mode') && event.target.innerText.endsWith(' *')) {
+        event.target.innerText = event.target.innerText.slice(0, -2);
+    }
+
+    if (!document.getElementById('channel_list').classList.contains('channel_creation_mode') && event.target.classList.contains('channel_item')) {
+        display_messages_pane(event.target);
+    }
+});
+
+document.getElementById('friend_requests_list').addEventListener('click', (event) => {
+    event.preventDefault();
+    if (event.target.id === 'accept_friend_request_button') {
+        acceptFriendRequest(event.target);
+    } else if (event.target.id === 'reject_friend_request_button') {
+        rejectFriendRequest(event.target);
+    }
+});
+
+document.getElementById('menu-btn').addEventListener('click', toggleSidebar);
+document.getElementById('friends_toggle').addEventListener('click', toggleFriendRequests);
+document.getElementById('channel_list_toggle').addEventListener('click', toggleChannelList);
+document.getElementById('home_link').addEventListener('click', renderDashboard);
+document.getElementById('overlay').addEventListener('click', toggleSidebar);
+document.getElementById('friends_overlay').addEventListener('click', toggleFriendRequests);
+document.querySelector('#add_friends_button').addEventListener('click', toggleFriendRequestPane);
+document.getElementById('friend_requests_pane_back').addEventListener('click', closeFriendRequestPane);
+document.getElementById('add_friends_submit').addEventListener('click', sendFriendRequest);
+document.getElementById('message_pane_toggler').addEventListener('click', closeMessagePane);
+document.getElementById('create_channel_button').addEventListener('click', async () => {
+    await createGroupChannel();
+    document.getElementById('selected_channels_counter').textContent = '0 Selected';
+    toggleChannelCreation();
+});
+
 document.getElementById('workspaces_link').addEventListener('click', () => {
     window.location.href = 'workspaces.html';
 });
 
 document.getElementById('settings_link').addEventListener('click', () => {
     window.location.href = 'settings.html';
+});
+
+document.getElementById('toggle_channel_creation_button').addEventListener('click', () => {
+    toggleChannelCreation();
 });
 
 fetchData();

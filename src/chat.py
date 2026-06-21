@@ -72,13 +72,9 @@ async def load_channel_list():
             for row in channel_response.data:
                 if row["channel_id"] == channel_id:
                     try:
-                        if row["channel_type"] == "private":
-                            friend_uuid = row["channel_members"][0]
-                            if friend_uuid == user_id:
-                                channel_list_names.append(friends.get_username(row["channel_members"][1]))
-                            else:
-                                channel_list_names.append(friends.get_username(row["channel_members"][0]))
-                            
+                        if row["channel_name"] is None or row["channel_type"] == "private":
+                            member_list = [friends.get_username(member) for member in row["channel_members"] if member != user_id]
+                            channel_list_names.append(", ".join(member_list))
                             continue
                         else:
                             channel_list_names.append(row["channel_name"])
@@ -108,13 +104,37 @@ async def add_channel_to_db(channel_type: str, channel_members: list, channel_na
     try:
         timestamp = datetime.now(timezone.utc).isoformat()
         response = await client.from_("channel_list").insert({"created_at": timestamp, "channel_members": channel_members, "channel_type": channel_type, "channel_name": channel_name}).execute()
-            # Update each user's channel list to include the new channel
+        # Update each user's channel list to include the new channel
         channel_id = response.data[0]["channel_id"]
         for member in channel_members:
-            user_response = await client.from_("user_information").select("channel_list").eq("user_id", member).execute()
-            channel_list = user_response.data[0]["channel_list"] if user_response.data and user_response.data[0] else []
-            channel_list.append(channel_id)
-            await client.from_("user_information").update({"channel_list": channel_list}).eq("user_id", member).execute()
+            try: 
+                await client.rpc('add_to_user_channel_list', {"user_id_lookup": member, "channel_id": channel_id}).execute()
+            
+            except Exception as member_error:
+            # Captures and logs if a specific user couldn't be added due to RLS/friendship rules
+                print(f"Skipped updating channel list for member {member}: {member_error}")
+
+        return {"channel_id": channel_id}
 
     except Exception as e:
         print(f"Error occurred while adding channel: {e}")
+
+async def create_group_channel(channel_name: str = None, selected_friend_names: list = []):
+    """
+    Creates a group channel with the given channel name and list of selected friend names.
+    The selected friend names are the list of friends that the user has selected to be added to the group channel.
+    The function retrieves the members of each selected friend and adds them to the group channel.
+    """
+    try:
+        user = await client.auth.get_user()
+        channel_members_ids = [user.user.id]
+        for friend_name in selected_friend_names:
+            friend_uuid = friends.get_uuid(friend_name)
+            channel_members_ids.append(friend_uuid)
+
+        response = await add_channel_to_db("group", channel_members_ids, channel_name)
+        
+        return response
+
+    except Exception as e:
+        print(f"Error occurred while creating group channel: {e}")

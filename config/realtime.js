@@ -12,7 +12,7 @@ async function initializeRealtime() {
                     const activeChannel = document.querySelector('.channel_item.active_channel');
                     const message_channel_ID = payload.new.chat_id;
 
-                    if (activeChannel && activeChannel.dataset.channel_id === message_channel_ID) {
+                    if (activeChannel && activeChannel.parentElement.dataset.channel_id === message_channel_ID) {
                         const messageSection = document.getElementById('messages_section');
                         const p = document.createElement('p');
                         p.classList.add('message_item');
@@ -21,10 +21,10 @@ async function initializeRealtime() {
                         messageSection.scrollTop = messageSection.scrollHeight;
                     }
 
-                    if (!activeChannel || activeChannel.dataset.channel_id !== message_channel_ID) {
+                    if (!activeChannel || activeChannel.parentElement.dataset.channel_id !== message_channel_ID) {
                         const channelButtons = document.querySelectorAll('.channel_item');
                         channelButtons.forEach(button => {
-                            if (button.dataset.channel_id === message_channel_ID) {
+                            if (button.parentElement.dataset.channel_id === message_channel_ID) {
                                 if (!button.textContent.endsWith(' *')) {
                                     button.textContent = button.textContent + ' *';
                                 }

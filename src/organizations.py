@@ -20,7 +20,6 @@ def add_organization(name, description="."):
         print("Error adding organization" + str(e))
         return {"message": f"An error occurred while adding organization to organizations: {str(e)}"} 
 
-
 def delete_organization(organization_id: str, owner_id: str):
     """Delete an organization from the database."""
     try:

@@ -13,7 +13,7 @@ def add_taskboard_to_db(taskboard_name: str):
 def get_personal_taskboards_for_user():
     try:
         user_id = client.auth.get_user().user.id
-        response = client.from_("taskboards").select("*").contains("members", [user_id]).eq("privacy", "private").execute()
+        response = client.from_("taskboards").select("*").contains("members", [user_id]).eq("private", True).execute()
         if response.data:
             return response.data
         else:
@@ -25,7 +25,7 @@ def get_personal_taskboards_for_user():
 def get_shared_taskboards_for_user():
     try:
         user_id = client.auth.get_user().user.id
-        response = client.from_("taskboards").select("*").contains("members", [user_id]).eq("privacy", "public").execute()
+        response = client.from_("taskboards").select("*").contains("members", [user_id]).eq("private", False).execute()
         if response.data:
             return response.data
         else:

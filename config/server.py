@@ -47,6 +47,7 @@ async def dashboard():
 @app.post('/api/navbar')
 async def navbar():
     friends_list = friends.get_friends()
+    await friends.verify_channels()
     channel_list = await chat.load_channel_list()
     friend_requests = friends.get_friend_requests()
     return {"friends": friends_list, "channels": channel_list, "friend_requests": friend_requests}
@@ -192,3 +193,11 @@ def load_organizations_for_users():
         return {"organizations": response}
     except Exception as e:
         return {"message": f"An error occurred while loading organizations for user: {str(e)}"}
+    
+@app.post('/api/channel/create_group_channel')
+async def create_group_channel(channel_name: str = Form(None), selected_friend_names: list = Form(...)):
+    try:
+        response = await chat.create_group_channel(channel_name, selected_friend_names)
+        return {"message": "Group channel created successfully", "data": response}
+    except Exception as e:
+        return {"message": f"An error occurred while creating group channel: {str(e)}"}
