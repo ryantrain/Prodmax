@@ -66,12 +66,14 @@ async def load_channel_list():
     
     channel_list_ids = response.data[0]["channel_list"] if response.data and response.data[0] else []
     channel_list_names = []
+    channel_privacy_status = []
     
     try:
         for channel_id in channel_list_ids:
             for row in channel_response.data:
                 if row["channel_id"] == channel_id:
                     try:
+                        channel_privacy_status.append(row["channel_type"])
                         if row["channel_name"] is None or row["channel_type"] == "private":
                             member_list = [friends.get_username(member) for member in row["channel_members"] if member != user_id]
                             channel_list_names.append(", ".join(member_list))
@@ -83,7 +85,7 @@ async def load_channel_list():
                     except Exception:
                         raise ValueError("No channel found for the given channel id.")
 
-        return channel_list_ids, channel_list_names
+        return channel_list_ids, channel_list_names, channel_privacy_status
     
     except Exception:
         raise ValueError("Error loading channel list.")

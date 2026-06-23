@@ -7,7 +7,7 @@ async function fetchData() {
 
             const channel_list = document.getElementById('channel_list');
             const channel_list_HTML = data.channels[1].map((name, index) => 
-                `<div class="channel_wrapper" data-channel_id="${data.channels[0][index]}">
+                `<div class="channel_wrapper" data-channel_id="${data.channels[0][index]}" data-channel_type="${data.channels[2][index]}">
                     <input type="checkbox" class="channel_select_checkbox hidden">
                     <button class="channel_item">${name}</button>
                 </div>`).join('');
@@ -211,11 +211,24 @@ function toggleChannelCreation() {
     document.getElementById('create_channel_button').classList.toggle('hidden');
     document.getElementById('channel_creation_title').classList.toggle('hidden');
     document.getElementById('selected_channels_counter').classList.toggle('hidden');
+    document.getElementById('create_group_channel_search_channel_query').classList.toggle('hidden');
 
     checkboxes.forEach(cb => cb.classList.toggle('hidden'));
     
     if (!list.classList.contains('channel_creation_mode')) {
         checkboxes.forEach(cb => cb.checked = false);
+        document.querySelectorAll('.channel_item').forEach(item => {
+            if (item.parentElement.classList.contains('hidden')) {
+                item.parentElement.classList.remove('hidden');
+            }
+        })
+    } else {
+        document.querySelectorAll('.channel_item').forEach(item => {
+            console.log(item.parentElement.dataset.channel_type);
+            if (item.parentElement.dataset.channel_type != 'private') {
+                item.parentElement.classList.add('hidden');
+            }
+        })
     }
 }
 
@@ -368,6 +381,22 @@ document.getElementById('settings_link').addEventListener('click', () => {
 
 document.getElementById('toggle_channel_creation_button').addEventListener('click', () => {
     toggleChannelCreation();
+});
+
+document.getElementById('create_group_channel_search_channel_query').addEventListener('input', (event) => {
+    const query = event.target.value.toLowerCase();
+    const channelItems = document.querySelectorAll('.channel_item');
+
+    channelItems.forEach(item => {
+        const channelName = item.textContent.toLowerCase();
+        const channelWrapper = item.parentElement;
+
+        if (channelName.includes(query) && channelWrapper.dataset.channel_type === 'private') {
+            channelWrapper.classList.remove('hidden');
+        } else {
+            channelWrapper.classList.add('hidden');
+        }
+    });
 });
 
 fetchData();

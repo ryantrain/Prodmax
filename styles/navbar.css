@@ -512,6 +512,10 @@
     cursor: pointer;
 }
 
+.channel_wrapper.hidden {
+    display: none;
+}
+
 .channel_select_checkbox {
     background-color: rgb(60, 60, 60);
     width: 1.25rem;
@@ -583,4 +587,31 @@
 
 .selected_channels_counter.hidden {
     display: none;
+}
+
+.create_group_channel_search_channel_query {
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.create_group_channel_search_channel_query.hidden {
+    display: none;
+}
+
+.create_group_channel_search_query {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.create_group_channel_search_query_input {
+    width: 90%;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: none;
+    background-color: #111;
+    color: white;
+    justify-self: center;
+    outline: none;
 }
