@@ -22,7 +22,7 @@
                 ☰
             </button>
 
-            <h2 class="logo">ProdMax</h2>
+            <h2 class="logo">Prodmax</h2>
 
             <button class="friends_toggler" id="friends_toggle">
                 <img src="../assets/svgs/friends.svg">
@@ -43,14 +43,20 @@
         <div id="overlay" class="overlay"></div>
 
         <div id="friends_overlay" class="overlay"></div>
-        
-        <div class="add_task_overlay"></div>
+
+        <div id="add_task_overlay" class="add_task_overlay"></div>
 
         <div id="friends_sidebar" class="friends_sidebar">
-            <button class="add_friends_button" id="add_friends_button">
-                <svg fill="#ffffff" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 45.902 45.902" xml:space="preserve" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path d="M43.162,26.681c-1.564-1.578-3.631-2.539-5.825-2.742c1.894-1.704,3.089-4.164,3.089-6.912 c0-5.141-4.166-9.307-9.308-9.307c-4.911,0-8.932,3.804-9.281,8.625c4.369,1.89,7.435,6.244,7.435,11.299 c0,1.846-0.42,3.65-1.201,5.287c1.125,0.588,2.162,1.348,3.066,2.26c2.318,2.334,3.635,5.561,3.61,8.851l-0.002,0.067 l-0.002,0.057l-0.082,1.557h11.149l0.092-12.33C45.921,30.878,44.936,28.466,43.162,26.681z"></path> <path d="M23.184,34.558c1.893-1.703,3.092-4.164,3.092-6.912c0-5.142-4.168-9.309-9.309-9.309c-5.142,0-9.309,4.167-9.309,9.309 c0,2.743,1.194,5.202,3.084,6.906c-4.84,0.375-8.663,4.383-8.698,9.318l-0.092,1.853h14.153h15.553l0.092-1.714 c0.018-2.514-0.968-4.926-2.741-6.711C27.443,35.719,25.377,34.761,23.184,34.558z"></path> <path d="M6.004,11.374v3.458c0,1.432,1.164,2.595,2.597,2.595c1.435,0,2.597-1.163,2.597-2.595v-3.458h3.454 c1.433,0,2.596-1.164,2.596-2.597c0-1.432-1.163-2.596-2.596-2.596h-3.454V2.774c0-1.433-1.162-2.595-2.597-2.595 c-1.433,0-2.597,1.162-2.597,2.595V6.18H2.596C1.161,6.18,0,7.344,0,8.776c0,1.433,1.161,2.597,2.596,2.597H6.004z"></path> </g> </g> </g></svg>
-            </button>
+            <div class="friends_sidebar_header"><h2 class="friends_sidebar_title">Friends</h2>
+                <button class="add_friends_button" id="add_friends_button">
+                    <svg fill="#ffffff" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 45.902 45.902" xml:space="preserve" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path d="M43.162,26.681c-1.564-1.578-3.631-2.539-5.825-2.742c1.894-1.704,3.089-4.164,3.089-6.912 c0-5.141-4.166-9.307-9.308-9.307c-4.911,0-8.932,3.804-9.281,8.625c4.369,1.89,7.435,6.244,7.435,11.299 c0,1.846-0.42,3.65-1.201,5.287c1.125,0.588,2.162,1.348,3.066,2.26c2.318,2.334,3.635,5.561,3.61,8.851l-0.002,0.067 l-0.002,0.057l-0.082,1.557h11.149l0.092-12.33C45.921,30.878,44.936,28.466,43.162,26.681z"></path> <path d="M23.184,34.558c1.893-1.703,3.092-4.164,3.092-6.912c0-5.142-4.168-9.309-9.309-9.309c-5.142,0-9.309,4.167-9.309,9.309 c0,2.743,1.194,5.202,3.084,6.906c-4.84,0.375-8.663,4.383-8.698,9.318l-0.092,1.853h14.153h15.553l0.092-1.714 c0.018-2.514-0.968-4.926-2.741-6.711C27.443,35.719,25.377,34.761,23.184,34.558z"></path> <path d="M6.004,11.374v3.458c0,1.432,1.164,2.595,2.597,2.595c1.435,0,2.597-1.163,2.597-2.595v-3.458h3.454 c1.433,0,2.596-1.164,2.596-2.597c0-1.432-1.163-2.596-2.596-2.596h-3.454V2.774c0-1.433-1.162-2.595-2.597-2.595 c-1.433,0-2.597,1.162-2.597,2.595V6.18H2.596C1.161,6.18,0,7.344,0,8.776c0,1.433,1.161,2.597,2.596,2.597H6.004z"></path> </g> </g> </g></svg>
+                </button>
+            </div>
 
+            <div class="friends_sidebar_search_query">
+                <input type="search" class="friends_sidebar_search_query_input" id="friends_sidebar_search_query_input" placeholder="Search friends...">
+            </div>
+            
             <div class="friend_requests_pane" id="friend_requests_pane">
                 <div class="friend_requests_pane_header">
                     <button class="friend_requests_pane_back" id="friend_requests_pane_back">←</button>
@@ -67,7 +73,26 @@
 
         </div>
 
-        <div class="channel_container" id="channel_list"></div>
+        <div class="channel_container" id="channel_list">
+            <div class="channel_header_row">
+                <h3 class="hidden" id="channel_creation_title">Channel Creation</h3>
+                <button class="toggle_channel_creation_button" id="toggle_channel_creation_button">
+                    <svg fill="#ffffff" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" enable-background="new 0 0 52 52" xml:space="preserve" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M45.5,17l-3.4,3.5c-0.6,0.6-0.9,1.3-0.9,2.1V40c0,0.8-0.7,1.5-1.5,1.5h-27c-0.8,0-1.5-0.7-1.5-1.5V13 c0-0.8,0.7-1.5,1.5-1.5h17.5c0.8,0,1.6-0.3,2.1-0.9l3.4-3.4c0.6-0.6,0.2-1.7-0.7-1.7H9.2c-2.2,0-4,1.8-4,4v34c0,2.2,1.8,4,4,4h34 c2.2,0,4-1.8,4-4V17.7C47.2,16.8,46.1,16.4,45.5,17z"></path> <path d="M18.9,30.7l3.7,3.7c0.2,0.2,0.4,0.2,0.6,0l19.4-19.9c0.2-0.2,0.2-0.4,0-0.6L39,10.3c-0.2-0.2-0.4-0.2-0.6,0 L18.9,30.1C18.7,30.3,18.7,30.5,18.9,30.7z"></path> <path d="M40.1,8.6c-0.2,0.2-0.2,0.4,0,0.6l3.6,3.6c0.2,0.2,0.4,0.2,0.6,0l2.5-2.5c0.7-0.6,0.7-1.6,0-2.3l-1.8-1.8 c-0.7-0.7-1.7-0.7-2.4,0C42.5,6.2,40.1,8.6,40.1,8.6z"></path> <path d="M15.6,36.9c-0.1,0.4,0.3,0.8,0.7,0.7c0.6-0.2,1.3-0.3,1.9-0.5c0.5-0.1,1-0.2,1.5-0.4c0.5-0.1,1-0.2,1.4-0.4 c0.2-0.1,0.6-0.5,0.3-0.8c0,0-3.8-3.8-3.8-3.8c-0.3-0.3-0.6,0-0.7,0.2c-0.3,0.4-0.4,1-0.5,1.4c-0.1,0.5-0.3,1-0.4,1.5 C15.9,35.7,15.8,36.3,15.6,36.9z"></path> </g></svg>
+                </button>
+            </div>
+            
+            <div class="channel_header_contents_row">
+                <h2 class="selected_channels_counter hidden" id="selected_channels_counter">0 Selected</h2>
+                <button class="create_channel_button hidden" id="create_channel_button">Create Channel</button>
+            </div>
+
+            <div class="create_group_channel_search_channel_query hidden" id="create_group_channel_search_channel_query">
+                <search class="create_group_channel_search_query">
+                    <input type="search" class="create_group_channel_search_query_input" id="create_group_channel_search_query_input" placeholder="Search connections...">
+                </search>
+            </div>
+        </div>
+
         <div class="message_pane" id="message_pane">
             <div class="messages_section">
                 <button type="button" id="message_pane_toggler" class="message_pane_toggler" aria-label="Back to channels">←</button>
@@ -78,6 +103,7 @@
                 <input class="message_input_form" type="text" name="message_input" placeholder="Type your message here..." required/>
             </form>
         </div>
+        
 
         <div class="task-list" id="task-list">
         </div>
@@ -96,7 +122,10 @@
             <button class="close_add_task_button" id="close_edit_task_button">Cancel</button>
         </div>
 
-    </div>
+        <div class="invite_people_container" id="invite_people_container">
+            <input class="invite_people_input" id="invite_people_input" type="text" placeholder="Enter username..." required/>
+            <button class="submit_invite_button" id="submit_invite_button">Invite</button>
+        </div>
 
 </body>
 </html>

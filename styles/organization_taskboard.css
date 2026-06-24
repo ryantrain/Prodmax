@@ -1,0 +1,4 @@
+.invite_people_container {
+    grid-area: chat-area;
+    display: flex;
+}
