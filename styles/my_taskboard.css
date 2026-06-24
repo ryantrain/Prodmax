@@ -133,7 +133,8 @@ body {
 .create-task-button {
     display: flex;
     padding: 1rem;
-    background-color: rgba(90, 90, 90, 0.526);
+    background-color: rgba(90,
+     90, 90, 0.526);
     border-radius: 12px;
     transition: background-color 0.2s ease-in-out;
     width: 95%;

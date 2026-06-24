@@ -1,4 +1,4 @@
-var organizationboard_id = null;
+var organization_id = null;
 var current_editing_organization = null;
 var current_deleting_organization = null;
 
@@ -7,7 +7,7 @@ async function loadOrganizations() {
 
     try {
         response = await fetch('http://localhost:8000/api/organizations/load', {
-            method: 'POST'
+            method: 'GET'
         });
 
         if (response.ok) {
@@ -45,7 +45,8 @@ async function createOrganization() {
 
         if (response.ok) {
             data = await response.json();
-            addOrganizationCard(data.organization_id, organization_title, organization_description);
+            console.log(data);
+            addOrganizationCard(data.data[0], organization_title, organization_description);
         }
 
     } catch (error) {
@@ -80,7 +81,11 @@ function addOrganizationCard(organization_id, organization_title, organization_d
     organizationElement.appendChild(organizationContent);
 
     const createOrganizationButton = document.querySelector('.create-organization-button');
+
     organization.insertBefore(organizationElement, createOrganizationButton);
+    organizationElement.onclick = async () => {
+        await fetchOrganizationTasks(organization_id);
+    }
 }
 
 // toggle the add organization button???
@@ -127,45 +132,45 @@ function toggleEditOrganizationInterface(card) {
     document.getElementById('organization_description_input_edit').value = currentDescription;
 }
 
-async function EditOrganization() {
-    // Function updates the corresponding organization to the db and updates the text on the card
-    const organization_title = document.getElementById('organization_title_input_edit').value;
-    const organization_description = document.getElementById('organization_description_input_edit').value;
+// async function EditOrganization() {
+//     // Function updates the corresponding organization to the db and updates the text on the card
+//     const organization_title = document.getElementById('organization_title_input_edit').value;
+//     const organization_description = document.getElementById('organization_description_input_edit').value;
 
-    const formData = new FormData();
-    formData.append('organization_name', organization_title);
-    formData.append('organization_description', organization_description);
+//     const formData = new FormData();
+//     formData.append('organization_name', organization_title);
+//     formData.append('organization_description', organization_description);
 
-    try {
-        response = await fetch('http://localhost:8000/api/organizationboard/edit_organization' ,{
-            method: 'POST',
-            body: formData
-        });
+//     try {
+//         response = await fetch('http://localhost:8000/api/organizationboard/edit_organization' ,{
+//             method: 'POST',
+//             body: formData
+//         });
 
-        if (response.ok) {
-            current_editing_organization.querySelector('.card-title').querySelector('h3').textContent = organization_title;
-            current_editing_organization.querySelector('.card-description-text').textContent = organization_description;
-        }
+//         if (response.ok) {
+//             current_editing_organization.querySelector('.card-title').querySelector('h3').textContent = organization_title;
+//             current_editing_organization.querySelector('.card-description-text').textContent = organization_description;
+//         }
 
-    } catch (error) {
-        console.error('Error editing organization:', error);
-    }
-}
+//     } catch (error) {
+//         console.error('Error editing organization:', error);
+//     }
+// }
 
-async function deleteOrganization(organization_id) {
-    try {
-        const response = await fetch('http://localhost:8000/api/organizationboard/' + organizationboard_id + '/delete_organization/' + organization_id, {
-            method: 'POST'
-        });
+// async function deleteOrganization(organization_id) {
+//     try {
+//         const response = await fetch('http://localhost:8000/api/organizationboard/' + taskboard_id + '/delete_organization/' + organization_id, {
+//             method: 'POST'
+//         });
 
-        if (response.ok) {
-            current_deleting_organization.remove();
-            current_deleting_organization = null;
-        }
-    } catch (error) {
-        console.error('Error deleting organization:', error);
-    }
-}
+//         if (response.ok) {
+//             current_deleting_organization.remove();
+//             current_deleting_organization = null;
+//         }
+//     } catch (error) {
+//         console.error('Error deleting organization:', error);
+//     }
+// }
 
 document.querySelector('.add_organization_overlay').addEventListener('click', () => {
     if (document.getElementById('add_organization_container').classList.contains('active')) {
@@ -191,4 +196,33 @@ document.getElementById('confirm_edit_organization_button').addEventListener('cl
     toggleEditOrganizationOverlay();
 });
 
+
+
+
 loadOrganizations();
+
+const organizations = document.querySelectorAll('.organization-card');
+
+async function fetchOrganizationTasks(organization_id) {
+    try {
+        const organization_response = await fetch(`http://localhost:8000/api/${organization_id}/organization_taskboard`, {
+            method: 'GET'
+        });
+
+        const organization_taskboard_data = await organization_response.json();
+
+        if(organization_taskboard_data){
+            sessionStorage.setItem('preFetchedData_organization_taskboard', JSON.stringify(organization_taskboard_data));
+            sessionStorage.setItem('organization_id', organization_id);
+        }
+        else{
+            console.log("No data to fetch");
+        }   
+        window.location.href = 'organization_taskboard.html';
+
+
+    } catch (error) {
+        console.error(`Error fetching taskboard data for ID ${organization_id}:`, error);
+        return { organizations: [] };
+    }
+}

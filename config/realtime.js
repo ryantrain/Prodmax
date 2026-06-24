@@ -37,7 +37,7 @@ async function initializeRealtime() {
 async function getUsername(sender_id) {
     try{
         const response = await fetch(`http://localhost:8000/api/user/${sender_id}`, {
-            method: 'POST'
+            method: 'GET'
         });
 
         const data = await response.json();

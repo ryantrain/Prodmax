@@ -44,7 +44,7 @@ function display_messages_pane(button) {
 
 async function load_messages(channel_id) {
     const response = await fetch('http://localhost:8000/api/load_messages/' + channel_id, {
-        method: 'POST'
+        method: 'GET'
     });
 
     const data = await response.json();
@@ -183,11 +183,11 @@ function rejectFriendRequest(button) {
 async function renderDashboard() {
     try {
         const dashboard_response = await fetch('http://localhost:8000/api/dashboard', {
-            method: 'POST'
+            method: 'GET'
         });
 
         const navbar_response = await fetch('http://localhost:8000/api/navbar', {
-            method: 'POST'
+            method: 'GET'
         });
 
         const dashboardData = await dashboard_response.json();

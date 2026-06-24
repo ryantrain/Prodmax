@@ -81,11 +81,11 @@ function updateTaskCount(){
 async function fetchPersonalTaskInfo(taskboard_id) {
     try {
         const taskboard_response = await fetch(`http://localhost:8000/api/taskboard/${taskboard_id}`, {
-            method: 'POST'
+            method: 'GET'
         });
 
         const navbar_response = await fetch('http://localhost:8000/api/navbar', {
-            method: 'POST'
+            method: 'GET'
         });
 
         const taskboard_data = await taskboard_response.json();

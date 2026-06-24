@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="../styles/navbar.css">
-    <link rel="stylesheet" href="../styles/organizations.css">
+    <link rel="stylesheet" href="../styles/my_taskboard.css">
+    <link rel="stylesheet" href="../styles/organization_taskboard.css">
     <meta charset="UTF-8">
     <script src="../scripts/navbar.js" defer></script>
-    <script src="../scripts/organizations.js" defer></script>
+    <script src="../scripts/organization_taskboard.js" defer></script>
+    <script src="../config/realtime.js" type="module" defer></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Organizations</title>
+    <title>Taskboards</title>
     <meta 
         http-equiv="Content-Security-Policy" 
         content="default-src 'self'; connect-src http://localhost:8000 https://*.supabase.co wss://*.supabase.co"
@@ -42,7 +44,7 @@
 
         <div id="friends_overlay" class="overlay"></div>
         
-        <div class="add_organization_overlay"></div>
+        <div class="add_task_overlay"></div>
 
         <div id="friends_sidebar" class="friends_sidebar">
             <button class="add_friends_button" id="add_friends_button">
@@ -62,10 +64,10 @@
                     <button type="button" id="add_friends_submit" class="add_friends_submit">+</button>
                 </div>
             </div>
+
         </div>
 
         <div class="channel_container" id="channel_list"></div>
-        
         <div class="message_pane" id="message_pane">
             <div class="messages_section">
                 <button type="button" id="message_pane_toggler" class="message_pane_toggler" aria-label="Back to channels">←</button>
@@ -77,27 +79,24 @@
             </form>
         </div>
 
-        <div class="organization-list" id="organization-list">
-
-            <div class="add_organization_container" id="add_organization_container" active>
-                <input class="organization_title_input" id="organization_title_input" type="text" placeholder="Enter title..." required/>
-                <textarea class="organization_description_input" id="organization_description_input" placeholder="Enter organization content..." required></textarea>
-                <button class="submit_organization_button" id="submit_organization_button">Create Organization</button>
-                <button class="close_add_organization_button" id="close_add_organization_button">Cancel</button>
-            </div>
-
-            <div class="add_organization_container" id="edit_organization_container" active>
-                <input class="organization_title_input" id="organization_title_input_edit" type="text" placeholder="Enter title..." required/>
-                <textarea class="organization_description_input" id="organization_description_input_edit" placeholder="Enter organization content..." required></textarea>
-                <button class="submit_organization_button" id="confirm_edit_organization_button">Confirm Edit</button>
-                <button class="close_add_organization_button" id="close_edit_organization_button">Cancel</button>
-            </div>
+        <div class="task-list" id="task-list">
         </div>
+
+        <div class="add_task_container" id="add_task_container">
+                <input class="task_title_input" id="task_title_input" type="text" placeholder="Enter title..." required/>
+                <textarea class="task_description_input" id="task_description_input" placeholder="Enter task content..." required></textarea>
+                <button class="submit_task_button" id="submit_task_button">Add Task</button>
+                <button class="close_add_task_button" id="close_add_task_button">Cancel</button>
+            </div>
+
+        <div class="add_task_container" id="edit_task_container">
+            <input class="task_title_input" id="task_title_input_edit" type="text" placeholder="Enter title..." required/>
+            <textarea class="task_description_input" id="task_description_input_edit" placeholder="Enter task content..." required></textarea>
+            <button class="submit_task_button" id="confirm_edit_task_button">Confirm Edit</button>
+            <button class="close_add_task_button" id="close_edit_task_button">Cancel</button>
+        </div>
+
     </div>
 
 </body>
-
 </html>
-
-
-        

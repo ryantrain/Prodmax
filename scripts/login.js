@@ -25,11 +25,11 @@ document.getElementById('login-form').addEventListener('submit', async(e) => {
             });
            
             const response_dashboard = await fetch('http://localhost:8000/api/dashboard', {
-                method: 'POST'
+                method: 'GET'
             });
 
             const response_navbar = await fetch('http://localhost:8000/api/navbar', {
-                method: 'POST'
+                method: 'GET'
             });
 
             const dashboardData = await response_dashboard.json();

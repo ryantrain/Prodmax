@@ -41,3 +41,15 @@ def retrieve_organizations_for_user():
     except Exception as e:      
         print("Error retrieving organizations for user")
         return {"message": f"An error occurred while retrieving organizations for user: {str(e)}"}
+    
+def retrieve_organization_tasks(organization_id):
+    """Retrieve organization tasks."""
+    try:
+        response = client.from_("taskboards").select("*").eq("organization_id", organization_id).execute()
+        if not response.data:
+            return []
+        return response.data
+            
+    except Exception as e:      
+        print("Error retrieving organization tasks for user")
+        return {"message": f"An error occurred while retrieving organizations for user: {str(e)}"}
