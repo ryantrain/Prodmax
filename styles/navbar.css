@@ -143,6 +143,7 @@
     transition: transform 0.1s ease-in-out;
     margin-bottom: 0.75rem;
     cursor: pointer;
+    grid-area: button;
 }
 
 .add_friends_button svg {
@@ -614,4 +615,39 @@
     color: white;
     justify-self: center;
     outline: none;
+}
+
+.friends_sidebar_header {
+    display: grid;
+    grid-template-columns: 1fr max-content;
+    grid-template-areas: "title button";
+}
+
+.friends_sidebar_title {
+    grid-area: title;
+    justify-self: center;
+    align-self: end;
+    font-size: 2rem;
+    margin-bottom: 0.4rem;
+}
+
+.friends_sidebar_search_query {
+    justify-self: center;
+    align-self: center;
+    margin-bottom: 0.5rem;
+    background-color: #111;
+    color: white;
+    padding: 0.5rem;
+    width: 90%;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+}
+
+.friends_sidebar_search_query_input {
+    width: 100%;
+    border: none;
+    background-color: #111;
+    color: white;
+    outline: none;
+    font-size: 1.5rem;
 }

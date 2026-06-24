@@ -399,4 +399,20 @@ document.getElementById('create_group_channel_search_channel_query').addEventLis
     });
 });
 
+document.getElementById('friends_sidebar_search_query_input').addEventListener('input', (event) => {
+    const query = event.target.value.toLowerCase();
+    const friendItems = document.querySelectorAll('.friends_item');
+
+    friendItems.forEach(item => {
+        const friendName = item.textContent.toLowerCase();
+
+        if (friendName.includes(query)) {
+            item.classList.remove('hidden');
+        } else {
+            item.classList.add('hidden');
+        }
+
+    });
+});
+
 fetchData();
