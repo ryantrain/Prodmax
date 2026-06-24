@@ -18,7 +18,7 @@ def get_personal_taskboards_for_user():
         if response.data:
             return response.data
         else:
-        response = client.from_("taskboards").select("*").contains("members", [user_id]).eq("private", "True").execute()
+            response = client.from_("taskboards").select("*").contains("members", [user_id]).eq("private", "True").execute()
         if not response.data:
             return []
         return response.data
