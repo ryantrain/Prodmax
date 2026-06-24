@@ -229,3 +229,11 @@ def add_task(taskboard_id: str, task_name: str = Form(...), task_description: st
         return {"message": "Task added successfully", "data": response, "ok": True}
     except Exception as e:
         return {"message": f"An error occurred while adding task to taskboard: {str(e)}"}
+    
+@app.post('/api/organization/{organization_id}/invite_members')
+def invite_members_to_organization(organization_id: str, member_ids: list = Form(...)):
+    try:
+        response = organizations.invite_members_to_organization(organization_id, member_ids)
+        return {"message": "Members invited successfully", "data": response}
+    except Exception as e:
+        return {"message": f"An error occurred while inviting members to organization: {str(e)}"}

@@ -47,10 +47,20 @@ def retrieve_organization_tasks(organization_id):
     try:
         response_tasks = client.from_("taskboards").select("*").eq("organization_id", organization_id).execute()
         response_organization = client.from_("organizations").select("*").eq("organization_id", organization_id).execute()
-        if not response_tasks.data or not response_organization.data:
-            return []
         return response_tasks.data, response_organization.data
             
     except Exception as e:      
         print("Error retrieving organization tasks for user")
         return {"message": f"An error occurred while retrieving organizations for user: {str(e)}"}
+    
+def invite_members_to_organization(organization_id: str, member_ids: list):
+    """Invite members to an organization."""
+    try:
+        user_response = client.auth.get_user()
+        user_id = user_response.user.id
+        response = client.rpc("invite_members_to_organization", {"selected_organization_id": organization_id, "user_id": user_id, "members_to_invite": member_ids}).execute()
+        return response
+    except Exception as e:
+        print("Error inviting members to organization")
+        print(e)
+        return {"message": f"An error occurred while inviting members to organization: {str(e)}"}

@@ -33,16 +33,18 @@ def get_friends() -> list:
 
         # Returns a list of dictionaries of length 1 with the username of each friend in each dictionary                        
         friends_list = []
+        friends_list_ids = []
         for row in friends_ids:
             uuid_pair = row.get("uuid_pair")
 
             uuid = uuid_pair[0] if uuid_pair[0] != user_uuid else uuid_pair[1]
+            friends_list_ids.append(uuid)
 
             friend_username = get_username(uuid)
             
             friends_list.append(friend_username)
 
-        return friends_list, friends_ids
+        return friends_list, friends_list_ids
 
     raise RuntimeError("client does not exist")
 

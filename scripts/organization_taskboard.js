@@ -279,6 +279,24 @@ function loadInviteMembersList() {
     }
 }
 
+async function InviteSelectedMembers() {
+    const selectedMembers = document.querySelectorAll('.invite_members_list_item_checkbox:checked');
+    const selectedMemberIds = Array.from(selectedMembers).map(member => member.parentElement.dataset.friend_id);
+
+    try {
+        const formData = new FormData();
+        selectedMemberIds.forEach(id => formData.append('member_ids', id));
+
+        response = await fetch(`http://localhost:8000/api/organization/${organization_id}/invite_members`, {
+            method: 'POST',
+            body: formData
+        });
+
+    } catch (error) {
+        console.error('Error inviting members:', error);
+    }
+}
+
 document.querySelector('.add_task_overlay').addEventListener('click', () => {
     if (document.getElementById('add_task_container').classList.contains('active')) {
         toggleAddTaskOverlay();
@@ -342,6 +360,8 @@ document.getElementById('invite_members_cancel_button').addEventListener('click'
 });
 
 document.getElementById('invite_members_confirm_button').addEventListener('click', async () => {
+    await InviteSelectedMembers();
+    toggleInviteMembersOverlay();
 });
 
 loadOrganizationTaskboards();

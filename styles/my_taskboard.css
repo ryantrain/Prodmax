@@ -144,7 +144,7 @@ body {
     height: 13rem;
     color: white;
     justify-self: center;
-    align-self: center;
+    align-self: start;
     outline: none;
     border: 3px dashed rgb(106, 106, 106);
     align-items: center;
