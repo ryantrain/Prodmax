@@ -1,25 +1,35 @@
 const organization_id = sessionStorage.getItem("organization_id");
+const organization_members = JSON.parse(sessionStorage.getItem("preFetchedData_organization_taskboard")).organization[0].members;
 
 function loadOrganizationTaskboards() {
     const taskboardData = sessionStorage.getItem('preFetchedData_organization_taskboard'); 
     const orglist = document.getElementById('task-list');
+    const organization_name = sessionStorage.getItem('organization_name');
+    const organization_title_element = document.querySelector('.organization_taskboard_header_title');
+    
+    const organization_title = document.createElement('h2');
+    organization_title.textContent = organization_name;
+    organization_title_element.appendChild(organization_title);
 
     if (taskboardData) {
         const data = JSON.parse(taskboardData);
-        console.log(data);
-        for (const task of data.organizations) {
+        for (const task of data.tasks) {
             addOrganizationTaskboardCard(task.taskboard_name, task.taskboard_description, task.uuid)
         }
     }
+
     const createTaskButton = document.createElement('button');
     createTaskButton.textContent = '+';
     createTaskButton.classList.add('create-task-button');
     createTaskButton.onclick = () => {
         toggleAddTaskOverlay();        
     };
+
     orglist.appendChild(createTaskButton);
 
     sessionStorage.removeItem('preFetchedData_organization_taskboard');
+    sessionStorage.removeItem('organization_id');
+    sessionStorage.removeItem('organization_name');
 }
 
 async function createOrganizationTaskboard(organization_id) {
@@ -201,32 +211,6 @@ async function deleteTask(task_id) {
     }
 }
 
-document.querySelector('.add_task_overlay').addEventListener('click', () => {
-    if (document.getElementById('add_task_container').classList.contains('active')) {
-        toggleAddTaskOverlay();
-    } else if (document.getElementById('edit_task_container').classList.contains('active')) {
-        toggleEditTaskOverlay();
-}});
-
-document.getElementById('close_add_task_button').addEventListener('click', toggleAddTaskOverlay);
-
-document.getElementById('submit_task_button').addEventListener('click', () => {
-    createOrganizationTaskboard(organization_id);
-    toggleAddTaskOverlay();
-});
-
-document.getElementById('close_edit_task_button').addEventListener('click', () => {
-    toggleEditTaskOverlay();
-});
-
-document.getElementById('confirm_edit_task_button').addEventListener('click', async () => {
-    await EditTask(current_editing_task.dataset.task_id);
-    current_editing_task = null; // Reset current editing task after edit
-    toggleEditTaskOverlay();
-});
-
-loadOrganizationTaskboards();
-
 async function fetchTaskInfo(taskboard_id) {
     try {
         const taskboard_response = await fetch(`http://localhost:8000/api/taskboard/${taskboard_id}`, {
@@ -251,3 +235,113 @@ async function fetchTaskInfo(taskboard_id) {
         return { taskboards: [] };
     }
 }
+
+function toggleInviteMembersOverlay() {
+    const overlay = document.getElementById('invite_members_overlay');
+    const container = document.getElementById('invite_members_container');
+    overlay.classList.toggle('active');
+    container.classList.toggle('active');
+}
+
+function loadInviteMembersList() {
+    if (!document.getElementById('invite_members_overlay').classList.contains('active') || !document.getElementById('invite_members_container').classList.contains('active')) {
+        return;
+    }
+
+    const inviteMembersList = document.getElementById('invite_members_list');
+    const friends = document.querySelectorAll('.friends_item');
+
+    // clear existing items
+    while (inviteMembersList.firstChild) {
+        inviteMembersList.removeChild(inviteMembersList.firstChild);
+    }
+
+    document.getElementById('invite_members_selected_count_link').textContent = '0 selected';
+
+    for (const friend of friends) {
+        if (!organization_members.includes(friend.dataset.friend_id)) {
+            const invite_members_list_item = document.createElement('div');
+            invite_members_list_item.classList.add('invite_members_list_item');
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.classList.add('invite_members_list_item_checkbox');
+                invite_members_list_item.appendChild(checkbox);
+
+                const textContent = document.createElement('span');
+                textContent.classList.add('invite_members_list_item_username');
+                textContent.textContent = friend.textContent;
+                invite_members_list_item.appendChild(textContent);
+
+            invite_members_list_item.dataset.friend_id = friend.dataset.friend_id;
+            inviteMembersList.appendChild(invite_members_list_item);
+        }
+    }
+}
+
+document.querySelector('.add_task_overlay').addEventListener('click', () => {
+    if (document.getElementById('add_task_container').classList.contains('active')) {
+        toggleAddTaskOverlay();
+    } else if (document.getElementById('edit_task_container').classList.contains('active')) {
+        toggleEditTaskOverlay();
+}});
+
+document.getElementById('close_add_task_button').addEventListener('click', toggleAddTaskOverlay);
+
+document.getElementById('submit_task_button').addEventListener('click', () => {
+    createOrganizationTaskboard(organization_id);
+    toggleAddTaskOverlay();
+});
+
+document.getElementById('close_edit_task_button').addEventListener('click', () => {
+    toggleEditTaskOverlay();
+});
+
+document.getElementById('confirm_edit_task_button').addEventListener('click', async () => {
+    await EditTask(current_editing_task.dataset.task_id);
+    current_editing_task = null; // Reset current editing task after edit
+    toggleEditTaskOverlay();
+});
+
+document.getElementById('invite_members_button').addEventListener('click', () => {
+    toggleInviteMembersOverlay();
+    loadInviteMembersList();
+});
+
+document.getElementById('invite_members_overlay').addEventListener('click', (event) => {
+    if (event.target === document.getElementById('invite_members_overlay')) {
+        toggleInviteMembersOverlay();
+    }
+});
+
+document.getElementById('invite_members_list').addEventListener('click', (event) => {
+    if (event.target.classList.contains('invite_members_list_item')) {
+        event.target.querySelector('.invite_members_list_item_checkbox').checked = !event.target.querySelector('.invite_members_list_item_checkbox').checked;
+    } else if (event.target.classList.contains('invite_members_list_item_username')) {
+        event.target.closest('.invite_members_list_item').querySelector('.invite_members_list_item_checkbox').checked = !event.target.closest('.invite_members_list_item').querySelector('.invite_members_list_item_checkbox').checked;
+    }
+    document.getElementById('invite_members_selected_count_link').textContent = document.querySelectorAll('.invite_members_list_item_checkbox:checked').length + ' selected';
+});
+
+document.getElementById('invite_members_search_query_input').addEventListener('input', () => {
+    const searchQuery = document.getElementById('invite_members_search_query_input').value.toLowerCase();
+    const inviteMembersListNames = document.querySelectorAll('.invite_members_list_item_username');
+
+    inviteMembersListNames.forEach(item => {
+        const username = item.textContent.toLowerCase();
+        if (username.includes(searchQuery)) {
+            item.parentElement.classList.remove('hidden');
+        } else {
+            item.parentElement.classList.add('hidden');
+        }
+    });
+});
+
+document.getElementById('invite_members_cancel_button').addEventListener('click', () => {
+    toggleInviteMembersOverlay();
+});
+
+document.getElementById('invite_members_confirm_button').addEventListener('click', async () => {
+});
+
+loadOrganizationTaskboards();

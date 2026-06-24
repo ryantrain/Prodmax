@@ -1,6 +1,7 @@
 async function fetchData() {
     try {
         const rawData = sessionStorage.getItem('preFetchedData_navbar');
+        console.log(rawData);
 
         if (rawData) {
             const data = JSON.parse(rawData);
@@ -14,7 +15,7 @@ async function fetchData() {
             channel_list.insertAdjacentHTML('beforeend', channel_list_HTML);
 
             const friendList = document.getElementById('friends_sidebar');
-            const friendsListHTML = data.friends.map(name => `<p class="friends_item">${name}</p>`).join('');
+            const friendsListHTML = data.friends[0].map((name, index) => `<p class="friends_item" data-friend_id = "${data.friends[1][index]}">${name}</p>`).join('');
             friendList.insertAdjacentHTML('beforeend', friendsListHTML);
 
             const friendRequestList = document.getElementById('friend_requests_list');
@@ -234,19 +235,13 @@ function toggleChannelCreation() {
 
 async function renderOrganizations() {
     try {
-        const organization_response = await fetch('http://localhost:8000/api/organizations', {
-            method: 'POST'
-        });
-
         const navbar_response = await fetch('http://localhost:8000/api/navbar', {
-            method: 'POST'
+            method: 'GET'
         });
 
-        const organizationsData = await organization_response.json();
         const navbarData = await navbar_response.json();
 
         sessionStorage.setItem('preFetchedData_navbar', JSON.stringify(navbarData));
-        sessionStorage.setItem('preFetchedData_organizations', JSON.stringify(organizationsData));
     } catch (error) {
         console.error('Error rendering organizations:', error);
     }
@@ -369,6 +364,10 @@ document.getElementById('create_channel_button').addEventListener('click', async
     await createGroupChannel();
     document.getElementById('selected_channels_counter').textContent = '0 Selected';
     toggleChannelCreation();
+});
+
+document.getElementById('organizations_link').addEventListener('click', () => {
+    renderOrganizations();
 });
 
 document.getElementById('workspaces_link').addEventListener('click', () => {

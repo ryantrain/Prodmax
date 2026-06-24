@@ -23,17 +23,17 @@ def get_friends() -> list:
 
         # Returns a dictionary with each key containing a list of length 2 uuid pairs
 
-        friends = client.from_('friendships')\
+        friends_ids = client.from_('friendships')\
                                 .select("uuid_pair")\
                                 .contains("uuid_pair", [user_uuid])\
                                 .eq("status", "accepted").execute().data
         
-        if not friends:
+        if not friends_ids:
             return []
 
         # Returns a list of dictionaries of length 1 with the username of each friend in each dictionary                        
         friends_list = []
-        for row in friends:
+        for row in friends_ids:
             uuid_pair = row.get("uuid_pair")
 
             uuid = uuid_pair[0] if uuid_pair[0] != user_uuid else uuid_pair[1]
@@ -42,7 +42,7 @@ def get_friends() -> list:
             
             friends_list.append(friend_username)
 
-        return friends_list
+        return friends_list, friends_ids
 
     raise RuntimeError("client does not exist")
 
@@ -117,7 +117,7 @@ async def verify_channels():
     Verifies that a channel exists for each friend in the user's friend list.
     If a channel does not exist between the user and a friend, then create a channel for the user and that friend.
     """
-    friend_list = get_friends()
+    friend_list = get_friends()[0]
     for friend in friend_list:
         try:
             get_channel_id(friend)

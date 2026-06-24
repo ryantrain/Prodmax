@@ -35,7 +35,7 @@
 
         <div id="sidebar" class="sidebar">
             <a id="home_link">Home</a>
-            <a id="organizations_link" href="organizations.html">Organizations</a>
+            <a id="organizations_link">Organizations</a>
             <a id="workspaces_link" href="workspaces.html">Workspaces</a>
             <a id="settings_link" href="settings.html">Settings</a>
         </div>
@@ -45,6 +45,35 @@
         <div id="friends_overlay" class="overlay"></div>
 
         <div id="add_task_overlay" class="add_task_overlay"></div>
+
+        <div id="invite_members_overlay" class="invite_members_overlay">
+            <div class="invite_members_container" id="invite_members_container">
+
+                <div class="invite_members_header_title">
+                    <h2>Invite Members</h2>
+                </div>
+
+                <div class="invite_members_search_query">
+                    <input id="invite_members_search_query_input" type="search" placeholder="Enter usernames..." class="invite_members_search_query_input"/>
+                </div>
+
+                <div class="invite_members_selected_count">
+                    <a id="invite_members_selected_count_link">0 members selected</a>
+                </div>
+
+                <div class="invite_members_list" id="invite_members_list">
+                    <!-- <div class="invite_members_list_item">
+                        <input type="checkbox" class="invite_members_list_item_checkbox"/>
+                        <span class="invite_members_list_item_username">Username</span>
+                    </div> -->
+                </div>
+
+                <div class="invite_members_buttons">
+                    <button class="invite_members_cancel_button" id="invite_members_cancel_button">Cancel</button>
+                    <button class="invite_members_confirm_button" id="invite_members_confirm_button">Invite</button>
+                </div>
+            </div>
+        </div>
 
         <div id="friends_sidebar" class="friends_sidebar">
             <div class="friends_sidebar_header"><h2 class="friends_sidebar_title">Friends</h2>
@@ -104,8 +133,12 @@
             </form>
         </div>
         
-
         <div class="task-list" id="task-list">
+            
+            <div class="organization_taskboard_header_container" id="organization_taskboard_header_container">
+                <div class="organization_taskboard_header_title"></div>
+                <button class="invite_members_button" id="invite_members_button">Invite members</button>
+            </div>
         </div>
 
         <div class="add_task_container" id="add_task_container">
@@ -122,9 +155,10 @@
             <button class="close_add_task_button" id="close_edit_task_button">Cancel</button>
         </div>
 
-        <div class="invite_people_container" id="invite_people_container">
-            <input class="invite_people_input" id="invite_people_input" type="text" placeholder="Enter username..." required/>
-            <button class="submit_invite_button" id="submit_invite_button">Invite</button>
+        <div class="invite_members_overlay" id="invite_members_overlay">
+            <div class="invite_people_input">
+                <input type="text" placeholder="Enter email addresses..." />
+            </div>
         </div>
 
 </body>

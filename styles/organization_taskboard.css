@@ -1,4 +1,219 @@
-.invite_people_container {
-    grid-area: chat-area;
+.organization_taskboard_header_container {
     display: flex;
+    grid-row: 1;
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+}
+
+*.hidden {
+    display: none;
+}
+
+.invite_people_input {
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 8px;
+    box-sizing: border-box;
+    outline: none;
+    font-size: 1.5rem;
+}
+
+.invite_members_button {
+    background-color: #141414;
+    color: white;
+    padding: 0.5rem;
+    border: none;   
+    border-radius: 8px;
+    cursor: pointer;
+    box-sizing: border-box;
+    width: 12rem;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    transition: background-color 0.2s ease-in-out;
+    margin-left: auto;
+}
+
+.invite_members_button:hover {
+    background-color: #2b2b2b;
+}
+
+.organization_taskboard_header_title {
+    margin-top: auto;
+    min-width: 0;
+    max-width: calc(100% - 14rem);
+    flex: 1 1 0%;
+}
+
+.organization_taskboard_header_title h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.invite_members_overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 0;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.15s ease-in-out, visibility 0.15s ease-in-out;
+    visibility: hidden;
+}
+
+.invite_members_overlay.active {
+    z-index: 1000;
+    opacity: 1;
+    visibility: visible;
+}
+
+.invite_members_container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    background-color: #3c3c3c;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 20rem;
+    height: 30rem;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.15s ease-in-out, visibility 0.15s ease-in-out;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    border-radius: 8px;
+    display: grid;
+    gap: 0.25rem;
+    grid-template-rows: auto auto auto 1fr auto;
+}
+
+.invite_members_container.active {
+    opacity: 1;
+    visibility: visible;
+    z-index: 1001;
+}
+
+.invite_members_header_title {
+    margin-bottom: 0.5rem;
+    text-align: center;
+    font-size: 1.25rem;
+}
+
+.invite_members_selected_count {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.invite_members_search_query {
+    background-color: #2b2b2b;
+    justify-self: center;
+    border-radius: 8px;
+    height: 2.5rem;
+    margin: 0.75rem 0;
+    width: 95%;
+}
+
+.invite_members_search_query_input {
+    width: 100%;
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    outline: none;
+    background: transparent;
+    border: none;
+    color: white;
+    line-height: 1.5rem;
+}
+
+.invite_members_list {
+    display: grid;
+    row-gap: 0.5rem;
+    height: 100%;
+    margin-bottom: 1rem;
+    width: 95%;
+    padding: 0.5rem;
+    background-color: #2b2b2b;
+    border-radius: 8px;
+    justify-self: center;
+    grid-template-rows: repeat(autofill, min-content);
+    align-content: start;
+    overflow-y: auto;
+}
+
+.invite_members_list_item {
+    padding: 0.5rem;
+    background-color: #3c3c3c;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.invite_members_list_item:hover {
+    background-color: #4c4c4c;
+}
+
+.invite_members_list_item_checkbox {
+    margin: 0.5rem;
+    accent-color: #1e90ff;
+}
+
+.invite_members_list_item_username {
+    font-size: 1.2rem;
+    color: white;
+}
+.invite_members_buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.invite_members_confirm_button {
+    background-color: #12579d;
+    color: white;
+    padding: 0.5rem;
+    border: none;   
+    border-radius: 8px;
+    cursor: pointer;
+    box-sizing: border-box;
+    width: 100%;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.invite_members_confirm_button:hover {
+    background-color: #0f4378;
+}
+
+.invite_members_cancel_button {
+    background-color: #9d2e2e;
+    color: white;
+    padding: 0.5rem;
+    border: none;   
+    border-radius: 8px;
+    cursor: pointer;
+    box-sizing: border-box;
+    width: 100%;
+    font-size: 1.5rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.invite_members_cancel_button:hover {
+    background-color: #7a2424;
 }

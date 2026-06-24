@@ -11,6 +11,7 @@ function loadTaskboard() {
         const data = JSON.parse(taskboardData);
 
         for (const task of data.tasks) {
+            console.log(task);
             const taskElement = document.createElement('div');
             taskElement.dataset.task_complete = task.completed;
             if (task.completed) {
@@ -19,7 +20,6 @@ function loadTaskboard() {
                 taskElement.classList.add('organization-card-incomplete');
             }
             taskElement.dataset.task_id = task.id;
-            taskElement.classList.add('task-card');
             
                 // Create mark complete button
                 const markCompleteButton = document.createElement('button');

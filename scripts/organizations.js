@@ -1,6 +1,7 @@
 var organization_id = null;
 var current_editing_organization = null;
 var current_deleting_organization = null;
+const organizations = document.querySelectorAll('.organization-card');
 
 async function loadOrganizations() {
     const orglist = document.getElementById('organization-list');
@@ -84,7 +85,7 @@ function addOrganizationCard(organization_id, organization_title, organization_d
 
     organization.insertBefore(organizationElement, createOrganizationButton);
     organizationElement.onclick = async () => {
-        await fetchOrganizationTasks(organization_id);
+        await fetchOrganizationTasks(organization_id, organization_title);
     }
 }
 
@@ -172,6 +173,36 @@ function toggleEditOrganizationInterface(card) {
 //     }
 // }
 
+async function fetchOrganizationTasks(organization_id, organization_name) {
+    try {
+        const organization_response = await fetch(`http://localhost:8000/api/${organization_id}/organization_taskboard`, {
+            method: 'GET'
+        });
+
+        const navbar_response = await fetch('http://localhost:8000/api/navbar', {
+            method: 'GET'
+        });
+
+        const navbar_data = await navbar_response.json();
+        const organization_taskboard_data = await organization_response.json();
+
+        if(organization_taskboard_data){
+            sessionStorage.setItem('preFetchedData_organization_taskboard', JSON.stringify(organization_taskboard_data));
+            sessionStorage.setItem('organization_id', organization_id);
+            sessionStorage.setItem('organization_name', organization_name);
+            sessionStorage.setItem('preFetchedData_navbar', JSON.stringify(navbar_data));
+        } else {
+            console.log("No data to fetch");
+        }
+
+        window.location.href = 'organization_taskboard.html';
+
+    } catch (error) {
+        console.error(`Error fetching taskboard data for ID ${organization_id}:`, error);
+        return { organizations: [] };
+    }
+}
+
 document.querySelector('.add_organization_overlay').addEventListener('click', () => {
     if (document.getElementById('add_organization_container').classList.contains('active')) {
         toggleAddOrganizationOverlay();
@@ -196,33 +227,4 @@ document.getElementById('confirm_edit_organization_button').addEventListener('cl
     toggleEditOrganizationOverlay();
 });
 
-
-
-
 loadOrganizations();
-
-const organizations = document.querySelectorAll('.organization-card');
-
-async function fetchOrganizationTasks(organization_id) {
-    try {
-        const organization_response = await fetch(`http://localhost:8000/api/${organization_id}/organization_taskboard`, {
-            method: 'GET'
-        });
-
-        const organization_taskboard_data = await organization_response.json();
-
-        if(organization_taskboard_data){
-            sessionStorage.setItem('preFetchedData_organization_taskboard', JSON.stringify(organization_taskboard_data));
-            sessionStorage.setItem('organization_id', organization_id);
-        }
-        else{
-            console.log("No data to fetch");
-        }   
-        window.location.href = 'organization_taskboard.html';
-
-
-    } catch (error) {
-        console.error(`Error fetching taskboard data for ID ${organization_id}:`, error);
-        return { organizations: [] };
-    }
-}

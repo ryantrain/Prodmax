@@ -24,15 +24,17 @@ body {
     grid-area: chat-area;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 2rem;
+    column-gap: 2rem;
+    row-gap: 1rem;
     width: 95%;
     margin-top: 1rem;
     justify-self: center;
     padding-bottom: 1rem;
     align-content: start;
+    grid-template-rows: auto 1fr;
 }
 
-.task-card {
+.organization-card-incomplete {
     display: flex;
     padding: 1rem;
     background-color: rgb(38, 38, 38);
@@ -45,7 +47,9 @@ body {
     overflow: hidden;
     align-self: center;
     position: relative;
-}organization-card-completed {
+}
+
+.organization-card-completed {
     display: flex;
     padding: 1rem;
     background-color: rgba(38, 38, 38, 0.42);
@@ -61,7 +65,7 @@ body {
     opacity: 0.6;
 }
 
-.task-card:hover {
+.organization-card-incomplete:hover {
     background-color: #212121;
     cursor: pointer;
 }
@@ -132,12 +136,11 @@ body {
 
 .create-task-button {
     display: flex;
-    padding: 1rem;
     background-color: rgba(90,
      90, 90, 0.526);
     border-radius: 12px;
     transition: background-color 0.2s ease-in-out;
-    width: 95%;
+    width: 100%;
     height: 13rem;
     color: white;
     justify-self: center;
@@ -336,4 +339,8 @@ button {
         transform: scaleY(1);
         opacity: 1;
     }
+}
+
+*.hidden {
+    display: none;
 }

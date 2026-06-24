@@ -45,10 +45,11 @@ def retrieve_organizations_for_user():
 def retrieve_organization_tasks(organization_id):
     """Retrieve organization tasks."""
     try:
-        response = client.from_("taskboards").select("*").eq("organization_id", organization_id).execute()
-        if not response.data:
+        response_tasks = client.from_("taskboards").select("*").eq("organization_id", organization_id).execute()
+        response_organization = client.from_("organizations").select("*").eq("organization_id", organization_id).execute()
+        if not response_tasks.data or not response_organization.data:
             return []
-        return response.data
+        return response_tasks.data, response_organization.data
             
     except Exception as e:      
         print("Error retrieving organization tasks for user")
