@@ -189,8 +189,9 @@ def toggle_task_completed(taskboard_id: str, task_id: str):
 @app.get('/api/organizations/load')
 def load_organizations_for_users():
     try:
-        response = organizations.retrieve_organizations_for_user()
-        return {"organizations": response}
+        response_organization_invitations = organizations.retrieve_organization_invitations_for_user()
+        response_organizations = organizations.retrieve_organizations_for_user()
+        return {"organization_invitations": response_organization_invitations, "organizations": response_organizations}
     except Exception as e:
         return {"message": f"An error occurred while loading organizations for user: {str(e)}"}
     
@@ -230,10 +231,26 @@ def add_task(taskboard_id: str, task_name: str = Form(...), task_description: st
     except Exception as e:
         return {"message": f"An error occurred while adding task to taskboard: {str(e)}"}
     
-@app.post('/api/organization/{organization_id}/invite_members')
+@app.post('/api/organizations/{organization_id}/invite_members')
 def invite_members_to_organization(organization_id: str, member_ids: list = Form(...)):
     try:
         response = organizations.invite_members_to_organization(organization_id, member_ids)
         return {"message": "Members invited successfully", "data": response}
     except Exception as e:
         return {"message": f"An error occurred while inviting members to organization: {str(e)}"}
+
+@app.post('/api/organizations/{organization_id}/accept_invitation')
+def accept_organization_invitation(organization_id: str):
+    try:
+        response = organizations.accept_organization_invitation(organization_id)
+        return {"message": "Organization invitation accepted", "data": response}
+    except Exception as e:
+        return {"message": f"An error occurred while accepting organization invitation: {str(e)}"}
+    
+@app.post('/api/organizations/{organization_id}/decline_invitation')
+def decline_organization_invitation(organization_id: str):
+    try:
+        response = organizations.decline_organization_invitation(organization_id)
+        return {"message": "Organization invitation declined", "data": response}
+    except Exception as e:
+        return {"message": f"An error occurred while declining organization invitation: {str(e)}"}

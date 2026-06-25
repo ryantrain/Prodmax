@@ -4,7 +4,6 @@ async function fetchData() {
 
         if (rawData) {
             const data = JSON.parse(rawData);
-            console.log(data.friends);
 
             const channel_list = document.getElementById('channel_list');
             const channel_list_HTML = data.channels[1].map((name, index) => 

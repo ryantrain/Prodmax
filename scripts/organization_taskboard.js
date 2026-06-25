@@ -287,7 +287,7 @@ async function InviteSelectedMembers() {
         const formData = new FormData();
         selectedMemberIds.forEach(id => formData.append('member_ids', id));
 
-        response = await fetch(`http://localhost:8000/api/organization/${organization_id}/invite_members`, {
+        response = await fetch(`http://localhost:8000/api/organizations/${organization_id}/invite_members`, {
             method: 'POST',
             body: formData
         });

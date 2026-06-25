@@ -13,6 +13,10 @@ async function loadOrganizations() {
 
         if (response.ok) {
             data = await response.json();
+            console.log(data);
+            data.organization_invitations[1].forEach((organization_name, index) => {
+                addInvitationCard(data.organization_invitations[0][index]["organization_id"], organization_name);
+            });
             data.organizations.forEach(organization => {
                 addOrganizationCard(organization.organization_id, organization.name, organization.description)
             });
@@ -53,6 +57,50 @@ async function createOrganization() {
     } catch (error) {
         console.error('Error occurred while adding new organization:', error);
     }
+}
+
+function addInvitationCard(organization_id, organization_title) {
+    const organization = document.getElementById('organization-list');
+
+    const organizationElement = document.createElement('div');
+    console.log(organization_id, organization_title);
+    organizationElement.dataset.organization_id = organization_id;
+    organizationElement.classList.add('organization_invitation_card');
+
+    const organization_title_element = document.createElement('h3');
+    organization_title_element.textContent = organization_title;
+    organization_title_element.classList.add('organization_invitation_card_title');
+    organizationElement.appendChild(organization_title_element);
+
+    const buttonContainer = document.createElement('div');
+    buttonContainer.classList.add('organization_invitation_card_button_container');
+        acceptButton = document.createElement('button');
+        acceptButton.textContent = 'Accept';
+        acceptButton.classList.add('organization_invitation_card_accept_button');
+
+        acceptButton.onclick = async () => {
+            await acceptInvitation(organization_id);
+        };
+
+        declineButton = document.createElement('button');
+        declineButton.textContent = 'Decline';
+        declineButton.classList.add('organization_invitation_card_decline_button');
+
+        declineButton.onclick = () => {
+            const response_decline_invitation = declineInvitation(organization_id);
+
+            // Remove the invitation card from the DOM
+            if (response_decline_invitation) {
+                organizationElement.remove();
+            }
+        };
+
+    buttonContainer.appendChild(acceptButton);
+    buttonContainer.appendChild(declineButton);
+    organizationElement.appendChild(buttonContainer);
+
+    organization.insertBefore(organizationElement, organization.lastElementChild);
+
 }
 
 //draws the organization cards
@@ -200,6 +248,39 @@ async function fetchOrganizationTasks(organization_id, organization_name) {
     } catch (error) {
         console.error(`Error fetching taskboard data for ID ${organization_id}:`, error);
         return { organizations: [] };
+    }
+}
+
+async function acceptInvitation(organization_id) {
+    try {
+        response = await fetch ("http://localhost:8000/api/organizations/" + organization_id + "/accept_invitation" , {
+            method: 'POST'
+        });
+
+        if (response.ok) {
+            // Remove the invitation card from the DOM
+            const invitationCard = document.querySelector(`.organization_invitation_card[data-organization_id="${organization_id}"]`);
+            const data = await response.json()
+            if (invitationCard) {
+                invitationCard.remove();
+            }
+            if (data.data){
+                addOrganizationCard(data.data.organization_id, data.data.name, data.data.description);
+            }
+        }
+    } catch (error) {
+        console.error('Error accepting invitation:', error);
+    }
+}
+
+function declineInvitation(organization_id) {
+    try {
+        response = fetch ("http://localhost:8000/api/organizations/" + organization_id + "/decline_invitation" , {
+            method: 'POST'
+        });
+        return true;
+    } catch (error) {
+        console.error('Error declining invitation:', error);
     }
 }
 
