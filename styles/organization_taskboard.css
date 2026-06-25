@@ -148,7 +148,7 @@
     background-color: #2b2b2b;
     border-radius: 8px;
     justify-self: center;
-    grid-template-rows: repeat(autofill, min-content);
+    grid-template-rows: min-content;
     align-content: start;
     overflow-y: auto;
 }
@@ -216,4 +216,97 @@
 
 .invite_members_cancel_button:hover {
     background-color: #7a2424;
+}
+
+.organization_taskboard_header_members_button {
+    display: flex;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: end;
+    padding: 0.5rem;
+    background-color: #131313;
+    border-radius: 12px;
+    margin-top: 0.5rem;
+    margin-right: 0.5rem;
+    color: white;
+    transition: background-color 0.1s ease-in-out;
+}
+
+.organization_taskboard_header_members_button:hover {
+    background-color: #2b2b2b;
+}
+
+.organization_taskboard_header_members_button img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.organization_members_container {
+    border-radius: 12px 0 0 0;
+    position: fixed;
+    top: 60px;
+    right: 0;
+    width: 20rem;
+    height: calc(100% - 60px);
+    background-color: #3c3c3c;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+    transform: translateX(100%);
+    transition: transform 0.4s ease;
+    z-index: 1001;
+    display: grid;
+    grid-template-rows: auto 1fr;
+}
+
+.organization_members_container.active {
+    transform: translateX(0);
+}
+
+.organization_members_header_title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 3.5rem;
+    margin-bottom: 1rem;
+}
+
+.organization_members_close_button {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+}
+
+.organization_members_close_button svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.organization_members_list {
+    display: grid;
+    row-gap: 0.5rem;
+    height: calc(100% - 0.5rem);
+    margin-bottom: 1rem;
+    width: 95%;
+    padding: 0.5rem;
+    background-color: #2b2b2b;
+    border-radius: 8px;
+    justify-self: center;
+    grid-template-rows: min-content;
+    align-content: start;
+    overflow-y: auto;
+}
+
+.organization_members_list_item {
+    padding: 0.5rem;
+    background-color: #3c3c3c;
+    border-radius: 8px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.organization_members_list_item:hover {
+    background-color: #4c4c4c;
 }

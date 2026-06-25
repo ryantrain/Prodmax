@@ -206,8 +206,8 @@ async def create_group_channel(channel_name: str = Form(None), selected_friend_n
 @app.get('/api/{organization_id}/organization_taskboard')
 def load_organizations_taskboard(organization_id: str):
     try:
-        response_tasks, response_organization = organizations.retrieve_organization_tasks(organization_id)
-        return {"tasks": response_tasks, "organization": response_organization}
+        response_tasks, response_organization, response_organization_members_usernames = organizations.retrieve_organization_tasks_and_details(organization_id)
+        return {"tasks": response_tasks, "organization": response_organization, "organization_members_usernames": response_organization_members_usernames}
     except Exception as e:
         return {"message": f"An error occurred while loading organization tasks for user: {str(e)}"}
     

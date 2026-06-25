@@ -20,6 +20,10 @@ body {
     grid-template-columns: 3fr 20rem;
 }
 
+.main-container.organization-members-open {
+    grid-template-columns: 3fr 20rem;
+}
+
 .task-list {
     grid-area: chat-area;
     display: grid;

@@ -1,5 +1,5 @@
 const organization_id = sessionStorage.getItem("organization_id");
-const organization_members = JSON.parse(sessionStorage.getItem("preFetchedData_organization_taskboard")).organization[0].members;
+// const organization_members_ids = JSON.parse(sessionStorage.getItem("preFetchedData_organization_taskboard")).organization[0].members;
 
 function loadOrganizationTaskboards() {
     const taskboardData = sessionStorage.getItem('preFetchedData_organization_taskboard'); 
@@ -30,6 +30,24 @@ function loadOrganizationTaskboards() {
     sessionStorage.removeItem('preFetchedData_organization_taskboard');
     sessionStorage.removeItem('organization_id');
     sessionStorage.removeItem('organization_name');
+}
+
+function loadOrganizationMembers() {
+    const organization_member_list = document.getElementById('organization_members_list');
+    const organization_members_names = JSON.parse(sessionStorage.getItem('preFetchedData_organization_taskboard')).organization_members_usernames.map(member => member.username);
+    organization_members_names.forEach(member => {
+
+        const memberElement = document.createElement('div');
+        memberElement.classList.add('organization_members_list_item');
+
+            const memberName = document.createElement('span');
+            memberName.classList.add('organization_members_list_item_username');
+            memberName.textContent = member;
+
+        memberElement.appendChild(memberName);
+        organization_member_list.appendChild(memberElement);
+
+    });
 }
 
 async function createOrganizationTaskboard(organization_id) {
@@ -259,7 +277,7 @@ function loadInviteMembersList() {
     document.getElementById('invite_members_selected_count_link').textContent = '0 selected';
 
     for (const friend of friends) {
-        if (!organization_members.includes(friend.dataset.friend_id)) {
+        if (!organization_members_ids.includes(friend.dataset.friend_id)) {
             const invite_members_list_item = document.createElement('div');
             invite_members_list_item.classList.add('invite_members_list_item');
 
@@ -295,6 +313,11 @@ async function InviteSelectedMembers() {
     } catch (error) {
         console.error('Error inviting members:', error);
     }
+}
+
+function toggleOrganizationMembersPane() {
+    document.getElementById('organization_members_container').classList.toggle('active');
+    document.querySelector('.main-container').classList.toggle('organization-members-open')
 }
 
 document.querySelector('.add_task_overlay').addEventListener('click', () => {
@@ -364,4 +387,14 @@ document.getElementById('invite_members_confirm_button').addEventListener('click
     toggleInviteMembersOverlay();
 });
 
+document.getElementById('organization_taskboard_header_members_button').addEventListener('click', () => {
+    toggleOrganizationMembersPane();
+});
+
+document.getElementById('organization_members_close_button').addEventListener('click', () => {
+    toggleOrganizationMembersPane();
+});
+
+// Order matters
+loadOrganizationMembers();
 loadOrganizationTaskboards();
