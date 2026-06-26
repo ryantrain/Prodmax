@@ -56,7 +56,7 @@ async def send_message_to_db(chat_id: str, sender_user_id: str, content: str):
 async def load_channel_list():
     """
     Load existing list of channels in a user's channel list.
-    Return a tuple of two lists: (list of channel ids, list of channel names)
+    Return a tuple of three lists: (list of channel ids, list of channel names, list of channel privacy statuses)
     """
     user = await client.auth.get_user()
     user_id = user.user.id
@@ -104,8 +104,10 @@ async def add_channel_to_db(channel_type: str, channel_members: list, channel_na
     and will be set to None. If the channel is of type "group", then the channel name is needed.
     """
     try:
+        user = await client.auth.get_user()
+        user_id = user.user.id
         timestamp = datetime.now(timezone.utc).isoformat()
-        response = await client.from_("channel_list").insert({"created_at": timestamp, "channel_members": channel_members, "channel_type": channel_type, "channel_name": channel_name}).execute()
+        response = await client.from_("channel_list").insert({"created_at": timestamp, "channel_members": channel_members, "channel_type": channel_type, "channel_name": channel_name, "channel_owner": user_id}).execute()
         # Update each user's channel list to include the new channel
         channel_id = response.data[0]["channel_id"]
         for member in channel_members:
@@ -140,3 +142,24 @@ async def create_group_channel(channel_name: str = None, selected_friend_names: 
 
     except Exception as e:
         print(f"Error occurred while creating group channel: {e}")
+
+async def verify_private_channels():
+    """
+    Verifies that a channel exists for each friend in the user's friend list.
+    If a channel does not exist between the user and a friend, then create a channel for the user and that friend.
+    """
+    friend_list = friends.get_friends()[0]
+    for friend in friend_list:
+        try:
+            friends.get_channel_id_with_friend_username(friend)
+        except Exception as e:
+            friend_uuid = friends.get_uuid(friend)
+            user_id = client.auth.get_user().user.id
+            await add_channel_to_db(channel_type="private", channel_members=[user_id, friend_uuid], channel_name=None)
+
+async def verify_organization_channels():
+
+    user = await client.auth.get_user()
+    user_id = user.user.id
+
+    response = await client.rpc("verify_organization_channels", {"user_id_lookup": user_id}).execute()

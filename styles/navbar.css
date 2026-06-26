@@ -242,7 +242,7 @@
     justify-content: center;
     transition: background-color 0.2s ease-in-out, transform 0.1s ease;
     flex-wrap: wrap;
-    padding: 0.75rem;
+    padding: 0.75rem 0;
     margin: 0.25rem 0;
     background: transparent;
     border: none;

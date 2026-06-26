@@ -47,7 +47,8 @@ async def dashboard():
 @app.get('/api/navbar')
 async def navbar():
     friends_list = friends.get_friends()
-    await friends.verify_channels()
+    await chat.verify_private_channels()
+    await chat.verify_organization_channels()
     channel_list = await chat.load_channel_list()
     friend_requests = friends.get_friend_requests()
     return {"friends": friends_list, "channels": channel_list, "friend_requests": friend_requests}

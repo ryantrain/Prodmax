@@ -88,7 +88,7 @@ async def accept_friend_request(addressee_username: str):
     addressee_uuid = get_uuid(addressee_username)
     client.rpc("update_friendship_status", {"addressee_uuid": addressee_uuid, "new_status": "accepted"}).execute()
     await chat.add_channel_to_db(channel_type="private", channel_members=[addressee_uuid, client.auth.get_user().user.id], channel_name=None)
-    channel_id = get_channel_id(addressee_username)
+    channel_id = get_channel_id_with_friend_username(addressee_username)
     return {"channel_id": channel_id}
 
 def decline_friend_request(addressee_username: str):
@@ -105,7 +105,7 @@ def get_username(uuid: str):
         return username
     raise RuntimeError("client does not exist")
 
-def get_channel_id(friend_username: str):
+def get_channel_id_with_friend_username(friend_username: str):
     friend_uuid = get_uuid(friend_username)
     user_id = client.auth.get_user().user.id
     response = client.from_("channel_list").select("channel_id").eq("channel_type", "private").contains("channel_members", [user_id, friend_uuid]).execute().data
@@ -113,20 +113,6 @@ def get_channel_id(friend_username: str):
         return response[0]["channel_id"]
     else:
         raise ValueError("No channel found for the given friend username.")
-
-async def verify_channels():
-    """
-    Verifies that a channel exists for each friend in the user's friend list.
-    If a channel does not exist between the user and a friend, then create a channel for the user and that friend.
-    """
-    friend_list = get_friends()[0]
-    for friend in friend_list:
-        try:
-            get_channel_id(friend)
-        except Exception as e:
-            friend_uuid = get_uuid(friend)
-            user_id = client.auth.get_user().user.id
-            await chat.add_channel_to_db(channel_type="private", channel_members=[user_id, friend_uuid], channel_name=None)
 
 async def get_channel_members(channel_id: str):
     response = client.from_("channel_list").select("channel_members").eq("channel_id", channel_id).execute()

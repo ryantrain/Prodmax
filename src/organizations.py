@@ -47,7 +47,7 @@ def retrieve_organization_tasks_and_details(organization_id):
     try:
         response_tasks = client.from_("taskboards").select("*").eq("organization_id", organization_id).execute()
         response_organization = client.from_("organizations").select("*").eq("organization_id", organization_id).execute()
-        response_organization_members_usernames = client.from_("user_public_view").select("username").in_("user_id", response_organization.data[0]["members"]).execute()
+        response_organization_members_usernames = client.from_("user_public_view").select("*").in_("user_id", response_organization.data[0]["members"]).execute()
         return response_tasks.data, response_organization.data, response_organization_members_usernames.data
  
     except Exception as e:      

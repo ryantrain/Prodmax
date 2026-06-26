@@ -1,8 +1,9 @@
 const organization_id = sessionStorage.getItem("organization_id");
-// const organization_members_ids = JSON.parse(sessionStorage.getItem("preFetchedData_organization_taskboard")).organization[0].members;
+const organization_members_ids = JSON.parse(sessionStorage.getItem("preFetchedData_organization_taskboard")).organization_members_usernames.map(member => member.user_id);
+const organization_members_names = JSON.parse(sessionStorage.getItem('preFetchedData_organization_taskboard')).organization_members_usernames.map(member => member.username);
+const taskboardData = sessionStorage.getItem('preFetchedData_organization_taskboard');
 
 function loadOrganizationTaskboards() {
-    const taskboardData = sessionStorage.getItem('preFetchedData_organization_taskboard'); 
     const orglist = document.getElementById('task-list');
     const organization_name = sessionStorage.getItem('organization_name');
     const organization_title_element = document.querySelector('.organization_taskboard_header_title');
@@ -33,10 +34,9 @@ function loadOrganizationTaskboards() {
 }
 
 function loadOrganizationMembers() {
+    const data = JSON.parse(taskboardData);
     const organization_member_list = document.getElementById('organization_members_list');
-    const organization_members_names = JSON.parse(sessionStorage.getItem('preFetchedData_organization_taskboard')).organization_members_usernames.map(member => member.username);
-    organization_members_names.forEach(member => {
-
+    organization_members_names.forEach((member, index) => {
         const memberElement = document.createElement('div');
         memberElement.classList.add('organization_members_list_item');
 
@@ -45,6 +45,18 @@ function loadOrganizationMembers() {
             memberName.textContent = member;
 
         memberElement.appendChild(memberName);
+
+        if (data.organization[0].owner === organization_members_ids[index]) {
+            const ownerBadge = document.createElement('div');
+            ownerBadge.classList.add('organization_members_list_item_owner_badge');
+                const ownerText = document.createElement('a');
+                ownerText.textContent = 'Owner';
+                ownerBadge.appendChild(ownerText);
+            memberElement.appendChild(ownerBadge);
+            organization_member_list.prepend(memberElement);
+            return;
+        }
+
         organization_member_list.appendChild(memberElement);
 
     });
