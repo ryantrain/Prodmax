@@ -253,8 +253,9 @@ async function createGroupChannel() {
     // const channelName = document.getElementById('new_channel_name_input').value ???
     const selectedFriendNames = selectedChannels.map(cb => cb.nextElementSibling.textContent);
 
-    if (selectedChannels.length > 0) {
+    if (selectedChannels.length > 1) {
         const formData = new FormData();
+        formData.append('channel_name', selectedFriendNames.join(', '));
         selectedFriendNames.forEach(name => formData.append('selected_friend_names', name));
 
         try {
@@ -263,17 +264,6 @@ async function createGroupChannel() {
                 body: formData
             });
 
-            if (response.ok) {
-                data = await response.json();
-                const channel_id = data.data.channel_id;
-                const channel_list = document.getElementById('channel_list');
-                channel_list.insertAdjacentHTML('beforeend', 
-                    `<div class="channel_wrapper" data-channel_id="${data.data.channel_id}">
-                        <input type="checkbox" class="channel_select_checkbox">
-                        <button class="channel_item">${selectedFriendNames.join(', ')}</button>
-                    </div>`
-                );
-            }
         } catch (error) {
             console.error('Error creating group channel:', error);
         }

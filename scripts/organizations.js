@@ -51,13 +51,7 @@ async function createOrganization(event) {
         if (response.ok) {
             data = await response.json();
             addOrganizationCard(data.data[0].organization_id_returned, organization_title, organization_description);
-            const channelList = document.getElementById('channel_list');
-            channelList.insertAdjacentHTML('beforeend',
-                `<div class="channel_wrapper" data-channel_id="${data.data[0].channel_id_returned}" data-channel_type="organization">
-                        <input type="checkbox" class="channel_select_checkbox hidden">
-                        <button class="channel_item">${organization_title}</button>
-                    </div>`
-            );
+
         }
 
     } catch (error) {

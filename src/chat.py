@@ -132,6 +132,7 @@ async def create_group_channel(channel_name: str = None, selected_friend_names: 
     try:
         user = await client.auth.get_user()
         channel_members_ids = [user.user.id]
+        channel_name = user.user.user_metadata["username"] + ", " + channel_name 
         for friend_name in selected_friend_names:
             friend_uuid = friends.get_uuid(friend_name)
             channel_members_ids.append(friend_uuid)

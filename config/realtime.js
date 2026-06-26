@@ -3,7 +3,7 @@ const { supabase } = require('../config/supabaseClient');
 async function initializeRealtime() {
     await supabase.auth.getUser();
 
-    const channel = supabase.channel('message_updates')
+    const message_channel = supabase.channel('message_updates')
                 .on('postgres_changes', { 
                     event: "INSERT", 
                     schema: "public", 
@@ -32,6 +32,27 @@ async function initializeRealtime() {
                         });
                     }
                 }).subscribe();
+
+    const channel_channel = supabase.channel('channel_updates')
+                .on('postgres_changes', { 
+                    event: "INSERT",
+                    schema: "public", 
+                    table: "channel_list", 
+                }, async (payload) => {
+                    const channel_id = payload.new.channel_id;
+                    const channel_name = payload.new.channel_name;
+                    const channel_list = document.getElementById('channel_list');
+                    console.log(payload)
+
+                    if (channel_name) {
+                        channel_list.insertAdjacentHTML('beforeend', 
+                            `<div class="channel_wrapper" data-channel_id="${channel_id}">
+                                <input type="checkbox" class="channel_select_checkbox hidden">
+                                <button class="channel_item">${channel_name}</button>
+                            </div>`
+                        );
+                    }
+                }).subscribe();
 }
 
 async function getUsername(sender_id) {
@@ -49,6 +70,17 @@ async function getUsername(sender_id) {
         return 'Unknown User';
     }
 }
+
+async function get_username_for_groupchat(channel_id) {
+    try {
+        const response = await fetch(`http://localhost:8000/api/channel/${channel_id}`, {
+            method: 'GET'
+        });
+    } catch (error) {
+        console.error('Error fetching channel name for channel ID:', channel_id, error);
+        return 'Unknown Channel';
+    }
+};
 
 initializeRealtime().catch(error => {
     console.error('Error initializing realtime:', error);
