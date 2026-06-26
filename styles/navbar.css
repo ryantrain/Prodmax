@@ -222,9 +222,9 @@
     height: 100vh;
     border-radius: 12px 0 0 0;
     padding-top: 2rem;
+    padding-bottom: 4rem;
     top: 60px;
     align-content: start;
-    overflow: hidden;
     overflow-y: auto;
     z-index: 995;
     right: -20rem;

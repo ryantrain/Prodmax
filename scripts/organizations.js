@@ -13,7 +13,6 @@ async function loadOrganizations() {
 
         if (response.ok) {
             data = await response.json();
-            console.log(data);
             data.organization_invitations[1].forEach((organization_name, index) => {
                 addInvitationCard(data.organization_invitations[0][index]["organization_id"], organization_name);
             });
@@ -34,7 +33,8 @@ async function loadOrganizations() {
 }
 
 // get the new organization info and make an http post request to add the organization, then draw the card if successful
-async function createOrganization() {
+async function createOrganization(event) {
+    event.preventDefault();
     try {
         organization_title = document.getElementById('organization_title_input').value;
         organization_description = document.getElementById('organization_description_input').value;
@@ -299,8 +299,8 @@ document.querySelector('.add_organization_overlay').addEventListener('click', ()
 
 document.getElementById('close_add_organization_button').addEventListener('click', toggleAddOrganizationOverlay);
 
-document.getElementById('submit_organization_button').addEventListener('click', () => {
-    createOrganization();
+document.getElementById('submit_organization_button').addEventListener('click', (e) => {
+    createOrganization(e);
     toggleAddOrganizationOverlay();
 });
 
