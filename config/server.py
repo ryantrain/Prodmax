@@ -85,6 +85,14 @@ async def send_message(channel_id: str = Form(...), content: str = Form(...)):
     except Exception as e:
         return {"message": f"An error occurred while sending message: {str(e)}"}
     
+@app.post('/api/channels/retrieve_private_channel')
+async def retrieve_private_channel_with_friend_name(friend_id: str = Form(...)):
+    try:
+        channel_id = await chat.get_channel_id_with_friend_uuid(friend_id)
+        return {"channel_id": channel_id}
+    except Exception as e:
+        return {"message": f"An error occurred while retrieving private channel: {str(e)}"}
+    
 @app.post('/api/add_personal_taskboard')
 def add_taskboard(taskboard_name: str = Form(...)):
     try:
@@ -106,9 +114,9 @@ def add_friend(query: str = Form(...)):
         return {"message": f"An error occurred while sending friend request: {str(e)}"}
     
 @app.post('/api/accept_friend_request')
-async def accept_friend_request(addressee_username: str = Form(...)):
+async def accept_friend_request(addressee_uuid: str = Form(...)):
     try:
-        response = await friends.accept_friend_request(addressee_username)
+        response = await friends.accept_friend_request(addressee_uuid)
         return {"message": "Friend request accepted", "data": response}
     except Exception as e:
         return {"message": f"An error occurred while accepting friend request: {str(e)}"}

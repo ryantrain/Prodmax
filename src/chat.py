@@ -149,14 +149,14 @@ async def verify_private_channels():
     Verifies that a channel exists for each friend in the user's friend list.
     If a channel does not exist between the user and a friend, then create a channel for the user and that friend.
     """
-    friend_list = friends.get_friends()[0]
+    friend_list = friends.get_friends()[1]
     for friend in friend_list:
         try:
-            friends.get_channel_id_with_friend_username(friend)
+            friends.get_channel_id_with_friend_uuid(friend)
         except Exception as e:
-            friend_uuid = friends.get_uuid(friend)
-            user_id = client.auth.get_user().user.id
-            await add_channel_to_db(channel_type="private", channel_members=[user_id, friend_uuid], channel_name=None)
+            user = await client.auth.get_user()
+            user_id = user.user.id
+            await add_channel_to_db(channel_type="private", channel_members=[user_id, friend], channel_name=None)
 
 async def verify_organization_channels():
 

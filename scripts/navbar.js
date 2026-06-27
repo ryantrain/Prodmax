@@ -135,9 +135,10 @@ function closeFriendRequestPane() {
 
 async function acceptFriendRequest(button) {
     const username = button.dataset.username;
+    const user_id = button.dataset.user_id;
     const formData = new FormData();
 
-    formData.append('addressee_username', username);
+    formData.append('addressee_uuid', user_id);
 
     try {
         const response = await fetch('http://localhost:8000/api/accept_friend_request', {
@@ -146,15 +147,7 @@ async function acceptFriendRequest(button) {
         });
 
         if (response.ok){
-            const data = await response.json();
             button.parentElement.parentElement.remove();
-
-            document.getElementById('friends_sidebar').insertAdjacentHTML('beforeend', `<p class="friends_item">${username}</p>`);
-
-            document.getElementById('channel_list').insertAdjacentHTML('beforeend', `<div class="channel_wrapper" data-channel_id="${data.data.channel_id}">
-                <input type="checkbox" class="channel_select_checkbox hidden">
-                <button class="channel_item">${username}</button>
-            </div>`);
         }
 
     } catch (error) {

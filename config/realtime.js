@@ -46,7 +46,6 @@ async function initializeRealtime() {
                     const channel_id = payload.new.channel_id;
                     const channel_name = payload.new.channel_name;
                     const channel_list = document.getElementById('channel_list');
-                    console.log(payload)
 
                     if (channel_name) {
                         channel_list.insertAdjacentHTML('beforeend', 
@@ -76,6 +75,28 @@ async function initializeRealtime() {
                                 <button id="reject_friend_request_button" data-user_id="${sender_id}" data-username="${sender_username}" class="friend_request_button">✗</button>
                             </div>
                         </div>`)
+                }).subscribe();
+
+    const friend_request_accepted_channel = supabase.channel('friend_request_accepted_updates')
+                .on('postgres_changes', { 
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "friendships",
+                    filter: "status=eq.accepted"
+                }, async (payload) => {
+                    console.log(payload);
+                    const friendList = document.getElementById('friends_sidebar');
+                    let friend_id = "";
+                    if (payload.new.uuid_pair[0] === user_id) {
+                        friend_id = payload.new.uuid_pair[1];
+                    } else if (payload.new.uuid_pair[1] === user_id) {
+                        friend_id = payload.new.uuid_pair[0];
+                    }
+
+                    const friend_username = await getUsername(friend_id);
+                    friendList.insertAdjacentHTML('beforeend', `<p class="friends_item" data-user_id="${friend_id}">${friend_username}</p>`);
+                    const formData = new FormData();
+                    formData.append('friend_id', friend_id);
                 }).subscribe();
 }
 

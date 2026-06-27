@@ -85,12 +85,10 @@ def send_friend_request(addressee_username: str):
     except Exception as e:
         raise ValueError(f"An error occurred while sending friend request: {str(e)}")
 
-async def accept_friend_request(addressee_username: str):
-    addressee_uuid = get_uuid(addressee_username)
+async def accept_friend_request(addressee_uuid: str):
     client.rpc("update_friendship_status_accepted", {"addressee_uuid": addressee_uuid, "new_status": "accepted"}).execute()
     await chat.add_channel_to_db(channel_type="private", channel_members=[addressee_uuid, client.auth.get_user().user.id], channel_name=None)
-    channel_id = get_channel_id_with_friend_username(addressee_username)
-    return {"channel_id": channel_id}
+    return
 
 def decline_friend_request(addressee_uuid: str):
    
@@ -105,10 +103,9 @@ def get_username(uuid: str):
         return username
     raise RuntimeError("client does not exist")
 
-def get_channel_id_with_friend_username(friend_username: str):
-    friend_uuid = get_uuid(friend_username)
+def get_channel_id_with_friend_uuid(friend_id):
     user_id = client.auth.get_user().user.id
-    response = client.from_("channel_list").select("channel_id").eq("channel_type", "private").contains("channel_members", [user_id, friend_uuid]).execute().data
+    response = client.from_("channel_list").select("channel_id").eq("channel_type", "private").contains("channel_members", [user_id, friend_id]).execute().data
     if response:
         return response[0]["channel_id"]
     else:
