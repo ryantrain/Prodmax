@@ -18,12 +18,12 @@ async function fetchData() {
             friendList.insertAdjacentHTML('beforeend', friendsListHTML);
 
             const friendRequestList = document.getElementById('friend_requests_list');
-            const friendRequestList_HTML = data.friend_requests.map(name => 
+            const friendRequestList_HTML = data.friend_requests_names.map((name, index) => 
                 `<div class="friend_request_item">
                     <p>${name}</p>
                     <div class="friend_request_buttons_section">
-                        <button id="accept_friend_request_button" data-username="${name}" class="friend_request_button">✓</button>
-                        <button id="reject_friend_request_button" data-username="${name}" class="friend_request_button">✗</button>
+                        <button id="accept_friend_request_button" data-user_id="${data.friend_requests_ids[index]}" data-username="${name}" class="friend_request_button">✓</button>
+                        <button id="reject_friend_request_button" data-user_id="${data.friend_requests_ids[index]}" data-username="${name}" class="friend_request_button">✗</button>
                     </div>
                 </div>`).join('');
             friendRequestList.insertAdjacentHTML('beforeend', friendRequestList_HTML);
@@ -163,10 +163,10 @@ async function acceptFriendRequest(button) {
 };
 
 function rejectFriendRequest(button) {
-    const username = button.dataset.username;
+    const user_id = button.dataset.user_id;
     const formData = new FormData();
     
-    formData.append('addressee_username', username);
+    formData.append('addressee_uuid', user_id);
 
     try {
         fetch('http://localhost:8000/api/decline_friend_request', {

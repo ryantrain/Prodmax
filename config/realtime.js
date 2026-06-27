@@ -1,13 +1,17 @@
 const { supabase } = require('../config/supabaseClient');
 
 async function initializeRealtime() {
-    await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
+    const data_user = await supabase.auth.getUser();
+    const user = data_user.data.user;
+    const user_id = user.id;
+    await supabase.realtime.setAuth(session.access_token);
 
     const message_channel = supabase.channel('message_updates')
                 .on('postgres_changes', { 
                     event: "INSERT", 
                     schema: "public", 
-                    table: "messages", 
+                    table: "messages",
                 }, async (payload) => {
                     const activeChannel = document.querySelector('.channel_item.active_channel');
                     const message_channel_ID = payload.new.chat_id;
@@ -52,6 +56,26 @@ async function initializeRealtime() {
                             </div>`
                         );
                     }
+                }).subscribe();
+    
+    const receive_friend_requests_channel = supabase.channel('friend_request_updates')
+                .on('postgres_changes', { 
+                    event: "INSERT",
+                    schema: "public", 
+                    table: "friendships",
+                    filter: "sender_id=neq." + user_id
+                }, async (payload) => {
+                    const friend_request_list = document.getElementById('friend_requests_list');
+                    const sender_id = payload.new.sender_id;
+                    const sender_username = await getUsername(sender_id);
+                    friend_request_list.insertAdjacentHTML('beforeend',
+                        `<div class="friend_request_item">
+                            <p>${sender_username}</p>
+                            <div class="friend_request_buttons_section">
+                                <button id="accept_friend_request_button" data-user_id="${sender_id}" data-username="${sender_username}" class="friend_request_button">✓</button>
+                                <button id="reject_friend_request_button" data-user_id="${sender_id}" data-username="${sender_username}" class="friend_request_button">✗</button>
+                            </div>
+                        </div>`)
                 }).subscribe();
 }
 

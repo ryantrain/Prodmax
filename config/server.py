@@ -50,8 +50,8 @@ async def navbar():
     await chat.verify_private_channels()
     await chat.verify_organization_channels()
     channel_list = await chat.load_channel_list()
-    friend_requests = friends.get_friend_requests()
-    return {"friends": friends_list, "channels": channel_list, "friend_requests": friend_requests}
+    friend_requests_names, friend_requests_ids = friends.get_friend_requests()
+    return {"friends": friends_list, "channels": channel_list, "friend_requests_names": friend_requests_names, "friend_requests_ids": friend_requests_ids}
 
 @app.post('/api/register')
 async def register(username: str = Form(...), password: str = Form(...), email: str = Form(...), phone_number: str = Form(None)):
@@ -114,9 +114,9 @@ async def accept_friend_request(addressee_username: str = Form(...)):
         return {"message": f"An error occurred while accepting friend request: {str(e)}"}
 
 @app.post('/api/decline_friend_request')
-def decline_friend_request(addressee_username: str = Form(...)):
+def decline_friend_request(addressee_uuid: str = Form(...)):
     try:
-        friends.decline_friend_request(addressee_username)
+        friends.decline_friend_request(addressee_uuid)
         return {"message": "Friend request declined"}
     except Exception as e:
         return {"message": f"An error occurred while declining friend request: {str(e)}"}

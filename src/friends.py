@@ -70,9 +70,10 @@ def send_friend_request(addressee_username: str):
         if request_exists:
             raise ValueError("Friend request already exists")
         
+        user_id = client.auth.get_user().user.id
         if addressee_uuid:
             response = client.from_("friendships")\
-                    .insert({"uuid_pair": [client.auth.get_user().user.id, addressee_uuid], "status": "pending"})\
+                    .insert({"uuid_pair": [user_id, addressee_uuid], "status": "pending", "sender_id": user_id})\
                     .execute()
         if response:
             return {"success": True, "data": response}
@@ -86,19 +87,18 @@ def send_friend_request(addressee_username: str):
 
 async def accept_friend_request(addressee_username: str):
     addressee_uuid = get_uuid(addressee_username)
-    client.rpc("update_friendship_status", {"addressee_uuid": addressee_uuid, "new_status": "accepted"}).execute()
+    client.rpc("update_friendship_status_accepted", {"addressee_uuid": addressee_uuid, "new_status": "accepted"}).execute()
     await chat.add_channel_to_db(channel_type="private", channel_members=[addressee_uuid, client.auth.get_user().user.id], channel_name=None)
     channel_id = get_channel_id_with_friend_username(addressee_username)
     return {"channel_id": channel_id}
 
-def decline_friend_request(addressee_username: str):
-    addressee_uuid = get_uuid(addressee_username)
-    
+def decline_friend_request(addressee_uuid: str):
+   
     client.rpc("decline_friend_request", {"addressee_uuid": addressee_uuid}).execute()
     
 def get_username(uuid: str):
     if client:
-        username = client.from_("user_information")\
+        username = client.from_("user_public_view")\
                                 .select("username")\
                                 .eq("user_id", uuid)\
                                 .execute().data[0]["username"]
@@ -125,10 +125,12 @@ async def get_channel_members(channel_id: str):
 def get_friend_requests() -> list:
     user_id = client.auth.get_user().user.id
     response = client.from_("friendships").select("uuid_pair").contains("uuid_pair", [user_id]).eq("status", "pending").execute()
-    friend_requests = []
+    friend_requests_names = []
+    friend_requests_uuids = []
     for request in response.data:
         uuid_pair = request["uuid_pair"]
         friend_uuid = uuid_pair[0] if uuid_pair[0] != user_id else uuid_pair[1]
+        friend_requests_uuids.append(friend_uuid)
         friend_username = get_username(friend_uuid)
-        friend_requests.append(friend_username)
-    return friend_requests
+        friend_requests_names.append(friend_username)
+    return friend_requests_names, friend_requests_uuids
