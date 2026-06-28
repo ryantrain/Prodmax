@@ -64,7 +64,7 @@ body {
     flex-direction: column;
     justify-content: flex-end;
     overflow: hidden;
-    align-self: center;
+    align-self: start;
     position: relative;
     opacity: 0.6;
 }

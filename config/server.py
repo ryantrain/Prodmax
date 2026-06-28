@@ -146,11 +146,10 @@ def get_user_info(user_id: str):
     except Exception as e:
         return {"message": f"An error occurred while retrieving user information: {str(e)}"}
     
-@app.post('/api/taskboard/{taskboard_id}/add_personal_task')
+@app.post('/api/taskboard/{taskboard_id}/add_task')
 def add_task_to_taskboard(taskboard_id: str, task_name: str = Form(...), task_description: str = Form(...)):
     try:
         response = tasks.add_task_to_taskboard(taskboard_id, task_name, task_description)
-        print(response)
         return {"message": "Task added successfully", "data": response, "ok": True}
     except Exception as e:
         return {"message": f"An error occurred while adding task to taskboard: {str(e)}"}

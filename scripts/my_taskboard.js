@@ -11,7 +11,6 @@ function loadTaskboard() {
         const data = JSON.parse(taskboardData);
 
         for (const task of data.tasks) {
-            console.log(task);
             const taskElement = document.createElement('div');
             taskElement.dataset.task_complete = task.completed;
             if (task.completed) {
@@ -26,20 +25,9 @@ function loadTaskboard() {
                 markCompleteButton.classList.add('mark-complete-button');
                 markCompleteButton.textContent = "✓";
                 markCompleteButton.onclick = async () => {
-                    response = await fetch('http://localhost:8000/api/taskboard/' + taskboard_id + '/toggle_task_completed/' + task.id, {
+                    const response = await fetch('http://localhost:8000/api/taskboard/' + taskboard_id + '/toggle_task_completed/' + task.id, {
                         method: 'POST'
                     });
-
-                    if (response.ok) {
-                        taskElement.dataset.task_complete = taskElement.dataset.task_complete === 'true' ? 'false' : 'true';
-                        if (taskElement.dataset.task_complete === 'true') {
-                            taskElement.classList.remove('organization-card-incomplete');
-                            taskElement.classList.add('organization-card-completed');
-                        } else {
-                            taskElement.classList.remove('organization-card-completed');
-                            taskElement.classList.add('organization-card-incomplete');
-                        }
-                    }
                 }
                 taskElement.appendChild(markCompleteButton);
 
@@ -50,7 +38,7 @@ function loadTaskboard() {
                 taskOptions.onclick = (e) => {
                     e.stopPropagation();
                     // Handle task options click (e.g., show a dropdown menu with options)
-                    this.ToggleCardOptionsDropdown(taskElement);
+                    this.toggleCardOptionsDropdown(taskElement);
 
                 }
                 taskElement.appendChild(taskOptions);
@@ -91,54 +79,21 @@ function loadTaskboard() {
 
 async function createSubtask(taskboard_id) {
     try {
-        task_title = document.getElementById('task_title_input').value;
-        task_description = document.getElementById('task_description_input').value;
+        const task_title = document.getElementById('task_title_input').value;
+        const task_description = document.getElementById('task_description_input').value;
 
-        formData = new FormData();
+        const formData = new FormData();
 
         formData.append('task_name', task_title);
         formData.append('task_description', task_description);
-        const response = await fetch('http://localhost:8000/api/taskboard/' + taskboard_id + '/add_personal_task', {
+        const response = await fetch('http://localhost:8000/api/taskboard/' + taskboard_id + '/add_task', {
             method: 'POST',
             body: formData
         });
 
-        if (response.ok) {
-            addSubtaskCard(task_title, task_description);
-        }
-
     } catch (error) {
         console.error('Error occurred while adding task to taskboard:', error);
     }
-}
-
-function addSubtaskCard(task_title, task_description) {
-    const task = document.getElementById('task-list');
-
-    const taskElement = document.createElement('div');
-    taskElement.classList.add('task-card');
-    taskElement.classList.add('organization-card-incomplete');
-
-        // Create task name/title element
-        const taskName = document.createElement('div')
-        taskName.classList.add('card-title');
-            const taskTitle = document.createElement('h3')
-            taskTitle.textContent = task_title;
-        taskName.appendChild(taskTitle);
-
-        // Create task content element
-        const taskContent = document.createElement('div');
-        taskContent.classList.add('card-description-container');
-            const taskText = document.createElement('p');
-            taskText.classList.add('card-description-text')
-            taskText.textContent = task_description;
-        taskContent.appendChild(taskText);
-
-    taskElement.appendChild(taskName);
-    taskElement.appendChild(taskContent);
-
-    const createTaskButton = document.querySelector('.create-task-button');
-    task.insertBefore(taskElement, createTaskButton);
 }
 
 function toggleAddTaskOverlay() {
@@ -167,7 +122,7 @@ function toggleEditTaskOverlay() {
     container.classList.toggle('active');
 }
 
-function ToggleCardOptionsDropdown(card) {
+function toggleCardOptionsDropdown(card) {
     const orglist = document.getElementById('task-list');
     // Check if dropdown already exists somewhere
     const check_dropdown = orglist.querySelectorAll('.card-options-dropdown');
@@ -233,7 +188,7 @@ async function EditTask(task_id) {
     formData.append('task_description', task_description);
 
     try {
-        response = await fetch('http://localhost:8000/api/taskboard/' + taskboard_id + '/edit_task/' + task_id, {
+        const response = await fetch('http://localhost:8000/api/taskboard/' + taskboard_id + '/edit_task/' + task_id, {
             method: 'POST',
             body: formData
         });
@@ -254,10 +209,10 @@ async function deleteTask(task_id) {
             method: 'POST'
         });
 
-        if (response.ok) {
-            current_deleting_task.remove();
-            current_deleting_task = null;
-        }
+        // if (response.ok) {
+        //     current_deleting_task.remove();
+        //     current_deleting_task = null;
+        // }
     } catch (error) {
         console.error('Error deleting task:', error);
     }
