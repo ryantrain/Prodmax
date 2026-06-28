@@ -53,6 +53,16 @@ async def navbar():
     friend_requests_names, friend_requests_ids = friends.get_friend_requests()
     return {"friends": friends_list, "channels": channel_list, "friend_requests_names": friend_requests_names, "friend_requests_ids": friend_requests_ids}
 
+@app.get('/api/logout')
+async def logout():
+    try:
+        response = client.auth.sign_out()
+        if getattr(chat, "client", None):
+            await chat.client.auth.sign_out()
+        return {"message": "Logout successful", "data": response}
+    except Exception as e:
+        return {"message": f"An error occurred during logout: {str(e)}"}
+
 @app.post('/api/register')
 async def register(username: str = Form(...), password: str = Form(...), email: str = Form(...), phone_number: str = Form(None)):
     try:

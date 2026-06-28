@@ -48,6 +48,7 @@ document.getElementById('login-form').addEventListener('submit', async(e) => {
 
     } catch (error) {
         console.error('Error during login:', error);
+        spinner.classList.toggle('hidden');
     }
 
 });
