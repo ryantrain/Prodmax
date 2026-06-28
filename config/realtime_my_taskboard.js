@@ -62,8 +62,9 @@ function addSubtaskCard(task_title, task_description, task_id) {
     const task = document.getElementById('task-list');
 
     const taskElement = document.createElement('div');
-    taskElement.dataset.task_id = task_id;
+    taskElement.dataset.task_complete = 'false';
     taskElement.classList.add('organization-card-incomplete');
+    taskElement.dataset.task_id = task_id;
 
         // Create mark complete button
         const markCompleteButton = document.createElement('button');
@@ -89,12 +90,13 @@ function addSubtaskCard(task_title, task_description, task_id) {
 
         // Create task options button
         const taskOptions = document.createElement('button');
+        console.log(taskOptions);
         taskOptions.classList.add('card-options-button');
         taskOptions.textContent = '...';
         taskOptions.onclick = (e) => {
             e.stopPropagation();
             // Handle task options click (e.g., show a dropdown menu with options)
-            this.toggleCardOptionsDropdown(taskElement);
+            toggleCardOptionsDropdown(taskElement);
 
         }
         taskElement.appendChild(taskOptions);
@@ -160,6 +162,19 @@ function toggleCardOptionsDropdown(card) {
         dropdown.appendChild(deleteOption);
 
     card.appendChild(dropdown);
+}
+
+function toggleEditTaskOverlay() {
+    const overlay = document.querySelector('.add_task_overlay');
+    const container = document.getElementById('edit_task_container');
+    if (container.classList.contains('active')) {
+        overlay.addEventListener('transitionend', () => {
+            document.getElementById('task_title_input_edit').value = '';
+        document.getElementById('task_description_input_edit').value = '';
+        }, {once: true});
+    }
+    overlay.classList.toggle('active');
+    container.classList.toggle('active');
 }
 
 initializeRealtime();

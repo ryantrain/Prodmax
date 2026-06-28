@@ -38,7 +38,7 @@ function loadTaskboard() {
                 taskOptions.onclick = (e) => {
                     e.stopPropagation();
                     // Handle task options click (e.g., show a dropdown menu with options)
-                    this.toggleCardOptionsDropdown(taskElement);
+                    toggleCardOptionsDropdown(taskElement);
 
                 }
                 taskElement.appendChild(taskOptions);
