@@ -5,7 +5,6 @@ async function initializeRealtime() {
     const data_user = await supabase.auth.getUser();
     const user = data_user.data.user;
     const user_id = user.id;
-    await supabase.realtime.setAuth(session.access_token);
 
     const message_channel = supabase.channel('message_updates')
                 .on('postgres_changes', { 

@@ -263,3 +263,11 @@ def decline_organization_invitation(organization_id: str):
         return {"message": "Organization invitation declined", "data": response}
     except Exception as e:
         return {"message": f"An error occurred while declining organization invitation: {str(e)}"}
+    
+@app.get('/api/organizations/{organization_id}/retrieve_name')
+def retrieve_organization_name(organization_id: str):
+    try:
+        response = organizations.retrieve_organization_names_for_invitations([organization_id])
+        return {"message": "Organization name retrieved successfully", "data": response}
+    except Exception as e:
+        return {"message": f"An error occurred while retrieving organization name: {str(e)}"}

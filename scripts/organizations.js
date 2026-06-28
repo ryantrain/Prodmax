@@ -63,7 +63,6 @@ function addInvitationCard(organization_id, organization_title) {
     const organization = document.getElementById('organization-list');
 
     const organizationElement = document.createElement('div');
-    console.log(organization_id, organization_title);
     organizationElement.dataset.organization_id = organization_id;
     organizationElement.classList.add('organization_invitation_card');
 
