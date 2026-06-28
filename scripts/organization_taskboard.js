@@ -75,13 +75,6 @@ async function createOrganizationTaskboard(organization_id) {
             method: 'POST',
             body: formData
         });
-
-        if (response.ok) {
-            data = await response.json();
-            console.log(data);
-            addOrganizationTaskboardCard(taskboard_title, taskboard_description, data.data.data[0].uuid);
-        }
-
     } catch (error) {
         console.error('Error occurred while adding task to taskboard:', error);
     }
