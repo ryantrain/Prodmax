@@ -1,6 +1,5 @@
 const { supabase } = require('../config/supabaseClient');
 const organization_id = sessionStorage.getItem("organization_id");
-console.log(organization_id);
 
 async function initializeRealtime() {
     const { data: { session } } = await supabase.auth.getSession();
@@ -15,12 +14,54 @@ async function initializeRealtime() {
                     table: "taskboards",
                     filter: `organization_id=eq.${organization_id}`
                 }, async (payload) => {
-                    console.log(payload);
                     const taskboard_id = payload.new.uuid;
                     const taskboard_name = payload.new.taskboard_name;
                     const taskboard_description = payload.new.taskboard_description;
 
                     addOrganizationTaskboardCard(taskboard_name, taskboard_description, taskboard_id);
+                }).subscribe();
+
+    const new_member_channel = supabase.channel('new_member_updates')
+                .on('postgres_changes', { 
+                    event: "UPDATE", 
+                    schema: "public", 
+                    table: "organizations",
+                    filter: `organization_id=eq.${organization_id}`
+                }, async (payload) => {
+                    console.log(payload);
+                    const new_column = payload.new.members;
+                    const old_column = []
+                    
+                    document.querySelectorAll('.organization_members_list_item').forEach(item => {
+                        old_column.push(item.dataset.member_id);
+                    });
+
+                    console.log(old_column);
+                    console.log(old_column.every(member => new_column.includes(member)));
+
+                    if (old_column.every(member => new_column.includes(member))) {
+                        const new_members = new_column.filter(member => !old_column.includes(member));
+                        const formData = new FormData();
+                        formData.append('user_ids', [new_members]);
+                        try {
+                            const response = await fetch('http://localhost:8000/api/users/retrieve_usernames', {
+                                method: 'POST',
+                                body: formData
+                            });
+
+                            if (response.ok) {
+                                const data = await response.json();
+                                console.log(data);
+                                const member_list = document.getElementById('organization_members_list');
+                                member_list.insertAdjacentHTML('beforeend',
+                                `<div class="organization_members_list_item">
+                                    <span class="organization_members_list_item_username">${data.data[0]}</span>
+                                </div>`)
+                            }
+                        } catch (error) {
+                            console.error('Error occurred while fetching new member username:', error);
+                        }
+                    }
                 }).subscribe();
 }
 

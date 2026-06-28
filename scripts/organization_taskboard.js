@@ -39,6 +39,7 @@ function loadOrganizationMembers() {
     organization_members_names.forEach((member, index) => {
         const memberElement = document.createElement('div');
         memberElement.classList.add('organization_members_list_item');
+        memberElement.dataset.member_id = organization_members_ids[index];
 
             const memberName = document.createElement('span');
             memberName.classList.add('organization_members_list_item_username');

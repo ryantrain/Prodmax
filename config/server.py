@@ -271,3 +271,11 @@ def retrieve_organization_name(organization_id: str):
         return {"message": "Organization name retrieved successfully", "data": response}
     except Exception as e:
         return {"message": f"An error occurred while retrieving organization name: {str(e)}"}
+    
+@app.post('/api/users/retrieve_usernames')
+def retrieve_usernames(user_ids: list = Form(...)):
+    try:
+        response = organizations.retrieve_usernames_for_member_ids(user_ids)
+        return {"message": "Usernames retrieved successfully", "data": response}
+    except Exception as e:
+        return {"message": f"An error occurred while retrieving usernames: {str(e)}"}

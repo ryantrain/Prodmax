@@ -117,3 +117,13 @@ def decline_organization_invitation(organization_id: str):
         print("Error declining organization invitation:")
         print(e)
         return {"message": f"An error occurred while declining organization invitation: {str(e)}"}
+    
+def retrieve_usernames_for_member_ids(member_ids: list):
+    try:
+        response = client.rpc("retrieve_usernames_using_id_list", {"user_ids": member_ids}).execute()
+        usernames = response.data if response.data else []
+        return usernames
+    except Exception as e:
+        print("Error retrieving usernames for member IDs:")
+        print(e)
+        return {"message": f"An error occurred while retrieving usernames for member IDs: {str(e)}"}
