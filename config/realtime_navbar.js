@@ -126,26 +126,6 @@ async function get_username_for_groupchat(channel_id) {
     }
 };
 
-async function logout() {
-    try {
-        const response = await fetch('http://localhost:8000/api/logout', {
-            method: 'GET'
-        });
-
-        if (response.ok) {
-            supabase.auth.signOut();
-            window.location.href = 'login.html';
-        }
-
-    } catch (error) {
-        console.error('Error logging out:', error);
-    }
-}
-
 initializeRealtime().catch(error => {
     console.error('Error initializing realtime:', error);
-});
-
-document.getElementById('logout_link').addEventListener('click', async () => {
-    await logout();
 });

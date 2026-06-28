@@ -1,3 +1,5 @@
+const { supabase } = require('../config/supabaseClient');
+
 async function fetchData() {
     try {
         const rawData = sessionStorage.getItem('preFetchedData_navbar');
@@ -263,6 +265,23 @@ async function createGroupChannel() {
     }
 }
 
+async function logout() {
+    try {
+        const response = await fetch('http://localhost:8000/api/logout', {
+            method: 'GET'
+        });
+
+        if (response.ok) {
+            supabase.auth.signOut();
+
+            window.location.href = 'login.html';
+        }
+
+    } catch (error) {
+        console.error('Error logging out:', error);
+    }
+}
+
 // Updates the message history with the new message
 document.getElementById('message_input_form').addEventListener('submit', async(e) => {
     e.preventDefault();
@@ -358,6 +377,10 @@ document.getElementById('workspaces_link').addEventListener('click', () => {
 
 document.getElementById('settings_link').addEventListener('click', () => {
     window.location.href = 'settings.html';
+});
+
+document.getElementById('logout_link').addEventListener('click', async () => {
+    await logout();
 });
 
 document.getElementById('toggle_channel_creation_button').addEventListener('click', () => {
