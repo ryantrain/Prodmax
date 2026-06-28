@@ -1,6 +1,7 @@
 var taskboard_id = null;
 var current_editing_task = null;
 var current_deleting_task = null;
+const private = sessionStorage.getItem('private') === "True" ? true : false;
 
 function loadTaskboard() {
     const taskboardData = sessionStorage.getItem('preFetchedData_private_taskboard');
@@ -39,7 +40,6 @@ function loadTaskboard() {
                     e.stopPropagation();
                     // Handle task options click (e.g., show a dropdown menu with options)
                     toggleCardOptionsDropdown(taskElement);
-
                 }
                 taskElement.appendChild(taskOptions);
 
@@ -62,19 +62,18 @@ function loadTaskboard() {
             taskElement.appendChild(taskContent);
 
             orglist.appendChild(taskElement);
-
         }
-
-        const createTaskButton = document.createElement('button');
-        createTaskButton.textContent = '+';
-        createTaskButton.classList.add('create-task-button');
-        createTaskButton.onclick = () => {
-            toggleAddTaskOverlay();
-        };
-        orglist.appendChild(createTaskButton);
-
-        sessionStorage.removeItem('preFetchedData_private_taskboard');
     }
+    const createTaskButton = document.createElement('button');
+    createTaskButton.textContent = '+';
+    createTaskButton.classList.add('create-task-button');
+    createTaskButton.onclick = () => {
+        toggleAddTaskOverlay();
+    };
+    orglist.appendChild(createTaskButton);
+
+    sessionStorage.removeItem('preFetchedData_private_taskboard');
+    sessionStorage.removeItem('private');
 }
 
 async function createSubtask(taskboard_id) {
@@ -86,6 +85,8 @@ async function createSubtask(taskboard_id) {
 
         formData.append('task_name', task_title);
         formData.append('task_description', task_description);
+        formData.append('private', private);
+
         const response = await fetch('http://localhost:8000/api/taskboard/' + taskboard_id + '/add_task', {
             method: 'POST',
             body: formData

@@ -22,6 +22,7 @@ organizations.client = client
 app = FastAPI()
 threading.Thread(target=asyncio.run, args=(chat.start_realtime_async(),)).start()
 
+###################### USER INFO ######################
 @app.post("/api/login")
 async def login(email: str = Form(...), password: str = Form(...)):
     try:
@@ -39,6 +40,26 @@ async def login(email: str = Form(...), password: str = Form(...)):
     except RuntimeError as e:
         return {"message": str(e)}
 
+@app.post('/api/register')
+async def register(username: str = Form(...), password: str = Form(...), email: str = Form(...), phone_number: str = Form(None)):
+    try:
+        response = await register_user(email, password, username, phone_number)
+        if response:
+            return {"message": "Registration successful", "data": response}
+        else:
+            return {"message": "Registration failed"}
+    except Exception:
+        return {"message": "An error occurred during registration"}
+
+@app.get('/api/user/{user_id}')
+def get_user_info(user_id: str):
+    try:
+        response = friends.get_username(user_id)
+        return {"username": response}
+    except Exception as e:
+        return {"message": f"An error occurred while retrieving user information: {str(e)}"}
+        
+###################### NAVIGATION AND DASHBOARD ######################
 @app.get("/api/dashboard")
 async def dashboard():
      taskboards = tasks.get_personal_taskboards_for_user()
@@ -63,17 +84,7 @@ async def logout():
     except Exception as e:
         return {"message": f"An error occurred during logout: {str(e)}"}
 
-@app.post('/api/register')
-async def register(username: str = Form(...), password: str = Form(...), email: str = Form(...), phone_number: str = Form(None)):
-    try:
-        response = await register_user(email, password, username, phone_number)
-        if response:
-            return {"message": "Registration successful", "data": response}
-        else:
-            return {"message": "Registration failed"}
-    except Exception:
-        return {"message": "An error occurred during registration"}
-
+###################### MESSAGES ######################
 @app.get('/api/load_messages/{channel_id}')
 async def load_messages(channel_id: str):
     channel_id = str(channel_id)
@@ -111,6 +122,7 @@ def add_taskboard(taskboard_name: str = Form(...)):
     except Exception as e:
         return {"message": f"An error occurred while adding taskboard: {str(e)}"}
 
+###################### FRIENDS ######################
 @app.post('/api/add_friend')
 def add_friend(query: str = Form(...)):
     try:
@@ -138,7 +150,25 @@ def decline_friend_request(addressee_uuid: str = Form(...)):
         return {"message": "Friend request declined"}
     except Exception as e:
         return {"message": f"An error occurred while declining friend request: {str(e)}"}
-    
+
+###################### GROUP CHATS ######################
+@app.post('/api/channel/create_group_channel')
+async def create_group_channel(channel_name: str = Form(None), selected_friend_names: list = Form(...)):
+    try:
+        response = await chat.create_group_channel(channel_name, selected_friend_names)
+        return {"message": "Group channel created successfully", "data": response}
+    except Exception as e:
+        return {"message": f"An error occurred while creating group channel: {str(e)}"}
+
+###################### TASKBOARDS ######################
+@app.post('/api/add_personal_taskboard')
+def add_taskboard(taskboard_name: str = Form(...)):
+    try:
+        response = tasks.add_taskboard_to_db(taskboard_name)
+        return {"message": "Taskboard added successfully", "data": response}
+    except Exception as e:
+        return {"message": f"An error occurred while adding taskboard: {str(e)}"}
+
 @app.get('/api/taskboard/{taskboard_id}')
 def get_taskboard(taskboard_id: str):
     try:
@@ -157,7 +187,7 @@ def get_user_info(user_id: str):
         return {"message": f"An error occurred while retrieving user information: {str(e)}"}
     
 @app.post('/api/taskboard/{taskboard_id}/add_task')
-def add_task_to_taskboard(taskboard_id: str, task_name: str = Form(...), task_description: str = Form(...)):
+def add_task_to_taskboard_db(taskboard_id: str, task_name: str = Form(...), task_description: str = Form(...)):
     try:
         response = tasks.add_task_to_taskboard(taskboard_id, task_name, task_description)
         return {"message": "Task added successfully", "data": response, "ok": True}
@@ -180,6 +210,7 @@ def delete_task_from_taskboard(taskboard_id: str, task_id: str):
     except Exception as e:
         return {"message": f"An error occurred while deleting task from taskboard: {str(e)}"}
 
+###################### ORGANIZATIONS ######################
 @app.post('/api/organizations/add_organization')
 def add_organization_to_database(organization_name: str = Form(...), organization_description: str = Form(...)):
     try:
@@ -195,14 +226,6 @@ def delete_organization_from_database(organization_id: str):
         return {"message": "Organization deleted successfully"}
     except Exception as e:
         return {"message": f"An error occurred while deleting organization from taskboard: {str(e)}"}
-    
-@app.post('/api/taskboard/{taskboard_id}/toggle_task_completed/{task_id}')
-def toggle_task_completed(taskboard_id: str, task_id: str):
-    try:
-        tasks.toggle_task_completed(task_id)
-        return {"message": "Task completion toggled"}
-    except Exception as e:
-        return {"message": f"An error occurred while toggling task completion: {str(e)}"}
 
 @app.get('/api/organizations/load')
 def load_organizations_for_users():
@@ -213,14 +236,6 @@ def load_organizations_for_users():
     except Exception as e:
         return {"message": f"An error occurred while loading organizations for user: {str(e)}"}
     
-@app.post('/api/channel/create_group_channel')
-async def create_group_channel(channel_name: str = Form(None), selected_friend_names: list = Form(...)):
-    try:
-        response = await chat.create_group_channel(channel_name, selected_friend_names)
-        return {"message": "Group channel created successfully", "data": response}
-    except Exception as e:
-        return {"message": f"An error occurred while creating group channel: {str(e)}"}
-
 @app.get('/api/{organization_id}/organization_taskboard')
 def load_organizations_taskboard(organization_id: str):
     try:
@@ -230,7 +245,7 @@ def load_organizations_taskboard(organization_id: str):
         return {"message": f"An error occurred while loading organization tasks for user: {str(e)}"}
     
 @app.post('/api/taskboard/{organization_id}/add_organization_taskboard')
-def add_organization_task(organization_id: str, taskboard_name: str = Form(...), taskboard_description: str = Form(...)):
+def add_organization_taskboard_to_db(organization_id: str, taskboard_name: str = Form(...), taskboard_description: str = Form(...)):
     try:
         response = tasks.add_taskboard_to_db(taskboard_name, taskboard_description, organization_id, privacy = False)
         return {"message": "Taskboard added successfully", "data": response}
@@ -288,3 +303,28 @@ def retrieve_usernames(user_ids: list = Form(...)):
         return {"message": "Usernames retrieved successfully", "data": response}
     except Exception as e:
         return {"message": f"An error occurred while retrieving usernames: {str(e)}"}
+###################### TASKBOARDS ######################
+@app.post('/api/taskboard/{taskboard_id}/toggle_task_completed/{task_id}')
+def toggle_task_completed(taskboard_id: str, task_id: str):
+    try:
+        tasks.toggle_task_completed(task_id)
+        return {"message": "Task completion toggled"}
+    except Exception as e:
+        return {"message": f"An error occurred while toggling task completion: {str(e)}"}
+
+@app.post('/api/taskboard/{taskboard_id}/assign_members')
+def assign_members_to_taskboard(taskboard_id: str, member_ids: list = Form(...)):
+    try:
+        print(member_ids)
+        response = organizations.assign_members_to_taskboard(taskboard_id, member_ids)
+        return {"message": "Assigned tasks successfully", "data": response}
+    except Exception as e:
+        return {"message": f"An error occurred while assigning taskboards to members: {str(e)}"}
+    
+@app.get('/api/taskboard/{taskboard_id}/retrieve_members')
+def retrieve_taskboard_members(taskboard_id: str):
+    try:
+        response = organizations.retrieve_taskboard_members(taskboard_id)
+        return {"message": "Retrieve taskboard members successfully", "data": response}
+    except Exception as e:
+        return {"message": f"An error occurred while retrieving members of taskboard: {str(e)}"}

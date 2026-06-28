@@ -82,7 +82,7 @@ body {
 .mark-complete-button {
     position: absolute;
     top: 0.1rem;
-    right: 4.0rem;
+    right: 5.0rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -126,16 +126,6 @@ body {
 .card-description-text {
     word-break: break-word;
     white-space: normal;
-}
-
-.card-options-button {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    display: flex;
-    justify-content: flex-end;
-    padding: 0.5rem;
-    background: transparent;
 }
 
 .create-task-button {
@@ -297,6 +287,7 @@ button {
     font-size: 20px;
     cursor: pointer;
     z-index: 5;
+    padding: 0.5rem;
     height: 0.25rem;
     width: 2rem;
     line-height: 2;
@@ -333,6 +324,8 @@ button {
 .card-options-dropdown-item:hover {
     background-color: #333;
 }
+
+
 
 @keyframes slideDown {
     from {

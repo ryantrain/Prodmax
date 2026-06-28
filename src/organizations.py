@@ -62,8 +62,7 @@ def invite_members_to_organization(organization_id: str, member_ids: list):
         response = client.rpc("invite_members_to_organization", {"selected_organization_id": organization_id, "user_id": user_id, "members_to_invite": member_ids}).execute()
         return response
     except Exception as e:
-        print("Error inviting members to organization")
-        print(e)
+        print("Error inviting members to organization" + str(e))
         return {"message": f"An error occurred while inviting members to organization: {str(e)}"}
     
 def retrieve_organization_invitations_for_user():
@@ -78,8 +77,7 @@ def retrieve_organization_invitations_for_user():
 
         return response.data, organization_names
     except Exception as e:
-        print("Error retrieving organization invitations for user:")
-        print(e)
+        print("Error retrieving organization invitations for user:" + str(e))
         return {"message": f"An error occurred while retrieving organization invitations for user: {str(e)}"}
     
 def retrieve_organization_names_for_invitations(organization_ids: list):
@@ -88,8 +86,7 @@ def retrieve_organization_names_for_invitations(organization_ids: list):
         return response.data
     
     except Exception as e:
-        print("Error retrieving organization names:")
-        print(e)
+        print("Error retrieving organization names:" + str(e))
         return {"message": f"An error occurred while retrieving organization names: {str(e)}"}
     
 def accept_organization_invitation(organization_id: str):
@@ -101,8 +98,7 @@ def accept_organization_invitation(organization_id: str):
 
         return response.data[0] if response.data else []
     except Exception as e:
-        print("Error accepting organization invitation:")
-        print(e)
+        print("Error accepting organization invitation:" + str(e))
         return {"message": f"An error occurred while accepting organization invitation: {str(e)}"}
     
 def decline_organization_invitation(organization_id: str):
@@ -114,8 +110,7 @@ def decline_organization_invitation(organization_id: str):
 
         return response.data[0] if response.data else []
     except Exception as e:
-        print("Error declining organization invitation:")
-        print(e)
+        print("Error declining organization invitation:" + str(e))
         return {"message": f"An error occurred while declining organization invitation: {str(e)}"}
     
 def retrieve_usernames_for_member_ids(member_ids: list):
@@ -124,6 +119,24 @@ def retrieve_usernames_for_member_ids(member_ids: list):
         usernames = response.data if response.data else []
         return usernames
     except Exception as e:
-        print("Error retrieving usernames for member IDs:")
-        print(e)
+        print("Error retrieving usernames for member IDs:" + str(e))
         return {"message": f"An error occurred while retrieving usernames for member IDs: {str(e)}"}
+    
+def assign_members_to_taskboard(taskboard_id: str, member_ids: list):
+    """Assign members to a taskboard."""
+    try:
+        print(member_ids)
+        response = client.rpc("assign_members_to_taskboard", {"taskboard_id": taskboard_id, "members_to_invite": member_ids}).execute()
+        return response
+    except Exception as e:
+        print("Error assigning members to taskboard" + str(e))
+        return {"message": f"An error occurred while assigning taskboard to members (organizations.py): {str(e)}"}
+
+def retrieve_taskboard_members(taskboard_id: str):
+    """Retrieve members of a taskboard."""
+    try:
+        response = client.from_("taskboards").select("members").eq("uuid", taskboard_id).execute()
+        return response
+    except Exception as e:
+        print("Error retrieving members of taskboard" + str(e))
+        return {"message": f"An error occurred while retrieving members of taskboard (organizations.py): {str(e)}"}

@@ -1,10 +1,15 @@
 client = None
 
-########################### taskboards ##########################################
-def add_taskboard_to_db(taskboard_name: str, taskboard_description: str, organization_id: str = None, privacy = True):
+########################### TASKBOARDS ##########################################
+def add_taskboard_to_db(taskboard_name: str, taskboard_description: str = "", organization_id: str = None, privacy = True):
     try:
         user_id = client.auth.get_user().user.id
-        response = client.from_("taskboards").insert({"taskboard_name": taskboard_name, "taskboard_description": taskboard_description, "members": [user_id], "taskboard_owner": user_id, "organization_id": organization_id, "private": privacy}).execute()
+        response = client.from_("taskboards").insert({"taskboard_name": taskboard_name, 
+                                                      "taskboard_description": taskboard_description, 
+                                                      "members": [user_id], 
+                                                      "taskboard_owner": user_id, 
+                                                      "organization_id": organization_id, 
+                                                      "private": privacy}).execute()
         return response
     
     except Exception as e:
@@ -43,7 +48,7 @@ def get_shared_taskboards_for_user():
         print(f"An error occurred while fetching taskboards: {str(e)}")
         return []
 
-#################### tasks in taskboards #############################
+#################### SUBTASKS #############################
 def retrieve_tasks_for_taskboard(taskboard_id: str):
     try:
         response = client.from_("tasks").select("*").eq("parent_taskboard", taskboard_id).execute()
@@ -55,12 +60,12 @@ def retrieve_tasks_for_taskboard(taskboard_id: str):
         print(f"An error occurred while fetching tasks for taskboard: {str(e)}")
         return []
 
-def add_task_to_taskboard(taskboard_id: str, task_name: str, task_description: str):
+def add_task_to_taskboard(taskboard_id: str, task_name: str, task_description: str = ""):
     try:
         response = client.from_("tasks").insert({"task_name": task_name, "task_description": task_description, "parent_taskboard": taskboard_id}).execute()
         task_id = response.data[0]["id"]
         client.rpc("insert_task_into_taskboard", {"taskboard_id": taskboard_id, "task_id": task_id}).execute()
-        return None
+        return response
     except Exception as e:
         print(f"An error occurred while adding task to private taskboard: {str(e)}")
         return None

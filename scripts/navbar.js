@@ -20,12 +20,12 @@ async function fetchData() {
             friendList.insertAdjacentHTML('beforeend', friendsListHTML);
 
             const friendRequestList = document.getElementById('friend_requests_list');
-            const friendRequestList_HTML = data.friend_requests_names.map((name, index) => 
+            const friendRequestList_HTML = data.friend_requests.map(name => 
                 `<div class="friend_request_item">
                     <p>${name}</p>
                     <div class="friend_request_buttons_section">
-                        <button id="accept_friend_request_button" data-user_id="${data.friend_requests_ids[index]}" data-username="${name}" class="friend_request_button">✓</button>
-                        <button id="reject_friend_request_button" data-user_id="${data.friend_requests_ids[index]}" data-username="${name}" class="friend_request_button">✗</button>
+                        <button id="accept_friend_request_button" data-username="${name}" class="friend_request_button">✓</button>
+                        <button id="reject_friend_request_button" data-username="${name}" class="friend_request_button">✗</button>
                     </div>
                 </div>`).join('');
             friendRequestList.insertAdjacentHTML('beforeend', friendRequestList_HTML);
@@ -137,10 +137,9 @@ function closeFriendRequestPane() {
 
 async function acceptFriendRequest(button) {
     const username = button.dataset.username;
-    const user_id = button.dataset.user_id;
     const formData = new FormData();
 
-    formData.append('addressee_uuid', user_id);
+    formData.append('addressee_username', username);
 
     try {
         const response = await fetch('http://localhost:8000/api/accept_friend_request', {
@@ -149,7 +148,15 @@ async function acceptFriendRequest(button) {
         });
 
         if (response.ok){
+            const data = await response.json();
             button.parentElement.parentElement.remove();
+
+            document.getElementById('friends_sidebar').insertAdjacentHTML('beforeend', `<p class="friends_item">${username}</p>`);
+
+            document.getElementById('channel_list').insertAdjacentHTML('beforeend', `<div class="channel_wrapper" data-channel_id="${data.data.channel_id}">
+                <input type="checkbox" class="channel_select_checkbox hidden">
+                <button class="channel_item">${username}</button>
+            </div>`);
         }
 
     } catch (error) {
@@ -158,10 +165,10 @@ async function acceptFriendRequest(button) {
 };
 
 function rejectFriendRequest(button) {
-    const user_id = button.dataset.user_id;
+    const username = button.dataset.username;
     const formData = new FormData();
     
-    formData.append('addressee_uuid', user_id);
+    formData.append('addressee_username', username);
 
     try {
         fetch('http://localhost:8000/api/decline_friend_request', {
@@ -229,18 +236,25 @@ function toggleChannelCreation() {
 
 async function renderOrganizations() {
     try {
-        const navbar_response = await fetch('http://localhost:8000/api/navbar', {
+        const organizations_response = await fetch('http://localhost:8000/api/organizations/load', {
             method: 'GET'
         });
 
+        const navbar_response = await fetch('http://localhost:8000/api/navbar', {
+            method: 'GET'
+        }); 
+
+        const organizationData = await organizations_response.json();
         const navbarData = await navbar_response.json();
 
         sessionStorage.setItem('preFetchedData_navbar', JSON.stringify(navbarData));
+        sessionStorage.setItem('preFetchedOrganizations', JSON.stringify(organizationData));
+        
+        window.location.href = 'organizations.html';
+
     } catch (error) {
         console.error('Error rendering organizations:', error);
-    }
-
-    window.location.href = 'organizations.html';
+    }    
 }
 
 async function createGroupChannel() {
@@ -248,9 +262,8 @@ async function createGroupChannel() {
     // const channelName = document.getElementById('new_channel_name_input').value ???
     const selectedFriendNames = selectedChannels.map(cb => cb.nextElementSibling.textContent);
 
-    if (selectedChannels.length > 1) {
+    if (selectedChannels.length > 0) {
         const formData = new FormData();
-        formData.append('channel_name', selectedFriendNames.join(', '));
         selectedFriendNames.forEach(name => formData.append('selected_friend_names', name));
 
         try {
@@ -259,6 +272,17 @@ async function createGroupChannel() {
                 body: formData
             });
 
+            if (response.ok) {
+                data = await response.json();
+                const channel_id = data.data.channel_id;
+                const channel_list = document.getElementById('channel_list');
+                channel_list.insertAdjacentHTML('beforeend', 
+                    `<div class="channel_wrapper" data-channel_id="${data.data.channel_id}">
+                        <input type="checkbox" class="channel_select_checkbox">
+                        <button class="channel_item">${selectedFriendNames.join(', ')}</button>
+                    </div>`
+                );
+            }
         } catch (error) {
             console.error('Error creating group channel:', error);
         }
@@ -270,13 +294,10 @@ async function logout() {
         const response = await fetch('http://localhost:8000/api/logout', {
             method: 'GET'
         });
-
         if (response.ok) {
             supabase.auth.signOut();
-
             window.location.href = 'login.html';
         }
-
     } catch (error) {
         console.error('Error logging out:', error);
     }

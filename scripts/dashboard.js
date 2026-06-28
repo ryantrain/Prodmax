@@ -30,20 +30,18 @@ addButton.addEventListener("click", async () => {
 
     taskInput.value = "";
     modalOverlay.classList.remove("show");
-    updateTaskCount();
 
     formData = new FormData();
     formData.append("taskboard_name", taskName);
 
     try {
-        response = await fetch ("http://localhost:8000/api/add_personal_taskboard", {
-        method: "POST",
-        body: formData
+        response = await fetch ("http://localhost:8000/api/add_personal_taskboard",{
+            method: "POST",
+            body: formData
         });
 
         if (response.ok) {
             data = await response.json()
-            console.log(data);
             taskList.onclick = () => {
                 fetchPersonalTaskInfo(data.data.data[0].uuid);
             }
@@ -52,7 +50,7 @@ addButton.addEventListener("click", async () => {
     } catch (error) {
         console.error("Error occured while adding taskboard to db:", error);
     }
-
+    updateTaskCount();
 });
 
 taskInput.addEventListener("keydown", (event) => {

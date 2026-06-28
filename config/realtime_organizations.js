@@ -14,6 +14,7 @@ async function initializeRealtime() {
             }, async (payload) => {
             try {
                 const organization_id = payload.new.organization_id;
+                console.log(organization_id);
 
                 const response = await fetch(`http://localhost:8000/api/organizations/${organization_id}/retrieve_name`, {
                     method: 'GET'

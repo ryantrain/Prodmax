@@ -7,22 +7,17 @@ async function loadOrganizations() {
     const orglist = document.getElementById('organization-list');
 
     try {
-        response = await fetch('http://localhost:8000/api/organizations/load', {
-            method: 'GET'
-        });
+        fetchedOrganizationData = sessionStorage.getItem('preFetchedOrganizations');
+        
+        organizationData = JSON.parse(fetchedOrganizationData);
 
-        if (response.ok) {
-            data = await response.json();
-            data.organization_invitations[1].forEach((organization_name, index) => {
-                addInvitationCard(data.organization_invitations[0][index]["organization_id"], organization_name);
-            });
-            data.organizations.forEach(organization => {
-                addOrganizationCard(organization.organization_id, organization.name, organization.description)
-            });
-        }
+        organizationData.organizations.forEach(organization => {
+            addOrganizationCard(organization.organization_id, organization.name, organization.description)
+        });
     } catch (error) {
         console.error('Error occurred while loading organizations:', error);
     }
+
     const createOrganizationButton = document.createElement('button');
     createOrganizationButton.textContent = '+';
     createOrganizationButton.classList.add('create-organization-button');
@@ -233,11 +228,12 @@ async function fetchOrganizationTasks(organization_id, organization_name) {
         const navbar_data = await navbar_response.json();
         const organization_taskboard_data = await organization_response.json();
 
-        if(organization_taskboard_data){
+        if (organization_taskboard_data){
             sessionStorage.setItem('preFetchedData_organization_taskboard', JSON.stringify(organization_taskboard_data));
             sessionStorage.setItem('organization_id', organization_id);
             sessionStorage.setItem('organization_name', organization_name);
             sessionStorage.setItem('preFetchedData_navbar', JSON.stringify(navbar_data));
+            sessionStorage.setItem('private', "False");
         } else {
             console.log("No data to fetch");
         }

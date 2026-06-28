@@ -28,7 +28,7 @@ function loadOrganizationTaskboards() {
 
     orglist.appendChild(createTaskButton);
 
-    sessionStorage.removeItem('preFetchedData_organization_taskboard');
+    // sessionStorage.removeItem('preFetchedData_organization_taskboard');
     sessionStorage.removeItem('organization_id');
     sessionStorage.removeItem('organization_name');
 }
@@ -59,7 +59,6 @@ function loadOrganizationMembers() {
         }
 
         organization_member_list.appendChild(memberElement);
-
     });
 }
 
@@ -76,13 +75,19 @@ async function createOrganizationTaskboard(organization_id) {
             method: 'POST',
             body: formData
         });
+
+        if (response.ok) {
+            data = await response.json();
+            addOrganizationTaskboardCard(taskboard_title, taskboard_description, data.data.data[0].uuid);
+        }
+
     } catch (error) {
         console.error('Error occurred while adding task to taskboard:', error);
     }
 }
 
 function addOrganizationTaskboardCard(task_title, task_description, taskboard_id) {
-    const task = document.getElementById('task-list');
+    const taskList = document.getElementById('task-list');
 
     const taskElement = document.createElement('div');
     taskElement.classList.add('task-card');
@@ -107,11 +112,39 @@ function addOrganizationTaskboardCard(task_title, task_description, taskboard_id
     taskElement.appendChild(taskContent);
 
     const createTaskButton = document.querySelector('.create-task-button');
-    task.insertBefore(taskElement, createTaskButton);
+    
+    const memberAssignment = document.createElement('button');
+    memberAssignment.classList.add('assign-members-button');
+    memberAssignment.textContent = 'Assign';
+    memberAssignment.onclick = async (e) => {
+        e.stopPropagation();
+        
+        const confirmButton = document.getElementById('assign_members_confirm_button');
+        confirmButton.dataset.taskboardId = taskboard_id;
+
+        toggleAssignMembersOverlay();
+        await loadAssignMembersList(taskboard_id);
+    }
+    
+    taskElement.appendChild(memberAssignment);
+
+    taskList.insertBefore(taskElement, createTaskButton);
     taskElement.onclick = async () => {
         await fetchTaskInfo(taskboard_id);
-    }
+    }    
 }
+
+document.getElementById('assign_members_confirm_button').addEventListener('click', async (e) => {
+    const currentTaskboardId = e.currentTarget.dataset.taskboardId;
+    
+    if (!currentTaskboardId) {
+        console.error("No active taskboard ID found on the confirm button!");
+        return;
+    }
+
+    toggleAssignMembersOverlay();
+    await updateAssignedMembers(currentTaskboardId);
+});
 
 function toggleAddTaskOverlay() {
     const overlay = document.querySelector('.add_task_overlay');
@@ -195,7 +228,7 @@ function toggleEditTaskInterface(card) {
     document.getElementById('task_description_input_edit').value = currentDescription;
 }
 
-async function EditTask(task_id) {
+async function editTask(task_id) {
     // Function updates the corresponding task to the db and updates the text on the card
     const task_title = document.getElementById('task_title_input_edit').value;
     const task_description = document.getElementById('task_description_input_edit').value;
@@ -267,7 +300,7 @@ function toggleInviteMembersOverlay() {
     container.classList.toggle('active');
 }
 
-function loadInviteMembersList() {
+function loadInviteMembersList(taskboard_id) {
     if (!document.getElementById('invite_members_overlay').classList.contains('active') || !document.getElementById('invite_members_container').classList.contains('active')) {
         return;
     }
@@ -279,8 +312,6 @@ function loadInviteMembersList() {
     while (inviteMembersList.firstChild) {
         inviteMembersList.removeChild(inviteMembersList.firstChild);
     }
-
-    document.getElementById('invite_members_selected_count_link').textContent = '0 selected';
 
     for (const friend of friends) {
         if (!organization_members_ids.includes(friend.dataset.friend_id)) {
@@ -298,9 +329,11 @@ function loadInviteMembersList() {
                 invite_members_list_item.appendChild(textContent);
 
             invite_members_list_item.dataset.friend_id = friend.dataset.friend_id;
+            
             inviteMembersList.appendChild(invite_members_list_item);
         }
     }
+    document.getElementById('invite_members_selected_count_link').textContent = document.querySelectorAll('.invite_members_list_item_checkbox:checked').length + ' Selected';
 }
 
 async function InviteSelectedMembers() {
@@ -326,6 +359,88 @@ function toggleOrganizationMembersPane() {
     document.querySelector('.main-container').classList.toggle('organization-members-open')
 }
 
+async function loadAssignMembersList(taskboard_id) {
+    try {
+        response = await fetch(`http://localhost:8000/api/taskboard/${taskboard_id}/retrieve_members`, {
+            method: 'GET'
+        });
+
+        if (response.ok){
+            data = await response.json();
+        }
+
+        const taskboard_member_ids = data.data.data[0].members;
+
+        if (!document.getElementById('assign_members_overlay').classList.contains('active') || !document.getElementById('assign_members_container').classList.contains('active')) {
+            return;
+        }
+
+        const assignMembersList = document.getElementById('assign_members_list');
+
+        // clear existing items
+        while (assignMembersList.firstChild) {
+            assignMembersList.removeChild(assignMembersList.firstChild);
+        }
+
+        for (let i = 0; i < organization_members_ids.length; i++){
+            const member = organization_members_names[i];
+            const user_id = organization_members_ids[i];
+            const assign_members_list_item = document.createElement('div');
+            assign_members_list_item.classList.add('assign_members_list_item');
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.classList.add('assign_members_list_item_checkbox');
+
+            if (taskboard_member_ids.includes(user_id)) {
+                checkbox.checked = true;
+            }
+
+            assign_members_list_item.appendChild(checkbox);
+            const textContent = document.createElement('span');
+            textContent.classList.add('assign_members_list_item_username');
+            textContent.textContent = member;
+            assign_members_list_item.appendChild(textContent);
+
+            assign_members_list_item.dataset.username = member;
+            assign_members_list_item.dataset.user_id = user_id;
+            assignMembersList.appendChild(assign_members_list_item);
+        }
+        document.getElementById('assign_members_selected_count_link').textContent = document.querySelectorAll('.assign_members_list_item_checkbox:checked').length + ' Selected';
+    } catch (error) {
+        console.error('Error retrieving members:', error);
+    }
+}
+
+function toggleAssignMembersOverlay(){
+    const overlay = document.getElementById('assign_members_overlay');
+    const container = document.getElementById('assign_members_container');
+    overlay.classList.toggle('active');
+    container.classList.toggle('active');
+}
+
+async function updateAssignedMembers(taskboard_id) {
+    const selectedMembers = document.querySelectorAll('.assign_members_list_item_checkbox:checked');
+    
+    const selectedMemberIds = Array.from(selectedMembers).map(member => member.parentElement.dataset.user_id);
+
+    console.log(selectedMemberIds);
+    console.log(taskboard_id);
+
+    try {
+        const formData = new FormData();
+        selectedMemberIds.forEach(id => formData.append('member_ids', id));
+
+        response = await fetch(`http://localhost:8000/api/taskboard/${taskboard_id}/assign_members`, {
+            method: 'POST',
+            body: formData
+        });
+
+    } catch (error) {
+        console.error('Error assigning members:', error);
+    }
+}
+
 document.querySelector('.add_task_overlay').addEventListener('click', () => {
     if (document.getElementById('add_task_container').classList.contains('active')) {
         toggleAddTaskOverlay();
@@ -345,7 +460,7 @@ document.getElementById('close_edit_task_button').addEventListener('click', () =
 });
 
 document.getElementById('confirm_edit_task_button').addEventListener('click', async () => {
-    await EditTask(current_editing_task.dataset.task_id);
+    await editTask(current_editing_task.dataset.task_id);
     current_editing_task = null; // Reset current editing task after edit
     toggleEditTaskOverlay();
 });
@@ -367,7 +482,7 @@ document.getElementById('invite_members_list').addEventListener('click', (event)
     } else if (event.target.classList.contains('invite_members_list_item_username')) {
         event.target.closest('.invite_members_list_item').querySelector('.invite_members_list_item_checkbox').checked = !event.target.closest('.invite_members_list_item').querySelector('.invite_members_list_item_checkbox').checked;
     }
-    document.getElementById('invite_members_selected_count_link').textContent = document.querySelectorAll('.invite_members_list_item_checkbox:checked').length + ' selected';
+    document.getElementById('invite_members_selected_count_link').textContent = document.querySelectorAll('.invite_members_list_item_checkbox:checked').length + ' Selected';
 });
 
 document.getElementById('invite_members_search_query_input').addEventListener('input', () => {
@@ -400,6 +515,27 @@ document.getElementById('organization_taskboard_header_members_button').addEvent
 document.getElementById('organization_members_close_button').addEventListener('click', () => {
     toggleOrganizationMembersPane();
 });
+
+document.getElementById('assign_members_list').addEventListener('click', (event) => {
+    if (event.target.classList.contains('assign_members_list_item')) {
+        event.target.querySelector('.assign_members_list_item_checkbox').checked = !event.target.querySelector('.assign_members_list_item_checkbox').checked;
+    } else if (event.target.classList.contains('assign_members_list_item_username')) {
+        event.target.closest('.assign_members_list_item').querySelector('.assign_members_list_item_checkbox').checked = !event.target.closest('.assign_members_list_item').querySelector('.assign_members_list_item_checkbox').checked;
+    }
+    document.getElementById('assign_members_selected_count_link').textContent = document.querySelectorAll('.assign_members_list_item_checkbox:checked').length + ' Selected';
+});
+
+document.getElementById('assign_members_cancel_button').addEventListener('click', () => {
+    toggleAssignMembersOverlay();
+});
+
+document.getElementById('assign_members_overlay').addEventListener('click', (event) => {
+    if (event.target === document.getElementById('assign_members_overlay')) {
+        toggleAssignMembersOverlay();
+    }
+});
+
+
 
 // Order matters
 loadOrganizationMembers();
