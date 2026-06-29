@@ -20,10 +20,10 @@ def add_organization(name, description="."):
         print("Error adding organization" + str(e))
         return {"message": f"An error occurred while adding organization to organizations: {str(e)}"} 
 
-def delete_organization(organization_id: str, owner_id: str):
+def delete_organization(organization_id: str):
     """Delete an organization from the database."""
     try:
-        response = client.rpc("delete_organization", {"organization_id": organization_id, "owner_id": owner_id}).execute()
+        response = client.rpc("delete_organization", {"id": organization_id}).execute()
         return response
     except Exception as e:      
         print("Error removing organization")
@@ -158,3 +158,12 @@ def delete_organization_taskboard(organization_id: str, taskboard_id: str):
         print("Error deleting organization taskboard:")
         print(e)
         return {"message": f"An error occurred while deleting organization taskboard: {str(e)}"}
+
+def edit_organization(organization_id: str, new_name: str, new_description: str):
+    try:
+        response = client.rpc("edit_organization", {"target_organization_id": organization_id, "new_name": new_name, "new_description": new_description}).execute()
+        return response
+    except Exception as e:
+        print("Error editing organization:")
+        print(e)
+        return {"message": f"An error occurred while editing organization: {str(e)}"}

@@ -8,7 +8,6 @@ async function initializeRealtime() {
             table: "tasks",
             filter: `parent_taskboard=eq.${taskboard_id}`
         }, (payload) => {
-            console.log(taskboard_id)
             const task_id = payload.new.id;
             const task_title = payload.new.task_name;
             const task_description = payload.new.task_description;
@@ -25,7 +24,6 @@ async function initializeRealtime() {
         }, (payload) => {
             const task_id = payload.new.id;
             const card = document.querySelector(`[data-task_id="${task_id}"]`);
-            console.log(card);
 
             if (card.dataset.task_complete === 'true' && payload.new.completed === false) {
                 card.classList.remove('organization-card-completed');
@@ -49,7 +47,6 @@ async function initializeRealtime() {
             table: "tasks",
             filter: `parent_taskboard=eq.${taskboard_id}`
         }, (payload) => {
-            console.log(payload);
             const task_id = payload.old.id;
             const card = document.querySelector(`[data-task_id="${task_id}"]`);
             if (card) {
@@ -90,7 +87,6 @@ function addSubtaskCard(task_title, task_description, task_id) {
 
         // Create task options button
         const taskOptions = document.createElement('button');
-        console.log(taskOptions);
         taskOptions.classList.add('card-options-button');
         taskOptions.textContent = '...';
         taskOptions.onclick = (e) => {

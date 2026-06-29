@@ -82,7 +82,7 @@ body {
 .mark-complete-button {
     position: absolute;
     top: 0.1rem;
-    right: 5.0rem;
+    right: 4rem;
     display: flex;
     justify-content: center;
     align-items: center;

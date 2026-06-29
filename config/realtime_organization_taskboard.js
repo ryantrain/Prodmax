@@ -78,21 +78,25 @@ async function initializeRealtime() {
                     schema: "public", 
                     table: "taskboards",
                 }, async (payload) => {
+                    const taskboard_id = payload.new.uuid;
                     const taskboard_name = payload.new.taskboard_name;
                     const taskboard_description = payload.new.taskboard_description;
 
-                    current_editing_task.querySelector('.card-title').querySelector('h3').textContent = taskboard_name;
-                    current_editing_task.querySelector('.card-description-text').textContent = taskboard_description;
-                    current_editing_task = null; // Reset current editing task after edit
+                    const taskboard_card = document.querySelector(`[data-taskboard_id="${taskboard_id}"]`);
+                    if (taskboard_card) {
+                        taskboard_card.querySelector('.card-title').querySelector('h3').textContent = taskboard_name;
+                        taskboard_card.querySelector('.card-description-text').textContent = taskboard_description;
+                    }
                 }).subscribe();
 }
 
 function addOrganizationTaskboardCard(task_title, task_description, taskboard_id) {
-    const task = document.getElementById('task-list');
+    const taskList = document.getElementById('task-list');
 
     const taskElement = document.createElement('div');
     taskElement.classList.add('task-card');
     taskElement.classList.add('organization-card-incomplete');
+    taskElement.dataset.taskboard_id = taskboard_id;
 
         // Create task name/title element
         const taskName = document.createElement('div')
@@ -109,14 +113,42 @@ function addOrganizationTaskboardCard(task_title, task_description, taskboard_id
             taskText.textContent = task_description;
         taskContent.appendChild(taskText);
 
+    
+        // Create task options button
+        const taskOptions = document.createElement('button');
+        taskOptions.classList.add('organization-card-options-button');
+        taskOptions.textContent = '...';
+        taskOptions.onclick = (e) => {
+            e.stopPropagation();
+            // Handle task options click (e.g., show a dropdown menu with options)
+            toggleOrganizationCardOptionsDropdown(taskElement);
+        }
+        
+    taskElement.appendChild(taskOptions);
     taskElement.appendChild(taskName);
     taskElement.appendChild(taskContent);
 
     const createTaskButton = document.querySelector('.create-task-button');
-    task.insertBefore(taskElement, createTaskButton);
+    
+    const memberAssignment = document.createElement('button');
+    memberAssignment.classList.add('assign-members-button');
+    memberAssignment.textContent = 'Assign';
+    memberAssignment.onclick = async (e) => {
+        e.stopPropagation();
+        
+        const confirmButton = document.getElementById('assign_members_confirm_button');
+        confirmButton.dataset.taskboardId = taskboard_id;
+
+        toggleAssignMembersOverlay();
+        await loadAssignMembersList(taskboard_id);
+    }
+    
+    taskElement.appendChild(memberAssignment);
+
+    taskList.insertBefore(taskElement, createTaskButton);
     taskElement.onclick = async () => {
         await fetchTaskInfo(taskboard_id);
-    }
+    }    
 }
 
 async function fetchTaskInfo(taskboard_id) {

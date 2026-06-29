@@ -235,10 +235,10 @@ def delete_organization_taskboard(organization_id: str, taskboard_id: str):
     except Exception as e:
         return {"message": f"An error occurred while deleting organization from taskboard: {str(e)}"}
 
-@app.post('/api/organizations/{organization_id}/delete_organization/}')
+@app.get('/api/organizations/{organization_id}/delete_organization')
 def delete_organization_from_database(organization_id: str):
     try:
-        tasks.delete_task_from_taskboard(organization_id)
+        organizations.delete_organization(organization_id)
         return {"message": "Organization deleted successfully"}
     except Exception as e:
         return {"message": f"An error occurred while deleting organization from taskboard: {str(e)}"}
@@ -344,3 +344,11 @@ def retrieve_taskboard_members(taskboard_id: str):
         return {"message": "Retrieve taskboard members successfully", "data": response}
     except Exception as e:
         return {"message": f"An error occurred while retrieving members of taskboard: {str(e)}"}
+
+@app.post('/api/organizations/{organization_id}/edit_organization')
+def edit_organization(organization_id: str, organization_name: str = Form(...), organization_description: str = Form(...)):
+    try:
+        response = organizations.edit_organization(organization_id, organization_name, organization_description)
+        return {"message": "Organization edited successfully", "data": response}
+    except Exception as e:
+        return {"message": f"An error occurred while editing organization: {str(e)}"}

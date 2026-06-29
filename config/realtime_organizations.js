@@ -30,6 +30,43 @@ async function initializeRealtime() {
             }
             
         }).subscribe();
+
+    const organization_edits_channel = supabase.channel('organization_edits_updates')
+        .on('postgres_changes', {
+            event: "UPDATE",
+            schema: "public",
+            table: "organizations",
+        }, async (payload) => {
+            try {
+                const organization_id = payload.new.organization_id;
+                const organization_title = payload.new.name;
+                const organization_description = payload.new.description;
+                const card = document.querySelector(`[data-organization_id="${organization_id}"]`);
+                if (card) {
+                    card.querySelector('.card-title').querySelector('h3').textContent = organization_title;
+                    card.querySelector('.card-description-text').textContent = organization_description;
+                }
+            } catch (error) {
+                console.error('Error updating organization:', error);
+            }
+        }).subscribe();
+
+    const organization_deletes_channel = supabase.channel('organization_deletes_updates')
+        .on('postgres_changes', {
+            event: "DELETE",
+            schema: "public",
+            table: "organizations",
+        }, async (payload) => {
+            try {
+                const organization_id = payload.old.organization_id;
+                const orgnanization_element = document.querySelector(`[data-organization_id="${organization_id}"]`);
+                if (orgnanization_element) {
+                    orgnanization_element.remove();
+                }
+            } catch (error) {
+                console.error('Error deleting organization:', error);
+            }
+        }).subscribe();
 }
 
 function addInvitationCard(organization_id, organization_title) {

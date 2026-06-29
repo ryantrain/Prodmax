@@ -75,12 +75,6 @@ async function createOrganizationTaskboard(organization_id) {
             method: 'POST',
             body: formData
         });
-
-        if (response.ok) {
-            data = await response.json();
-            addOrganizationTaskboardCard(taskboard_title, taskboard_description, data.data.data[0].uuid);
-        }
-
     } catch (error) {
         console.error('Error occurred while adding task to taskboard:', error);
     }
@@ -185,47 +179,6 @@ function toggleEditTaskOverlay() {
     container.classList.toggle('active');
 }
 
-function ToggleCardOptionsDropdown(card) {
-    const orglist = document.getElementById('task-list');
-    // Check if dropdown already exists somewhere
-    const check_dropdown = orglist.querySelectorAll('.card-options-dropdown');
-    if (check_dropdown.length > 0) {
-        if (check_dropdown[0].parentElement === card) {
-            check_dropdown[0].remove();
-            return;
-        }
-        check_dropdown.forEach(dropdown => dropdown.remove());
-    }
-
-    // Create dropdown menu
-    const dropdown = document.createElement('div');
-    dropdown.classList.add('card-options-dropdown');
-
-        // Add options to dropdown
-        const editOption = document.createElement('div');
-            editOption.classList.add('card-options-dropdown-item');
-            editOption.textContent = 'Edit';
-            editOption.onclick = () => {
-                // Handle edit option click 
-                dropdown.remove();
-                current_editing_task = card
-                toggleEditTaskboardInterface(card);
-            };
-        dropdown.appendChild(editOption);
-
-        const deleteOption = document.createElement('div');
-            deleteOption.classList.add('card-options-dropdown-item');
-            deleteOption.textContent = 'Delete';
-            deleteOption.onclick = () => {
-                current_deleting_task = card;
-                deleteTask(card.dataset.taskboard_id); 
-                dropdown.remove();
-            };
-        dropdown.appendChild(deleteOption);
-
-    card.appendChild(dropdown);
-}
-
 function toggleEditTaskboardInterface(card) {
     const overlay = document.querySelector('.add_task_overlay');
     const container = document.getElementById('edit_task_container');
@@ -256,11 +209,6 @@ async function editTaskboard(taskboard_id) {
             body: formData
         });
 
-        // if (response.ok) {
-        //     current_editing_task.querySelector('.card-title').querySelector('h3').textContent = task_title;
-        //     current_editing_task.querySelector('.card-description-text').textContent = task_description;
-        // }
-
     } catch (error) {
         console.error('Error editing task:', error);
     }
@@ -271,10 +219,6 @@ async function deleteTask(taskboard_id) {
         const response = await fetch(`http://localhost:8000/api/organizations/${organization_id}/${taskboard_id}/delete_organization_taskboard`                                              , {
             method: 'POST'
         });
-
-        if (response.ok) {
-            current_deleting_task = null;
-        }
     } catch (error) {
         console.error('Error deleting task:', error);
     }
@@ -487,7 +431,6 @@ function toggleOrganizationCardOptionsDropdown(card) {
             deleteOption.textContent = 'Delete';
             deleteOption.onclick = (e) => {
                 e.stopPropagation();
-                current_deleting_task = card;
                 deleteTask(card.dataset.taskboard_id); 
                 dropdown.remove();
             };
@@ -516,6 +459,7 @@ document.getElementById('close_edit_task_button').addEventListener('click', () =
 
 document.getElementById('confirm_edit_task_button').addEventListener('click', async () => {
     await editTaskboard(current_editing_task.dataset.taskboard_id);
+    current_editing_task = null; // Reset current editing task after edit
     toggleEditTaskOverlay();
 });
 

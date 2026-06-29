@@ -194,11 +194,6 @@ async function EditTask(task_id) {
             body: formData
         });
 
-        if (response.ok) {
-            current_editing_task.querySelector('.card-title').querySelector('h3').textContent = task_title;
-            current_editing_task.querySelector('.card-description-text').textContent = task_description;
-        }
-
     } catch (error) {
         console.error('Error editing task:', error);
     }
@@ -209,11 +204,6 @@ async function deleteTask(task_id) {
         const response = await fetch('http://localhost:8000/api/taskboard/' + taskboard_id + '/delete_task/' + task_id, {
             method: 'POST'
         });
-
-        // if (response.ok) {
-        //     current_deleting_task.remove();
-        //     current_deleting_task = null;
-        // }
     } catch (error) {
         console.error('Error deleting task:', error);
     }
