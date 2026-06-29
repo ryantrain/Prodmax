@@ -17,32 +17,10 @@ def get_friends() -> list:
 
     if client:
 
-        user_uuid = client.auth.get_user().user.id
-        if not user_uuid:
-            raise RuntimeError("No authenticated user is available on the friends client")
+        response = client.rpc('retrieve_friends').execute()
 
-        # Returns a dictionary with each key containing a list of length 2 uuid pairs
-
-        friends_ids = client.from_('friendships')\
-                                .select("uuid_pair")\
-                                .contains("uuid_pair", [user_uuid])\
-                                .eq("status", "accepted").execute().data
-        
-        if not friends_ids:
-            return []
-
-        # Returns a list of dictionaries of length 1 with the username of each friend in each dictionary                        
-        friends_list = []
-        friends_list_ids = []
-        for row in friends_ids:
-            uuid_pair = row.get("uuid_pair")
-
-            uuid = uuid_pair[0] if uuid_pair[0] != user_uuid else uuid_pair[1]
-            friends_list_ids.append(uuid)
-
-            friend_username = get_username(uuid)
-            
-            friends_list.append(friend_username)
+        friends_list = [data['username'] for data in response.data]
+        friends_list_ids = [data['user_id'] for data in response.data]
 
         return friends_list, friends_list_ids
 
