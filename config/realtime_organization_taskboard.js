@@ -107,7 +107,48 @@ async function initializeRealtime() {
                         taskboard_card.querySelector('.card-description-text').textContent = taskboard_description;
                     }
                 }).subscribe();
+    
+    const taskboard_members_channel = supabase.channel('taskboard_assignment_updates')
+                .on('postgres_changes', { 
+                    event: "UPDATE", 
+                    schema: "public", 
+                    table: "taskboards",
+                    filter: `organization_id=eq.${organization_id}`
+                }, (payload) => {
+                    const oldMembers = payload.old?.members || [];
+                    const newMembers = payload.new?.members || [];
+
+                    console.log(oldMembers);
+                    console.log(newMembers);
+
+                    const membersChanged = JSON.stringify(oldMembers) !== JSON.stringify(newMembers);
+                    const taskCards = document.querySelectorAll('.task-card');
+                    const currentTaskboardIds = Array.from(taskCards).map(card => card.dataset.taskboard_id);
+
+                    const taskboard_id = payload.new.uuid;
+
+                    if (newMembers.includes(user_id) && membersChanged) {
+                        
+                        const taskboard_name = payload.new.taskboard_name;
+                        const taskboard_description = payload.new.taskboard_description;
+                        if (!currentTaskboardIds.includes(taskboard_id)){
+                            addOrganizationTaskboardCard(taskboard_name, taskboard_description, taskboard_id);
+                        }
+                    } 
+                    
+                    else if (membersChanged){
+                        const taskboard_id = payload.new.uuid;
+                        const taskboard_card = document.querySelector(`[data-taskboard_id="${taskboard_id}"]`);
+                        if (taskboard_card) {
+                            taskboard_card.remove();
+                        }
+                    }
+                })
+                .subscribe();
 }
+
+
+
 
 function addOrganizationTaskboardCard(task_title, task_description, taskboard_id) {
     const taskList = document.getElementById('task-list');
@@ -167,7 +208,7 @@ function addOrganizationTaskboardCard(task_title, task_description, taskboard_id
     taskList.insertBefore(taskElement, createTaskButton);
     taskElement.onclick = async () => {
         await fetchTaskInfo(taskboard_id);
-    }    
+    }      
 }
 
 async function fetchTaskInfo(taskboard_id) {
