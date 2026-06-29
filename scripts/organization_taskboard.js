@@ -19,8 +19,8 @@ function loadOrganizationTaskboards() {
 
     if (taskboardData) {
         const data = JSON.parse(taskboardData);
-        for (const task of data.tasks) {
-            addOrganizationTaskboardCard(task.taskboard_name, task.taskboard_description, task.uuid)
+        for (const taskboard of data.tasks) {
+            addOrganizationTaskboardCard(taskboard.taskboard_name, taskboard.taskboard_description, taskboard.uuid)
         }
     }
 
@@ -67,7 +67,7 @@ function loadOrganizationMembers() {
     });
 }
 
-async function createOrganizationTaskboard(organization_id) {
+function createOrganizationTaskboard(organization_id) {
     try {
         taskboard_title = document.getElementById('task_title_input').value;
         taskboard_description = document.getElementById('task_description_input').value;
@@ -76,10 +76,11 @@ async function createOrganizationTaskboard(organization_id) {
 
         formData.append('taskboard_name', taskboard_title);
         formData.append('taskboard_description', taskboard_description);
-        const response = await fetch(`http://localhost:8000/api/taskboard/${organization_id}/add_organization_taskboard`, {
+        const response = fetch(`http://localhost:8000/api/taskboard/${organization_id}/add_organization_taskboard`, {
             method: 'POST',
             body: formData
         });
+
     } catch (error) {
         console.error('Error occurred while adding task to taskboard:', error);
     }
@@ -221,7 +222,7 @@ async function editTaskboard(taskboard_id) {
 
 async function deleteTaskboard(taskboard_id) {
     try {
-        const response = await fetch(`http://localhost:8000/api/organizations/${organization_id}/${taskboard_id}/delete_organization_taskboard`                                              , {
+        const response = await fetch(`http://localhost:8000/api/organizations/${organization_id}/${taskboard_id}/delete_organization_taskboard`, {
             method: 'POST'
         });
     } catch (error) {
@@ -330,6 +331,7 @@ async function loadAssignMembersList(taskboard_id) {
             data = await response.json();
         }
 
+        console.log(data);
         const taskboard_member_ids = data.data.data[0].members;
 
         if (!document.getElementById('assign_members_overlay').classList.contains('active') || !document.getElementById('assign_members_container').classList.contains('active')) {
@@ -353,7 +355,7 @@ async function loadAssignMembersList(taskboard_id) {
             checkbox.type = 'checkbox';
             checkbox.classList.add('assign_members_list_item_checkbox');
 
-            if (taskboard_member_ids.includes(user_id)) {
+            if (taskboard_member_ids.includes(organization_members_ids[i])) {
                 checkbox.checked = true;
             }
 
@@ -384,9 +386,6 @@ async function updateAssignedMembers(taskboard_id) {
     const selectedMembers = document.querySelectorAll('.assign_members_list_item_checkbox:checked');
     
     const selectedMemberIds = Array.from(selectedMembers).map(member => member.parentElement.dataset.user_id);
-
-    console.log(selectedMemberIds);
-    console.log(taskboard_id);
 
     try {
         const formData = new FormData();
