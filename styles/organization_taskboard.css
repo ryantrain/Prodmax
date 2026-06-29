@@ -332,7 +332,7 @@
     position: absolute;
     display: flex;
     top: 10px;
-    right: 10px;
+    right: 4rem;
     background-color: rgb(23, 23, 23);
     border: none;
     justify-content: center;
@@ -342,12 +342,11 @@
     font-size: 12px;
     cursor: pointer;
     z-index: 5;
-    padding: 0.5rem;
-    height: 0.75rem;
+    height: 0.25rem;
     width: 2rem;
-    line-height: 2;
-    padding-top: 0.8rem;
-    padding-bottom: 0.3rem;
+    line-height: 0;
+    padding: 0.5rem;
+    padding-bottom: 1rem;
 }
 
 .assign_members_overlay{
@@ -490,4 +489,67 @@
 
 .assign_members_cancel_button:hover {
     background-color: #7a2424;
+}
+
+.organization-card-options-button {
+    position: absolute;
+    display: flex;
+    top: 10px;
+    right: 10px;
+    background-color: rgb(23, 23, 23);
+    border: none;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1rem;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 5;
+    height: 0.25rem;
+    width: 2rem;
+    line-height: 2;
+    padding: 0.5rem;
+    padding-bottom: 1rem;
+}
+
+.organization-card-options-dropdown {
+    position: absolute;
+    top: 3rem; 
+    right: 10px;
+    background-color: #222;
+    border: 1px solid #444;
+    border-radius: 6px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 995;
+    display: flex;
+    flex-direction: column;
+    min-width: 100px;
+    overflow: hidden;
+    
+    /* Animation properties */
+    transform-origin: top center;
+    animation: slideDown 0.2s ease-out forwards;
+}
+
+.organization-card-options-dropdown-item {
+    padding: 10px 14px;
+    color: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.organization-card-options-dropdown-item:hover {
+    background-color: #333;
+}
+
+@keyframes slideDown {
+    from {
+        transform: scaleY(0);
+        opacity: 0;
+    }
+    to {
+        transform: scaleY(1);
+        opacity: 1;
+    }
 }

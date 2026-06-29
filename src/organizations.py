@@ -140,3 +140,21 @@ def retrieve_taskboard_members(taskboard_id: str):
     except Exception as e:
         print("Error retrieving members of taskboard" + str(e))
         return {"message": f"An error occurred while retrieving members of taskboard (organizations.py): {str(e)}"}
+
+def edit_organization_taskboard(organization_id: str, taskboard_id: str, new_name: str, new_description: str):
+    try:
+        response = client.rpc("edit_organization_taskboard", {"target_organization_id": organization_id, "target_taskboard_id": taskboard_id, "new_name": new_name, "new_description": new_description}).execute()
+        return response
+    except Exception as e:
+        print("Error editing organization taskboard:")
+        print(e)
+        return {"message": f"An error occurred while editing organization taskboard: {str(e)}"}
+    
+def delete_organization_taskboard(organization_id: str, taskboard_id: str):
+    try:
+        response = client.rpc("delete_organization_taskboard", {"target_organization_id": organization_id, "target_taskboard_id": taskboard_id}).execute()
+        return response
+    except Exception as e:
+        print("Error deleting organization taskboard:")
+        print(e)
+        return {"message": f"An error occurred while deleting organization taskboard: {str(e)}"}

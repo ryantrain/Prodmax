@@ -291,7 +291,9 @@ button {
     height: 0.25rem;
     width: 2rem;
     line-height: 2;
+    padding: 0.5rem;
     padding-bottom: 1rem;
+
 }
 
 .card-options-dropdown {

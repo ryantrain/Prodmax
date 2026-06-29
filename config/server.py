@@ -219,6 +219,22 @@ def add_organization_to_database(organization_name: str = Form(...), organizatio
     except Exception as e:
         return {"message": f"An error occurred while adding organization to taskboard: {str(e)}"}
 
+@app.post('/api/organizations/{organization_id}/{taskboard_id}/edit_organization_taskboard')
+def edit_organization_taskboard(organization_id: str, taskboard_id: str, new_taskboard_name: str = Form(...), new_taskboard_description: str = Form(...)):
+    try:
+        response = organizations.edit_organization_taskboard(organization_id, taskboard_id, new_taskboard_name, new_taskboard_description).data
+        return {"message": "Organization edited successfully", "data": response, "ok": True}
+    except Exception as e:
+        return {"message": f"An error occurred while editing organization: {str(e)}"}
+
+@app.post('/api/organizations/{organization_id}/{taskboard_id}/delete_organization_taskboard')
+def delete_organization_taskboard(organization_id: str, taskboard_id: str):
+    try:
+        organizations.delete_organization_taskboard(organization_id, taskboard_id)
+        return {"message": "Organization deleted successfully"}
+    except Exception as e:
+        return {"message": f"An error occurred while deleting organization from taskboard: {str(e)}"}
+
 @app.post('/api/organizations/{organization_id}/delete_organization/}')
 def delete_organization_from_database(organization_id: str):
     try:

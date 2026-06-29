@@ -14,7 +14,6 @@ async function loadOrganizations() {
         console.log(organizationData);
 
         if (organizationData.organization_invitations[0].length > 0){
-            console.log(organizationData.organization_invitations[0]);
             for (let i = 0; i < organizationData.organization_invitations[0].length; i++){
                 const organizationInvitationId = organizationData.organization_invitations[0][i].organization_id;
                 const organizationInvitationNames = organizationData.organization_invitations[1][i];

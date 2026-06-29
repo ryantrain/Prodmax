@@ -58,6 +58,33 @@ async function initializeRealtime() {
                         }
                     }
                 }).subscribe();
+
+    const delete_taskboard_channel = supabase.channel('delete_taskboard_updates')
+                .on('postgres_changes', { 
+                    event: "DELETE",
+                    schema: "public",
+                    table: "taskboards",
+                }, async (payload) => {
+                    const taskboard_id = payload.old.uuid;
+                    const taskboard_card = document.querySelector(`[data-taskboard_id="${taskboard_id}"]`);
+                    if (taskboard_card) {
+                        taskboard_card.remove();
+                    }
+                }).subscribe();
+
+    const edit_taskboard_channel = supabase.channel('edit_taskboard_updates')
+                .on('postgres_changes', { 
+                    event: "UPDATE", 
+                    schema: "public", 
+                    table: "taskboards",
+                }, async (payload) => {
+                    const taskboard_name = payload.new.taskboard_name;
+                    const taskboard_description = payload.new.taskboard_description;
+
+                    current_editing_task.querySelector('.card-title').querySelector('h3').textContent = taskboard_name;
+                    current_editing_task.querySelector('.card-description-text').textContent = taskboard_description;
+                    current_editing_task = null; // Reset current editing task after edit
+                }).subscribe();
 }
 
 function addOrganizationTaskboardCard(task_title, task_description, taskboard_id) {

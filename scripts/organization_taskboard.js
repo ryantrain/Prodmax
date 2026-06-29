@@ -92,6 +92,7 @@ function addOrganizationTaskboardCard(task_title, task_description, taskboard_id
     const taskElement = document.createElement('div');
     taskElement.classList.add('task-card');
     taskElement.classList.add('organization-card-incomplete');
+    taskElement.dataset.taskboard_id = taskboard_id;
 
         // Create task name/title element
         const taskName = document.createElement('div')
@@ -108,6 +109,18 @@ function addOrganizationTaskboardCard(task_title, task_description, taskboard_id
             taskText.textContent = task_description;
         taskContent.appendChild(taskText);
 
+    
+        // Create task options button
+        const taskOptions = document.createElement('button');
+        taskOptions.classList.add('organization-card-options-button');
+        taskOptions.textContent = '...';
+        taskOptions.onclick = (e) => {
+            e.stopPropagation();
+            // Handle task options click (e.g., show a dropdown menu with options)
+            toggleOrganizationCardOptionsDropdown(taskElement);
+        }
+        
+    taskElement.appendChild(taskOptions);
     taskElement.appendChild(taskName);
     taskElement.appendChild(taskContent);
 
@@ -196,7 +209,7 @@ function ToggleCardOptionsDropdown(card) {
                 // Handle edit option click 
                 dropdown.remove();
                 current_editing_task = card
-                toggleEditTaskInterface(card);
+                toggleEditTaskboardInterface(card);
             };
         dropdown.appendChild(editOption);
 
@@ -205,7 +218,7 @@ function ToggleCardOptionsDropdown(card) {
             deleteOption.textContent = 'Delete';
             deleteOption.onclick = () => {
                 current_deleting_task = card;
-                deleteTask(card.dataset.task_id); 
+                deleteTask(card.dataset.taskboard_id); 
                 dropdown.remove();
             };
         dropdown.appendChild(deleteOption);
@@ -213,7 +226,7 @@ function ToggleCardOptionsDropdown(card) {
     card.appendChild(dropdown);
 }
 
-function toggleEditTaskInterface(card) {
+function toggleEditTaskboardInterface(card) {
     const overlay = document.querySelector('.add_task_overlay');
     const container = document.getElementById('edit_task_container');
 
@@ -228,39 +241,38 @@ function toggleEditTaskInterface(card) {
     document.getElementById('task_description_input_edit').value = currentDescription;
 }
 
-async function editTask(task_id) {
+async function editTaskboard(taskboard_id) {
     // Function updates the corresponding task to the db and updates the text on the card
     const task_title = document.getElementById('task_title_input_edit').value;
     const task_description = document.getElementById('task_description_input_edit').value;
 
     const formData = new FormData();
-    formData.append('task_name', task_title);
-    formData.append('task_description', task_description);
+    formData.append('new_taskboard_name', task_title);
+    formData.append('new_taskboard_description', task_description);
 
     try {
-        response = await fetch('http://localhost:8000/api/taskboard/' + taskboard_id + '/edit_task/' + task_id, {
+        response = await fetch(`http://localhost:8000/api/organizations/${organization_id}/${taskboard_id}/edit_organization_taskboard`, {
             method: 'POST',
             body: formData
         });
 
-        if (response.ok) {
-            current_editing_task.querySelector('.card-title').querySelector('h3').textContent = task_title;
-            current_editing_task.querySelector('.card-description-text').textContent = task_description;
-        }
+        // if (response.ok) {
+        //     current_editing_task.querySelector('.card-title').querySelector('h3').textContent = task_title;
+        //     current_editing_task.querySelector('.card-description-text').textContent = task_description;
+        // }
 
     } catch (error) {
         console.error('Error editing task:', error);
     }
 }
 
-async function deleteTask(task_id) {
+async function deleteTask(taskboard_id) {
     try {
-        const response = await fetch('http://localhost:8000/api/taskboard/' + taskboard_id + '/delete_task/' + task_id, {
+        const response = await fetch(`http://localhost:8000/api/organizations/${organization_id}/${taskboard_id}/delete_organization_taskboard`                                              , {
             method: 'POST'
         });
 
         if (response.ok) {
-            current_deleting_task.remove();
             current_deleting_task = null;
         }
     } catch (error) {
@@ -441,6 +453,49 @@ async function updateAssignedMembers(taskboard_id) {
     }
 }
 
+function toggleOrganizationCardOptionsDropdown(card) {
+    const orglist = document.getElementById('task-list');
+    // Check if dropdown already exists somewhere
+    const check_dropdown = orglist.querySelectorAll('.organization-card-options-dropdown');
+    if (check_dropdown.length > 0) {
+        if (check_dropdown[0].parentElement === card) {
+            check_dropdown[0].remove();
+            return;
+        }
+        check_dropdown.forEach(dropdown => dropdown.remove());
+    }
+
+    // Create dropdown menu
+    const dropdown = document.createElement('div');
+    dropdown.classList.add('organization-card-options-dropdown');
+
+        // Add options to dropdown
+        const editOption = document.createElement('div');
+            editOption.classList.add('organization-card-options-dropdown-item');
+            editOption.textContent = 'Edit';
+            editOption.onclick = (e) => {
+                // Handle edit option click
+                e.stopPropagation();
+                dropdown.remove();
+                current_editing_task = card
+                toggleEditTaskboardInterface(card);
+            };
+        dropdown.appendChild(editOption);
+
+        const deleteOption = document.createElement('div');
+            deleteOption.classList.add('organization-card-options-dropdown-item');
+            deleteOption.textContent = 'Delete';
+            deleteOption.onclick = (e) => {
+                e.stopPropagation();
+                current_deleting_task = card;
+                deleteTask(card.dataset.taskboard_id); 
+                dropdown.remove();
+            };
+        dropdown.appendChild(deleteOption);
+
+    card.appendChild(dropdown);
+}
+
 document.querySelector('.add_task_overlay').addEventListener('click', () => {
     if (document.getElementById('add_task_container').classList.contains('active')) {
         toggleAddTaskOverlay();
@@ -460,8 +515,7 @@ document.getElementById('close_edit_task_button').addEventListener('click', () =
 });
 
 document.getElementById('confirm_edit_task_button').addEventListener('click', async () => {
-    await editTask(current_editing_task.dataset.task_id);
-    current_editing_task = null; // Reset current editing task after edit
+    await editTaskboard(current_editing_task.dataset.taskboard_id);
     toggleEditTaskOverlay();
 });
 
@@ -534,7 +588,6 @@ document.getElementById('assign_members_overlay').addEventListener('click', (eve
         toggleAssignMembersOverlay();
     }
 });
-
 
 
 // Order matters
