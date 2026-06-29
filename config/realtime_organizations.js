@@ -47,7 +47,7 @@ function addInvitationCard(organization_id, organization_title) {
 
     const buttonContainer = document.createElement('div');
     buttonContainer.classList.add('organization_invitation_card_button_container');
-        acceptButton = document.createElement('button');
+        const acceptButton = document.createElement('button');
         acceptButton.textContent = 'Accept';
         acceptButton.classList.add('organization_invitation_card_accept_button');
 
@@ -55,7 +55,7 @@ function addInvitationCard(organization_id, organization_title) {
             await acceptInvitation(organization_id);
         };
 
-        declineButton = document.createElement('button');
+        const declineButton = document.createElement('button');
         declineButton.textContent = 'Decline';
         declineButton.classList.add('organization_invitation_card_decline_button');
 
@@ -142,7 +142,7 @@ async function fetchOrganizationTasks(organization_id, organization_name) {
 
 async function acceptInvitation(organization_id) {
     try {
-        response = await fetch ("http://localhost:8000/api/organizations/" + organization_id + "/accept_invitation" , {
+        const response = await fetch ("http://localhost:8000/api/organizations/" + organization_id + "/accept_invitation" , {
             method: 'POST'
         });
 
@@ -164,7 +164,7 @@ async function acceptInvitation(organization_id) {
 
 function declineInvitation(organization_id) {
     try {
-        response = fetch ("http://localhost:8000/api/organizations/" + organization_id + "/decline_invitation" , {
+        const response = fetch ("http://localhost:8000/api/organizations/" + organization_id + "/decline_invitation" , {
             method: 'POST'
         });
         return true;
