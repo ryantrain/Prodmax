@@ -7,10 +7,15 @@ function loadOrganizationTaskboards() {
     const orglist = document.getElementById('task-list');
     const organization_name = sessionStorage.getItem('organization_name');
     const organization_title_element = document.querySelector('.organization_taskboard_header_title');
-    
+    const organization_description = JSON.parse(taskboardData).organization[0].description;
+    const settings_button = document.getElementById('organization_settings_button');
+
     const organization_title = document.createElement('h2');
     organization_title.textContent = organization_name;
     organization_title_element.appendChild(organization_title);
+
+    settings_button.dataset.organization_name = organization_name;
+    settings_button.dataset.organization_description = organization_description;
 
     if (taskboardData) {
         const data = JSON.parse(taskboardData);
@@ -214,7 +219,7 @@ async function editTaskboard(taskboard_id) {
     }
 }
 
-async function deleteTask(taskboard_id) {
+async function deleteTaskboard(taskboard_id) {
     try {
         const response = await fetch(`http://localhost:8000/api/organizations/${organization_id}/${taskboard_id}/delete_organization_taskboard`                                              , {
             method: 'POST'
@@ -431,7 +436,7 @@ function toggleOrganizationCardOptionsDropdown(card) {
             deleteOption.textContent = 'Delete';
             deleteOption.onclick = (e) => {
                 e.stopPropagation();
-                deleteTask(card.dataset.taskboard_id); 
+                deleteTaskboard(card.dataset.taskboard_id); 
                 dropdown.remove();
             };
         dropdown.appendChild(deleteOption);
@@ -439,12 +444,56 @@ function toggleOrganizationCardOptionsDropdown(card) {
     card.appendChild(dropdown);
 }
 
+function toggleEditOrganizationInterface() {
+    const overlay = document.querySelector('.add_task_overlay');
+    const container = document.getElementById('edit_organization_container');
+
+    if (container.classList.contains('active')) {
+        overlay.addEventListener('transitionend', () => {
+            document.getElementById('organization_name_input_edit').value = '';
+            document.getElementById('organization_description_input_edit').value = '';
+        }, {once: true});
+    } else {
+        const settings_button = document.getElementById('organization_settings_button');
+        document.getElementById('organization_name_input_edit').value = settings_button.dataset.organization_name;
+        document.getElementById('organization_description_input_edit').value = settings_button.dataset.organization_description;
+    }
+
+    overlay.classList.toggle('active');
+    container.classList.toggle('active');  
+}
+
+function editOrganization() {
+    const organization_name = document.getElementById('organization_name_input_edit').value;
+    const organization_description = document.getElementById('organization_description_input_edit').value;
+
+    const formData = new FormData();
+    formData.append('organization_name', organization_name);
+    formData.append('organization_description', organization_description);
+
+    try {
+        fetch(`http://localhost:8000/api/organizations/${organization_id}/edit_organization`, {
+            method: 'POST',
+            body: formData
+        });
+    } catch (error) {
+        console.error('Error editing organization:', error);
+    }
+}
+
 document.querySelector('.add_task_overlay').addEventListener('click', () => {
     if (document.getElementById('add_task_container').classList.contains('active')) {
         toggleAddTaskOverlay();
     } else if (document.getElementById('edit_task_container').classList.contains('active')) {
         toggleEditTaskOverlay();
-}});
+    } else if (document.getElementById('invite_members_container').classList.contains('active')) {
+        toggleInviteMembersOverlay();
+    } else if (document.getElementById('assign_members_container').classList.contains('active')) {
+        toggleAssignMembersOverlay();
+    } else if (document.getElementById('edit_organization_container').classList.contains('active')) {
+        toggleEditOrganizationInterface();
+    }
+});
 
 document.getElementById('close_add_task_button').addEventListener('click', toggleAddTaskOverlay);
 
@@ -533,6 +582,18 @@ document.getElementById('assign_members_overlay').addEventListener('click', (eve
     }
 });
 
+document.getElementById('organization_settings_button').addEventListener('click', () => {
+    toggleEditOrganizationInterface();
+});
+
+document.getElementById('confirm_edit_organization_button').addEventListener('click', async () => {
+    await editOrganization();
+    toggleEditOrganizationInterface();
+});
+
+document.getElementById('close_edit_organization_button').addEventListener('click', () => {
+    toggleEditOrganizationInterface();
+});
 
 // Order matters
 loadOrganizationMembers();

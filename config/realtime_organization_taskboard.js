@@ -34,7 +34,26 @@ async function initializeRealtime() {
                         old_column.push(item.dataset.member_id);
                     });
 
-                    if (old_column.every(member => new_column.includes(member))) {
+                    // No changes in members
+                    if (old_column.every(member => new_column.includes(member)) && new_column.every(member => old_column.includes(member))) {
+                        console.log('No changes in members');
+                        const organization_name = payload.new.name;
+                        const organization_description = payload.new.description;
+
+                        const organization_title_element = document.querySelector('.organization_taskboard_header_title').querySelector('h2');
+                        if (organization_title_element) {
+                            organization_title_element.textContent = organization_name;
+                        }
+
+                        const settings_button = document.getElementById('organization_settings_button');
+                    
+                        if (settings_button) {
+                            settings_button.dataset.organization_name = organization_name;
+                            settings_button.dataset.organization_description = organization_description;
+                        }
+                    }
+                    // Changes in members
+                    else if (old_column.every(member => new_column.includes(member))) {
                         const new_members = new_column.filter(member => !old_column.includes(member));
                         const formData = new FormData();
                         formData.append('user_ids', [new_members]);
